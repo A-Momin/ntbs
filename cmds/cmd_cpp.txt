@@ -1,0 +1,18 @@
+
+g++ HelloWorld.cpp -o HelloWorld
+    -->o compile
+
+g++ -std=c++11 HelloWorld.cpp -o HelloWorld
+    	another way to compile
+
+./HelloWorld
+    	to run
+
+	g++ is the command to compile 
+	Helloworld.cpp is the file to be compiled 
+	-o is the command that says you want name of the executable file 
+	HelloWorld is the name you want to give the executable file.
+
+
+g++ -std=c++1 <file_name.cpp> -o <executable_file_name>
+g++ -std=c++1 pointer.cpp -o pntr

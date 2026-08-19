@@ -1,0 +1,210 @@
+{
+    "workbench.settings.editor": "json", // Options: 'ui', 'json'
+    "workbench.settings.openDefaultSettings": true,
+    "workbench.settings.useSplitJSON": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorCustomizations": {
+        "activityBarBadge.background": "#2979FF",
+        "activityBar.activeBorder": "#2979FF",
+        "list.activeSelectionForeground": "#2979FF",
+        "list.inactiveSelectionForeground": "#2979FF",
+        "list.highlightForeground": "#2979FF",
+        "scrollbarSlider.activeBackground": "#2979FF50",
+        "editorSuggestWidget.highlightForeground": "#2979FF",
+        "textLink.foreground": "#2979FF",
+        "progressBar.background": "#2979FF",
+        "pickerGroup.foreground": "#2979FF",
+        "tab.activeBorder": "#2979FF",
+        "notificationLink.foreground": "#2979FF",
+        "editorWidget.resizeBorder": "#2979FF",
+        "editorWidget.border": "#2979FF",
+        "settings.modifiedItemIndicator": "#2979FF",
+        "settings.headerForeground": "#2979FF",
+        "panelTitle.activeBorder": "#2979FF",
+        "breadcrumb.activeSelectionForeground": "#2979FF",
+        "menu.selectionForeground": "#2979FF",
+        "menubar.selectionForeground": "#2979FF",
+        "editor.findMatchBorder": "#2979FF",
+        "selection.background": "#2979FF40"
+    },
+    "workbench.statusBar.visible": true,
+    "workbench.startupEditor": "none",
+    "workbench.colorTheme": "Gruvbox Dark Hard",
+    "workbench.sideBar.location": "right", // `Workbench -> Settings Editor -> ui`
+
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.foldingStrategy": "indentation",
+    "editor.minimap.enabled": false,
+    "editor.fontSize": 16,
+    "editor.formatOnPaste": true,
+    "editor.snippetSuggestions": "top",
+    "editor.insertSpaces": true, //Insert spaces when pressing Tab. This setting is overridden based on the file contents when #editor.detectIndentation# is on.
+    "editor.detectIndentation": false,
+    "editor.renderWhitespace": "all",
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "expand",
+    "editor.suggestSelection": "first",
+    "editor.inlineSuggest.enabled": true,
+    // Controls whether suggestions should automatically show up while typing. This can be controlled for typing in comments, strings, and other code. Quick suggestion can be configured to show as ghost text or with the suggest widget. Also be aware of the `editor.suggestOnTriggerCharacters`-setting which controls if suggestions are triggered by special characters.
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "off",
+        "strings": "off"
+    },
+    // Controls whether suggestions should automatically show up when typing trigger characters.
+    "editor.suggestOnTriggerCharacters": false,
+    "debug.console.fontSize": 14,
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    // Configure settings to be overridden for yaml.
+    "[yaml]": {
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+    },
+    "[python]": {
+        // "editor.formatOnType": true
+        // "editor.defaultFormatter": "remimarsal.prettier-now"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "off",
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+        // "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // "editor.defaultFormatter": "mervin.markdown-formatter",
+        "editor.wordWrapColumn": 80,
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    },
+    // "markdown.extension.print.absoluteImgPath": false,
+    "markdown.extension.print.theme": "dark",
+    "markdown.extension.toc.omittedFromToc": {},
+    "markdown-preview-enhanced.hideDefaultVSCodeMarkdownPreviewButtons": false,
+    // "markdown-preview-enhanced.previewTheme": "none.css",
+    "markdown-preview-enhanced.codeBlockTheme": "one-dark.css",
+    "markdown-preview-enhanced.previewTheme": "atom-dark.css",
+    "markdown-preview-enhanced.revealjsTheme": "blood.css",
+    "markdown-preview-enhanced.enablePreviewZenMode": false,
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    // "java.configuration.checkProjectSettingsExclusions": false,
+    "printcode.printFilePath": "none",
+    "printcode.tabSize": 4,
+    "printcode.fontSize": 10,
+    "printcode.paperSize": "letter",
+    "python.jediEnabled": false,
+    "python.analysis.typeCheckingMode": "off",
+    "python.languageServer": "Pylance",
+    "python.terminal.activateEnvironment": false,
+    // "python.linting.flake8Args": ["--ignore=E265, E305, E302, E501, E401, F401, E701, W293, E226, E251, E266, E731, E303, E242, F405, E402, F403"],
+    "extensions.ignoreRecommendations": false,
+    "material-icon-theme.folders.color": "#4169E1",
+    "material-icon-theme.activeIconPack": "react_redux",
+    "security.workspace.trust.untrustedFiles": "open",
+    // "emmet.triggerExpansionOnTab": true,
+    "files.associations": {
+        "*.html": "jinja-html",
+        "**/templates/**/*.html": "django-html",
+        // "**/templates/**/*": "django-txt",
+        ".json": "jsonc"
+    },
+    "files.autoSave": "onFocusChange",
+    "emmet.includeLanguages": {
+        "jinja-html": "html",
+        "django-html": "html"
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.DS_Store": true,
+        "**/.git": true,
+        "**/.hg": true,
+        // "**/.idea": true,
+        "**/.metadata": true,
+        "**/.project": true,
+        "**/.pydevproject": true,
+        "**/.svn": true,
+        // "**/.vscode": true,
+        "**/*.class": true,
+        "**/CVS": true
+    },
+    "prettier.tabWidth": 4,
+    "redhat.telemetry.enabled": false,
+    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.inheritEnv": false,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.CustomBrowser": "chrome",
+    "breadcrumbs.enabled": true,
+    "git.openRepositoryInParentFolders": "never",
+    "chatgpt.gpt3.apiKey": "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",
+    "workbench.editorAssociations": {
+        "*.db": "default"
+    },
+    "explorer.confirmDragAndDrop": false,
+    "liveServer.settings.AdvanceCustomBrowserCmdLine": "",
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    "notebook.editorOptionsCustomizations": {
+        "editor.tabSize": 4,
+        "editor.indentSize": 4,
+        "editor.insertSpaces": true
+    },
+    "python.defaultInterpreterPath": "/Users/am/.pyenv/shims/python",
+    "notebook.output.textLineLimit": 50,
+    "docker.extension.enableComposeLanguageServer": false,
+    "database-client.autoSync": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "jupyter.disableJupyterAutoStart": true,
+    // Enable validating the currently open file on save
+    "terraform.experimentalFeatures.validateOnSave": true,
+    "gitlens.rebaseEditor.ordering": "asc",
+    "chat.viewSessions.orientation": "stacked",
+    "chat.mcp.gallery.enabled": true,
+    "terminal.integrated.profiles.osx": {
+        "bash": {
+            "path": "/bin/bash",
+            "args": [
+                "-l"
+            ]
+        },
+        "zsh": {
+            "path": "zsh",
+            "args": [
+                "-l"
+            ]
+        },
+        "fish": {
+            "path": "fish",
+            "args": [
+                "-l"
+            ]
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        }
+    },
+    "terminal.integrated.defaultProfile.osx": "bash"
+}

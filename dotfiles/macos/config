@@ -1,0 +1,53 @@
+# `UseKeychain yes` stores the passphrase in the macOS Keychain.
+
+Host farzana
+HostName MOS02.lan
+User Farzana
+StrictHostKeyChecking no # IdentityFile ~/.ssh/mos01_to_mos02.pub
+
+Host amomin
+HostName MOS02.local
+User a.momin
+StrictHostKeyChecking no
+
+# ============================================================================
+
+# General Purpose AWS EC2 instance
+Host devenv
+HostName 98.89.163.242
+StrictHostKeyChecking no
+User ec2-user
+IdentityFile ~/.ssh/general_purpose.pem
+
+Host ubun
+HostName 54.197.179.12
+StrictHostKeyChecking no
+User ubuntu
+IdentityFile ~/.ssh/AMShah.pem
+
+
+# ============================================================================
+
+### GitHub: Account 1
+
+### `$ git remote set-url origin git@gh1:A-Momin/noteshub.git`
+
+Host gh1
+HostName github.com
+User git
+AddKeysToAgent yes
+UseKeychain no
+IdentityFile ~/.ssh/github_bbcredcap3
+
+### GitHub: Account 2
+
+# `$ git remote set-url origin git@gh2:Aminul-Momin/Algorithms_and_Data_Structures.git`
+
+Host gh2
+HostName github.com
+User git
+AddKeysToAgent yes
+UseKeychain no
+IdentityFile ~/.ssh/ghub_amomin
+
+# ============================================================================

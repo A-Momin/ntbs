@@ -1,0 +1,2 @@
+-   [Authore's Youtube Channel](https://www.youtube.com/playlist?list=PL-v3vdeWVEsXo87wHeVSP_x1KTX4G1l8Y)
+-   [Author'r Github Account](https://github.com/nickjj/dotfiles)

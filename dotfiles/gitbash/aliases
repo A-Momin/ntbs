@@ -1,0 +1,402 @@
+#!/usr/bin/env bash
+
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+	colorflag="--color"
+	export LS_COLORS='no=00:fi=00:di=01;31:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
+else # macOS `ls`
+	colorflag="-G"
+	export LSCOLORS='BxBxhxDxfxhxhxhxhxcxcx'
+fi
+
+
+# List all files colorized in long format
+alias l="ls -lF ${colorflag}"
+
+# List all files colorized in long format, including dot files
+alias la="ls -laF ${colorflag}"
+
+# List only directories
+alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
+
+# Always use color output for `ls`
+alias ls="command ls -1 ${colorflag}"
+
+# Always enable colored `grep` output
+# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Get week number
+alias week='date +%V'
+
+# Stopwatch
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
+
+# Get macOS Software Updates, and update installed Ruby gems, Homebrew, npm, and their installed packages
+alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; sudo gem cleanup'
+
+# IP addresses
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias localip="ipconfig getifaddr en0"
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+
+# Show active network interfaces
+alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
+
+# Flush Directory Service cache
+alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
+
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+
+# View HTTP traffic
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+# Canonical hex dump; some systems have this symlinked
+command -v hd > /dev/null || alias hd="hexdump -C"
+
+# macOS has no `md5sum`, so use `md5` as a fallback
+command -v md5sum > /dev/null || alias md5sum="md5"
+
+# macOS has no `sha1sum`, so use `shasum` as a fallback
+command -v sha1sum > /dev/null || alias sha1sum="shasum"
+
+# JavaScriptCore REPL
+jscbin="/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc";
+[ -e "${jscbin}" ] && alias jsc="${jscbin}";
+unset jscbin;
+
+# Trim new lines and copy to clipboard
+alias c="tr -d '\n' | pbcopy"
+
+
+# Empty the Trash on all mounted volumes and the main HDD.
+# Also, clear Apple’s System Logs to improve shell startup speed.
+# Finally, clear download history from quarantine. https://mths.be/bum
+alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
+
+# Show/hide hidden files in Finder
+alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+# Hide/show all desktop icons (useful when presenting)
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+# URL-encode strings
+alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
+
+# Merge PDF files
+# Usage: `mergepdf -o output.pdf input{1,2,3}.pdf`
+alias mergepdf='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
+
+# Disable Spotlight
+alias spotoff="sudo mdutil -a -i off"
+# Enable Spotlight
+alias spoton="sudo mdutil -a -i on"
+
+# PlistBuddy alias, because sometimes `defaults` just doesn’t cut it
+alias plistbuddy="/usr/libexec/PlistBuddy"
+
+# Airport CLI alias
+alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
+
+# Ring the terminal bell, and put a badge on Terminal.app’s Dock icon
+# (useful when executing time-consuming commands)
+alias badge="tput bel"
+
+# Intuitive map function
+# For example, to list all directories that contain a certain file:
+# find . -name .gitattributes | map dirname
+alias map="xargs -n1"
+
+# One of @janmoesen’s ProTip™s
+for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
+	alias "$method"="lwp-request -m '$method'"
+done
+
+# Make Grunt print stack traces by default
+command -v grunt > /dev/null && alias grunt="grunt --stack"
+
+# Stuff I never really use but cannot delete either because of http://xkcd.com/530/
+alias stfu="osascript -e 'set volume output muted true'"
+alias pumpitup="osascript -e 'set volume output volume 100'"
+
+# Kill all the tabs in Chrome to free up memory
+# [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
+alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+
+# Lock the screen (when going AFK)
+alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+
+# Reload the shell (i.e. invoke as a login shell)
+alias reload="exec $SHELL -l"
+
+# Print each PATH entry on a separate line
+alias path='echo -e ${PATH//:/\\n}'
+
+#=============================================================================
+# MY ALIASES
+#=============================================================================
+
+# alias findsz="find . -maxdepth ${1:-1} -type d -exec du -sh {} + | sort -h"
+# alias findsz="find . -maxdepth 2 -type d -exec du -sh {} + | sort -h"
+
+
+
+# Recursively delete `.DS_Store` files
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+# alias cleanvenvdir="find . -type d -name '*.venv' -exec rm -rf {} +"
+
+alias runsshagent='eval $(ssh-agent)'
+
+#=============================================================================
+
+# Easier navigation: .., ..., ...., ....., ~ and -
+alias ..="cd ..&& ls -1"
+alias ...="cd ../.. && ls -1"
+alias ....="cd ../../.. && ls -1"
+alias .....="cd ../../../.. && ls -1"
+alias -- -="cd -"
+
+
+alias dl="cd $HOME/Downloads && ls -1"
+alias dt="cd $HOME/Desktop && ls -1"
+alias sshot="open $HOME/Desktop/ss"
+alias mdstyle="code $HOME/.local/state/crossnote/style.less"
+
+alias bu="code $DOTFILES/bash_utils.bash"
+alias secrets="code $DOTFILES/secrets.bash"
+alias aliases="code $DOTFILES/aliases"
+alias galiases="code $DOTFILES/git-aliases.bash"
+alias sshconfig="code $HOME/.ssh/config"
+alias chrome="open -na 'Google Chrome' --args --new-window" # open new (`-n`) Chrome application (`-a`) with arguments (`--args` and `--new-window`)
+alias chromeincog="open -na 'Google Chrome' --args --new-window --incognito" # open new (`-n`) Chrome application (`-a`) with arguments (`--args` and `--new-window`)
+alias ae="deactivate &> /dev/null; source .venv/bin/activate"
+alias de="deactivate"
+alias pae="pyenv activate $1"
+alias pde="pyenv deactivate"
+# alias uae="source $UV/$1/bin/activate"
+uae() {
+    source "$UV/$1/bin/activate" && echo -e "Activated \033[0;32m$1\033[0m Virual Environment, which is located in $UV"
+}
+alias ude="pyenv deactivate"
+alias cae="conda activate $1"
+alias cde="conda deactivate"
+
+
+alias jlb="jupyter-lab"
+alias jnb="jupyter notebook"
+alias rgh="code $HOME/notes_rough.md"
+
+# =============================================================================
+# =============================================================================
+
+alias ntpdf="open $NTHUB/nts && open $NTHUB/PDFs"
+alias nthub="cd $NTHUB"
+alias ntabc="code $NTHUB/nts/notes_arabic.md"
+alias ntbash="code $NTHUB/nts/notes_bash.md"
+alias ntdb="code $NTHUB/nts/notes_db.md"
+alias ntwaf="code $NTHUB/nts/notes_waf.md"
+alias ntwdev="code $NTHUB/nts/notes_web_developement.md"
+alias ntshell="code $NTHUB/nts/notes_shell.md"
+alias ntde="code $NTHUB/nts/notes_data_engineering.md"
+alias ntlnx="code $NTHUB/nts/notes_linux.md"
+alias ntgcp="code $NTHUB/nts/notes_gcp.md"
+alias ntemail="code $NTHUB/interviewprep/email_analysis.md"
+alias ntfw="code $NTHUB/nts/notes_fw.md"
+alias ntmd="code $NTHUB/nts/notes_md.md"
+alias ntaws1="code $NTHUB/nts/notes_aws1.md"
+alias ntaws2="code $NTHUB/nts/notes_aws2.md"
+alias ntdjango="code $NTHUB/nts/notes_django.md"
+alias ntre="code $NTHUB/nts/notes_re.md"
+alias ntml="code $NTHUB/nts/notes_ml.md"
+alias ntnsql="code $NTHUB/nts/notes_nosql.md"
+alias ntkafka="code $NTHUB/nts/notes_kafka.md"
+alias ntyml="code $NTHUB/nts/notes_yml.md"
+alias ntrmp="code $NTHUB/nts/notes_rmp.md"
+alias ntgit="code $NTHUB/nts/notes_git.md"
+alias ntdkr="code $NTHUB/nts/notes_docker.md"
+alias ntaf="code $NTHUB/nts/notes_airflow.md"
+alias ntvim="code $NTHUB/nts/notes_vim.md"
+alias ntvsc="code $NTHUB/nts/notes_vscode.md"
+alias ntmac="code $NTHUB/nts/notes_mac.md"
+alias ntpy="code $NTHUB/nts/notes_python.md"
+alias ntpytl="code $NTHUB/nts/notes_pytools.md"
+alias ntdvtl="code $NTHUB/nts/notes_devtools.md"
+alias ntpytest="code $NTHUB/nts/notes_pytest.md"
+alias nteng="open /Users/a.momin/gd/Writing\ English/Notes_English.gsheet"
+alias ntflask="code $NTHUB/nts/notes_flask.md"
+alias ntfastapi="code $NTHUB/nts/notes_fastapi.md"
+alias ntjira="code $NTHUB/nts/notes_jira.md"
+alias ntcss="open $NTHUB/nts/notes_css.gdoc"
+alias nthtml="open $NTHUB/nts/notes_html.gdoc"
+alias ntjnb="code $NTHUB/nts/notes_jnb.md"
+alias ntfintech="code $NTHUB/nts/notes_fintech.md"
+alias ntcicd="code $NTHUB/nts/notes_cicd.md"
+alias ntnw="code $NTHUB/nts/notes_networking.md"
+alias nttableau="code $NTHUB/nts/notes_tableau.md"
+alias ntstat="code $NTHUB/nts/notes_statistics.md"
+alias ntspark="code $NTHUB/nts/notes_spark.md"
+alias ntsysdgn="code $NTHUB/nts/notes_system_designs.md"
+alias ntmicroservice="code $NTHUB/nts/notes_microservice.md"
+alias ntopenai="code $NTHUB/nts/notes_openai.md"
+alias ntoop="code $NTHUB/nts/notes_oop.md"
+alias ntdrf="code $NTHUB/nts/notes_drf.md"
+alias ntwaf="code $NTHUB/nts/notes_waf.md"
+alias ntds="code $NTHUB/nts/notes_ds.md"
+alias nttf="code $NTHUB/nts/notes_terraform.md"
+alias ntserverless="code $NTHUB/nts/notes_serverless.md"
+alias ntansible="code $NTHUB/nts/notes_ansible.md"
+alias ntopenssl="code $NTHUB/nts/notes_openssl.md"
+alias ntselenium="code $NTHUB/nts/notes_selenium.md"
+alias ntbehave="code $NTHUB/nts/notes_behave.md"
+alias ntxpath="code $NTHUB/nts/notes_xpath.md"
+alias ntcolabtl="code $NTHUB/nts/notes_colaboration_tools.md"
+alias ntawsglue="code $NTHUB/nts/notes_awsglue.md"
+alias ntprompt="code $NTHUB/nts/notes_prompts.md"
+alias ntllm="code $NTHUB/nts/notes_llm.md"
+alias ntdatabricks="code $NTHUB/nts/notes_databricks.md"
+alias ntcb="code $NTHUB/nts/notes_cybersecurity.md"
+
+
+###############################################################################
+alias ntcarlog="code $NTHUB/nts/notes_car_log.md"
+alias ntislam="code $NTHUB/nts/notes_islam.md"
+alias nteng="code $NTHUB/nts/notes_english.md"
+alias nttmp="code $NTHUB/nts/notes_tmp.md"
+###############################################################################
+alias cmdnpm="code $NTHUB/nts/cmd_npm.txt"
+alias cmdreact="code $NTHUB/nts/cmd_react.txt"
+alias cmdcpp="code $NTHUB/nts/cmd_cpp.txt"
+alias cmdspark="code $NTHUB/cmds/cmd_pyspark.md"
+alias cmdawsglue="code $NTHUB/cmds/cmd_awsglue.md"
+###############################################################################
+
+## INTERVIEW QUESTIONS
+alias ivsupport="code $NTHUB/interviewprep/interview_support.md"
+alias iqs="code $NTHUB/iqs"
+alias iqaws="code $NTHUB/iqs/iq_aws.md"
+alias iqmicroservice="code $NTHUB/iqs/iq_microservice.md"
+alias iq="code $NTHUB/iqs/iq_questions.md"
+alias iqspark="code $NTHUB/iqs/iq_spark.md"
+alias iqpython="code $NTHUB/iqs/iq_python.md"
+alias iqdjango="code $NTHUB/iqs/iq_django.md"
+alias iqdrf="code $NTHUB/iqs/iq_drf.md"
+alias iqdb="code $NTHUB/iqs/iq_db.md"
+alias iqsql="code $NTHUB/iqs/iq_sql.md"
+alias adhocsql="code $SD/Databases/RDBMS/sql/schemas/adhocsql.sql"
+alias adhocspark="code $SD/Big_Data/elements_of_spark/adhocspark.py"
+# =============================================================================
+
+## JUPYTER NOTEBOOKS
+alias nbsql="code $NTHUB/nbs/nt_sql.ipynb"
+alias nbsqliq="code $SD/Databases/RDBMS/sql/notebooks/sql_queries_questions.ipynb"
+alias nbsqllc="code $SD/Databases/RDBMS/sql/notebooks/leetcode_sql_questions.ipynb"
+alias nbepp="code $NTHUB/nbs/nt_epp.ipynb"
+alias nbpypkg="code $NTHUB/nbs/nt_python_packages.ipynb"
+alias nboop="code $NTHUB/nbs/nt_oop.ipynb"
+alias nbpd="code $NTHUB/nbs/nt_pd.ipynb"
+alias nbspark="code $NTHUB/nbs/nt_spark.ipynb"
+alias nbsparksql="code $NTHUB/nbs/nt_spark_sql.ipynb"
+alias nbnp="code $NTHUB/nbs/nt_np.ipynb"
+alias nbplt="code $NTHUB/nbs/nt_plt.ipynb"
+alias nbml="code $NTHUB/nbs/nt_ml.ipynb"
+alias nbtorch="code $NTHUB/nbs/nt_torch.ipynb"
+alias nbstat="code $NTHUB/nbs/statistics.ipynb"
+alias nbadhocsql="code $NTHUB/nbs/adhoc_sql.ipynb"
+# =============================================================================
+
+dkr_aliases(){
+    #========== Docker Shortcuts =============
+    image_tag=$1
+    container_info=$(docker ps | grep $image_tag)
+
+    alias dps="docker ps | grep ${container_info:0:12}"
+    alias dstp="docker stop ${container_info:0:12}"
+    alias dbld="""docker build -t "${image_tag}""""
+    alias dlg="docker logs --follow ${container_info:0:12}"
+    alias dx="docker exec -it ${container_info:0:12} bash"
+}
+
+pvt_aliases(){
+
+    alias bp="code $DOTFILES/bash_profile_mos01" # bp ==> Bash Profile
+    alias startmysql="sudo /usr/local/mysql/support-files/mysql.server start"
+    alias stopmysql="sudo /usr/local/mysql/support-files/mysql.server stop"
+    alias statusmysql="sudo /usr/local/mysql/support-files/mysql.server status"
+    alias logmysql="sudo tail -f /usr/local/mysql/data/$(hostname).err"
+    alias mvpdf="mv $NTHUB/{nts,cmds}/*.pdf $GD/NOTES_PDF/notes/"
+
+    # NON-TECHNICAL
+    alias passdb="open $HOME/mydocs/gd/passdb.gsheet"
+    alias jobdb="open $HOME/mydocs/gd/jobs/Jobs_DB.gsheet"
+    alias apartments="code $GD/MISC/apartments.md"
+    alias ntrgh="code $HOME/notes_rough.md"
+    alias ntht="code $HOME/mydocs/gd/Harness-Tech/notes_ht.md"
+
+
+    alias mlcourses="cd $HOME/mydocs/Software_Development/Machine_Learning/ml_courses && ls -1"
+    alias ml="cd $HOME/mydocs/Software_Development/Machine_Learning && ls -1"                 # ml ==> Machine_Learning
+    alias bigdata="cd $HOME/mydocs/Software_Development/Big_Data"
+    alias books="cd $HOME/mydocs/BOOKS/PDF\ Books && ls -1"
+    alias llmapp="cd $SD/llm_app && ls -1"
+    alias ads="cd $HOME/mydocs/Software_Development/Algorithms_and_Data_Structures"
+    alias epi="cd $HOME/mydocs/Software_Development/Python_Program/Python3/elements-of-programming-interview && deactivate &> /dev/null; source .venv/bin/activate"
+    alias pp="cd $HOME/mydocs/Software_Development/Python_Program && ls -1"                   # pp ==> Python Program
+    alias pp2="cd $HOME/mydocs/Software_Development/Python_Program/Python2 && ls -1"          # pp2 ==> Python2 Program
+    alias pp3="cd $HOME/mydocs/Software_Development/Python_Program/Python3 && ls -1"          # pp3 ==> Python3 Program
+    alias jp="cd $HOME/mydocs/Software_Development/JavaPragrams && ls -1"                     # cpp ==> C++ Programs
+    alias jsp="cd $HOME/mydocs/Software_Development/Web_Development/Javascript_Program && ls -1"                         # pp3 ==> Python3 Program
+    alias cpp="cd $HOME/mydocs/Software_Development/C++_Programs && ls -1"                    # cpp ==> C++ Programs
+    alias algs4="cd $HOME/mydocs/Software_Development/algs4/src/main/java/edu/princeton/cs/algs4"
+    alias db="cd $HOME/mydocs/Software_Development/Databases && ls -1"                        # sql ==> MySQL Program
+    alias nttax="code $GD/TaxReturn/notes_tax.md"
+
+    alias mydocs="cd $HOME/mydocs && ls -1"
+    alias gd="cd $HOME/mydocs/gd && ls -1"
+    alias sd="cd $HOME/mydocs/Software_Development && ls -1"
+    alias wd="cd $HOME/mydocs/Software_Development/Web_Development && ls -1"
+    alias resumes="open $GD/jobs/resumes"
+    alias curresume="open $GD/jobs/resumes/AM-DE-PYDEV.gdoc"
+    alias myresume="open $GD/jobs/resumes/AM-DE-PYDEV.gdoc"
+    alias resumede="open $GD/jobs/resumes/AM-DE.gdoc"
+    alias mvntpdf="mv $NTHUB/{nts,iqs}/*.pdf $GD/NOTES_PDF/notes/"
+
+    alias python=python3
+    alias pip=pip3
+    alias vim=nvim
+
+    # alias tmux="tmux 2"
+
+    # Rough or Tmp Aliases
+    alias ntbh="code $NTHUB/nts/notes_buy_houses.md"
+}
+
+c1_aliases(){
+
+    alias dt="cd $DT"
+    alias dl="cd $DL"
+    alias gd='cd "$GD" && ls -1'
+    alias doc='cd "$DOC" && ls -1'
+    alias cb="cd $CODEBASE"
+    alias nthubc1='cd "$NTHUBC1" && ls -1'
+
+    #========== C1 Shortcuts =============
+    alias ntrgh='code "$HOME"/notes_rough.md'
+    alias ntrgh2='code "$NTHUBC1"/notes_rough2.md'
+    alias ntc1='code "$NTHUBC1"/notes_c1.md'
+    alias ntdoc='code "$NTHUBC1"/ntdoc.md'
+    alias ntdsu='code "$NTHUBC1"/ntdsu.md'
+    alias nttkt='code "$NTHUBC1"/nttkt.md'
+
+    alias buc1='code "$NTHUBC1"/.utils/bash_utils_c1.sh'
+    alias nbadhocsh='code "$NTHUBC1"/bscripts_jnb/adhocsh.ipynb'
+
+}

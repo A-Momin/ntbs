@@ -1,0 +1,40 @@
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+.markdown-preview.markdown-preview {
+
+    h1 {
+        color: rgb(189, 202, 223)
+    }
+
+    h2 {
+        color: Magenta;
+    }
+
+    h3 {
+        color: red;
+    }
+
+    h4 {
+        color: tomato;
+    }
+
+    h5 {
+        color: Orange;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    ul,
+    ol {
+        font-size: 16px;
+        color: rgb(148, 189, 247)
+    }
+
+    p {
+        font-size: 16px;
+    }
+}

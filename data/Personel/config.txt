@@ -1,0 +1,78 @@
+Host farzana
+HostName MOS02.lan
+User Farzana
+StrictHostKeyChecking no
+
+# IdentityFile ~/.ssh/mos01_to_mos02.pub
+
+Host amomin
+HostName MOS02.local
+User a.momin
+StrictHostKeyChecking no
+
+# ============================================================================
+
+Host jenkins_master
+HostName 111.111.154.113
+StrictHostKeyChecking no
+User ubuntu
+IdentityFile ~/.ssh/AMominNJ.pem
+
+Host jenkins_agent1
+HostName 3.235.22.191
+StrictHostKeyChecking no
+User ubuntu
+IdentityFile ~/.ssh/aws-ht.pem
+
+Host spark
+HostName 34.239.253.210
+StrictHostKeyChecking no
+User ubuntu
+IdentityFile ~/.ssh/AMominNJ.pem
+
+Host ubun
+HostName 34.239.248.170
+StrictHostKeyChecking no
+User ubuntu
+IdentityFile ~/.ssh/AMominNJ.pem
+
+Host ds_tmp
+HostName 34.139.107.187
+User a.momin
+IdentityFile ~/.ssh/gcp
+
+# ============================================================================
+
+### GitHub: Account 1
+
+### `$ git remote set-url origin git@gh1:A-Momin/noteshub.git`
+
+Host gh1
+HostName github.com
+User git
+AddKeysToAgent yes
+UseKeychain no
+IdentityFile ~/.ssh/ghub_bbcredcap3
+
+### GitHub: Account 2
+
+### `$ git remote set-url origin git@gh2:Aminul-Momin/Algorithms_and_Data_Structures.git`
+
+Host gh2
+HostName github.com
+User git
+AddKeysToAgent yes
+UseKeychain no
+IdentityFile ~/.ssh/ghub_amomin
+
+# ============================================================================
+
+Host awsdn1
+HostName ec2-34-193-196-2.compute-1.amazonaws.com
+User ubuntu
+IdentityFile ~/.ssh/hadoop_cluster.pem
+
+Host main-node
+HostName 104.197.237.10
+User bbcredcap3
+IdentityFile ~/.ssh/gcp-nds-key

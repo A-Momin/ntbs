@@ -1,0 +1,4 @@
+-   Spring Boot has Different Database Initialization Options:
+    -   liquibase
+    -   Flyway
+    -   

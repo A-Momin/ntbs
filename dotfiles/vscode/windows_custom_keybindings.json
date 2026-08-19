@@ -1,0 +1,109 @@
+/**
+This file is symbolic to the actual keybindings.json file located in the .vscode folder of your workspace on mac.
+This file is symlinked using the following command:
+    $ ln -sf $NTHUB/dotfiles/vscode/custom_keybindings.json $HOME/Library/Application\ Support/Code/User/keybindings.json
+ */
+[
+    {
+        "key": "ctrl+1",
+        "command": "-workbench.action.openEditorAtIndex1"
+    },
+    {
+        "key": "ctrl+2",
+        "command": "-workbench.action.openEditorAtIndex2"
+    },
+    {
+        "key": "ctrl+3",
+        "command": "-workbench.action.openEditorAtIndex3"
+    },
+    {
+        "key": "ctrl+4",
+        "command": "-workbench.action.openEditorAtIndex4"
+    },
+    {
+        "key": "ctrl+5",
+        "command": "-workbench.action.openEditorAtIndex5"
+    },
+    {
+        "key": "ctrl+6",
+        "command": "-workbench.action.openEditorAtIndex6"
+    },
+    {
+        "key": "ctrl+7",
+        "command": "-workbench.action.openEditorAtIndex7"
+    },
+    {
+        "key": "ctrl+8",
+        "command": "-workbench.action.openEditorAtIndex8"
+    },
+    {
+        "key": "ctrl+9",
+        "command": "-workbench.action.openEditorAtIndex9"
+    },
+    {
+        "key": "ctrl+b", // Unbind the default command for toggling the Bold.
+        "command": "-markdown.extension.editing.toggleBold", // The "-" before the command removes/unbinds it.
+        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
+    },
+    {
+        "key": "ctrl+enter", // Run selected block of Python code in terminal
+        "command": "python.execSelectionInTerminal",
+        "when": "editorTextFocus && !findInputFocussed && !isCompositeNotebook && !jupyter.ownsSelection && !notebookEditorFocused && !replaceInputFocussed && editorLangId == 'python'"
+    },
+    {
+        "key": "ctrl+shift+]",
+        "command": "workbench.action.increaseViewSize"
+    },
+    {
+        "key": "ctrl+shift+[",
+        "command": "workbench.action.decreaseViewSize"
+    },
+    {
+        "key": "ctrl+shift+up",
+        "command": "cursorTopSelect"
+    },
+    {
+        "key": "ctrl+shift+down",
+        "command": "cursorBottomSelect"
+    },
+    {
+        "key": "ctrl+up",
+        "command": "cursorTop"
+    },
+    {
+        "key": "ctrl+down",
+        "command": "cursorBottom"
+    },
+    {
+        "key": "ctrl+shift+left",
+        "command": "cursorHomeSelect"
+    },
+    {
+        "key": "ctrl+shift+right",
+        "command": "cursorEndSelect"
+    },
+    {
+        "key": "ctrl+left",
+        "command": "cursorHome"
+    },
+    {
+        "key": "ctrl+right",
+        "command": "cursorEnd"
+    },
+    {
+        "key": "alt+left",
+        "command": "cursorWordLeft"
+    },
+    {
+        "key": "alt+right",
+        "command": "cursorWordRight"
+    },
+    {
+        "key": "alt+shift+left",
+        "command": "cursorWordLeftSelect"
+    },
+    {
+        "key": "alt+shift+right",
+        "command": "cursorWordRightSelect"
+    }
+]

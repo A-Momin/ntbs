@@ -1,0 +1,116 @@
+# ============================================================================
+# # Run the snippet below to setup 'bash_profile_capone' file as your 'bash_profile' file.
+# # It assumes that 'ntbs' is downloaded in your home directory.
+export NTBS="$HOME/mydocs/ntbs"
+export DOTFILES="$NTBS/dotfiles/macos"
+ln -fs $DOTFILES/bash_profile_mos01 $HOME/.bash_profile
+
+# ----------------------------------------------------------------------------
+export UV="$HOME/.local/share/uv" # Where custom uv virtual environments are stored.
+export ADS="$HOME/mydocs/Software_Development/Algorithms_and_Data_Structures"
+export SD="$HOME/mydocs/Software_Development"
+export GD="$HOME/mydocs/gd"
+export ML="$HOME/mydocs/Software_Development/Machine_Learning/ml_courses"
+export NLTK_DATA='$HOME/nltk_data'
+export UTILS="$HOME/mydocs/Software_Development/noteshub/utils"
+export DATA="$HOME/DATA"
+
+# Add `GNU grep` to the path so that it can be used instead of the Apple version (BSD grep).
+export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
+
+# Set `VSCode` as Crontab's editor.
+# export VISUAL=code
+
+# Flask Environment Variables
+export FLASK_APP=run.py
+export FLASK_DEBUG=1
+export FLASK_ENV=dev
+
+
+# ============================================================================
+
+# set horizontal-scroll-mode on # to disable word wrap in terminal; not Working !!
+
+# This will add the code command to your system's PATH, allowing you to open Visual Studio Code from the terminal.
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+
+# It is specific to Git and used by the Git prompt (PS1) script to determine whether to show the dirty state of the working directory.
+export GIT_PS1_SHOWDIRTYSTATE=1
+
+# Add `~/bin` to the `$PATH`
+export PATH="$HOME/bin:$PATH";
+# Add `~/.local/bin` to the `$PATH`
+export PATH="$HOME/.local/bin:$PATH";
+
+# Order of the list is crical. second script might depend on the first script.
+for file in $DOTFILES/{git-completion.bash,git-prompt.sh,git-aliases.bash,aliases,secrets.bash,bash_utils.bash}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+done;
+unset file;
+
+
+# =============================================================================
+beautify_prompt
+pvt_symbolic_links
+pvt_aliases
+
+
+host=$(whoami)
+if [ $host = "am" ]; then
+    pvt_aliases
+elif [ $host = "hky162" ]; then
+    c1_aliases
+fi
+# =============================================================================
+# =============================================================================
+# Add pyenv to PATH
+export PATH="$HOME/.pyenv/bin:$PATH"
+# Initialize pyenv
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+##  pyenv-virtualenv is a plugin for pyenv that facilitates the creation and management of Python virtual environments.
+eval "$(pyenv virtualenv-init -)"
+# ============================================================================
+# Setting PATH for Python 3.9
+export PYTHONNOUSERSITE=True # Enable/Disable Python site module ('ENABLE_USER_SITE').
+export PYTHONPATH="$HOME/mydocs/Software_Development/Web_Development/aws/boto_scripts:${PYTHONPATH}"
+export PYTHONPATH="$HOME/mydocs/Software_Development/noteshub/utils:${PYTHONPATH}"
+# ============================================================================
+
+# Add mysql into the PATH variable.
+export PATH="/usr/local/mysql/bin:$PATH"
+export PATH="/usr/local/Cellar/sqlite/3.45.3/bin:$PATH"
+
+# ============================================================================
+######################## PySpark Configurations ##############################
+# ============================================================================
+
+# add java into the path variable
+export PATH="/usr/local/opt/openjdk@11/bin:${PATH}"
+export JAVA_HOME='/usr/local/opt/openjdk@11'
+
+# add java into the path variable
+# export PATH="/usr/local/jdk-11.0.23.jdk/Contents/Home/bin:${PATH}"
+# export JAVA_HOME='/usr/local/jdk-11.0.23.jdk/Contents/Home'
+export SPARK_HOME=/usr/local/spark-3.5.1-bin-hadoop3
+export PATH=$SPARK_HOME/bin:$PATH
+
+
+# export PYSPARK_DRIVER_PYTHON="jupyter"
+export PYSPARK_DRIVER_PYTHON="python3"
+
+# Setting PYSPARK_DRIVER_PYTHON_OPTS to "lab" implies that you want to use Jupyter Lab as your Python driver for PySpark. This can be particularly useful if you prefer the Jupyter Lab environment over the classic Jupyter Notebook interface for running PySpark code.
+# export PYSPARK_DRIVER_PYTHON_OPTS="lab"
+
+export PYSPARK_PYTHON="/usr/bin/python3"
+
+
+# This environment variable allows you to specify additional options or arguments to be passed to the Python executable specified by `PYSPARK_DRIVER_PYTHON` when launching the PySpark driver program.
+# It is used specifically for configuring options related to the Python environment, such as the IP address, port number, Python version, or any other Python-specific configurations.
+# export PYSPARK_DRIVER_PYTHON_OPTIONS="--ip 127.0.0.1 --port 8888"
+# ============================================================================
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

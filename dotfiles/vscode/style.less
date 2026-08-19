@@ -1,0 +1,78 @@
+/* Please visit the URL below for more information: */
+// https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css 
+// This file symbolic linked as the following sumlink command:
+    // $ ln -sf $NTHUB/dotfiles/vscode/style.less $HOME/.local/state/crossnote/style.less
+
+.markdown-preview.markdown-preview {
+
+    // Define variables
+    @primary-color: #37db34;
+
+    // These color variables are intended to be used with headers.
+    @h1-color: #FFF5EE; // SeaShell
+    @h2-color: #008000; // Green
+    @h3-color: #FF0000; // Red
+    @h4-color: #FF1493; // DeepPink
+    @h5-color: #FF4500; // OrangeRed
+    @h6-color: #FA8072; // Salman
+
+    // These color variables are intended to be used with bulet points.
+    @hpb1-color: #C71585; // MediumVioletRed
+    @hpb2-color: #228B22; // ForestGreen
+    @hpb3-color: #FFD700; // Gold
+    @hpb4-color: #FF7F50; // Coral
+
+    background-color: #1d1f21;
+
+    h1 {
+        color: @h1-color;
+    }
+
+    h2 {
+        color: @h2-color;
+    }
+
+    h3 {
+        color: @h3-color;
+    }
+
+    h4 {
+        color: @h4-color;
+        // color: darken(@primary-color, 10%);
+        // color: tomato;
+    }
+
+    h5 {
+        color: @h5-color;
+    }
+
+    h6 {
+        color: @h6-color;
+        font-size: 12px;
+    }
+//   h1 {
+//       color: rgb(91, 133, 201)
+//   }
+//   h4 {
+//     color: @primary-color;
+//     color: darken(@primary-color, 10%);
+//     color: tomato;
+//   }
+//   h5 {
+//     color: Magenta;
+//   }
+
+//   a {
+//     color: inherit;
+//     text-decoration: underline;
+//   }
+
+  ul, ol {
+    //  font-size: 16px;
+    color: rgb(75, 130, 208);
+    font-size: 16px;
+  }
+  p {
+      font-size: 16px;
+  }
+}
