@@ -150,6 +150,7 @@
     "liveServer.settings.CustomBrowser": "chrome",
     "breadcrumbs.enabled": true,
     "git.openRepositoryInParentFolders": "never",
+    "chatgpt.gpt3.apiKey": "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",
     "workbench.editorAssociations": {
         "*.db": "default"
     },
