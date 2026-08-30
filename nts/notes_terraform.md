@@ -1,35 +1,4 @@
--   <details><summary style="font-size:25px;color:Orange">Courses & Tutorials</summary>
 
-    -   [AWS: TERRAFORM DOCUMENTATION](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-    -   [HCL Language Documentation](https://developer.hashicorp.com/terraform/language)
-        -   [Expressions](https://developer.hashicorp.com/terraform/language/expressions)
-    -   [TERRAFORM CLI](https://developer.hashicorp.com/terraform/cli)
-    -   [Terraform Tips & Tricks: loops, if-statements, and more](https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
-    -   [50+ Terraform Molules](https://github.com/clouddrove?utf8=%E2%9C%93&q=terraform-&type=&language=)
-
-    -   [Terraform Real World Use Case | Process SQS Messages With Lambda and Upload to S3 | 9886611117](https://www.youtube.com/watch?v=etru_8t7Dyk)
-    -   [How do I deploy AWS Lambda using Terraform?](https://www.youtube.com/watch?v=JSR7U700h0U)
-    -   [Master Terraform Interview Questions with this Easy Demo](https://www.youtube.com/watch?v=LPW3VriwLVs&list=PLH1ul2iNXl7v5qKBE62pp6GjmodSm5Wbb)
-    -   [Terraform Interview ( Mock Interview )](https://www.youtube.com/watch?v=pCoCynze4Ag)
-
-    #### Courses:
-
-    -   [HashiCorp Terraform Associate Certification Course - Pass the Exam!](https://www.youtube.com/watch?v=V4waklkBC38)
-    -   [HashiCorp Terraform Associate Certification Course (003) - Pass the Exam!](https://www.youtube.com/watch?v=SPcwo0Gq9T8&t=4685s)
-    -   [Terraform by RahulWagh](https://www.youtube.com/playlist?list=PL7iMyoQPMtAOz187ezONf7pL8oGZRobYl)
-        -   [CODE](https://github.com/in28minutes/devops-master-class/tree/master/terraform)
-    -   [Complete Terraform Course - From BEGINNER to PRO! (Learn Infrastructure as Code)](https://www.youtube.com/watch?v=7xngnjfIlK4&t=178s)
-    -   [Terraform Course - Automate your AWS cloud infrastructure](https://www.youtuzbe.com/watch?v=SLB_c_ayRMo&t=2725s)
-
-    -   [How to Create AWS Lambda with Terraform? (API Gateway & GET/POST & IAM S3 Access & Dependencies)](https://antonputra.com/amazon/how-to-create-aws-lambda-with-terraform/)
-    -   [AWS Lambda – Terraform Example with API Gateway](https://tekanaid.com/posts/aws-lambda-terraform-configuration-example-with-api-gateway#code)
-    -   [Terraform to create AWS SNS | GitHub Actions](https://www.youtube.com/watch?v=e7P0TGwp1VA&t=679s)
-    -   [Terraform to create AWS SNS and AWS SQS service which invokes AWS lambda function | GitHub Actions](https://www.youtube.com/watch?v=tTD5D9ZHYUc)
-    -   [HashiCorp Vault + Terraform: The Ultimate Secrets Management Guide](https://www.youtube.com/watch?v=FQE_gyEwu0Q)
-
-    </details>
-
----
 
 -   <details><summary style="font-size:25px;color:Orange">Terms & Concepts</summary>
 
@@ -68,28 +37,15 @@
             | **`*.auto.tfvars`**            | **Automatically loaded variable files**. Any file ending with `.auto.tfvars` or `.auto.tfvars.json` is automatically loaded by Terraform. This is commonly used for injecting values from external systems or for environment-specific variables (e.g., `prod.auto.tfvars`).                         |
             | **`__________.tfvars`**        | A **manually-loaded variable file**. If present, Terraform will ignore it unless you manually add them with your `terraform` command (e.g. `$ terraform apply -var-file="global.tfvars" -var-file="dev.tfvars"`).                                                                                    |
 
-
-        -   **Infrastructure as Code (IaC)**:
-
-            -   IaC is a methodology where infrastructure is defined and managed using code, allowing for versioning, automation, and consistency.
-            -   Terraform is a popular cloud agnostic IaC tool used to provision, version, and manage infrastructure in a declarative manner.
-
-        -   **Terraform CLI**:
-
-            -   The command-line interface for interacting with Terraform, enabling users to apply, plan, and destroy infrastructure.
-            -   Commands: Common commands include terraform init, terraform plan, terraform apply, and terraform destroy.
-
         -   **Terraform Cloud**:
-
             -   A hosted service by HashiCorp that provides collaboration, versioning, and automation features for Terraform configurations.
-            -   Usage: Terraform Cloud facilitates remote execution of Terraform runs, workspace management, and collaboration among team members.
+            -   **Usage**: **Terraform Cloud** facilitates remote execution of Terraform runs, workspace management, and collaboration among team members.
 
         -   **Provider**: A plugin that translates Terraform configurations into API calls to interact with specific cloud or infrastructure platforms.
             -   **Tier**: A classification system used by HashiCorp to indicate the level of maintenance and support for a specific provider.
                 -   **Official Provider**: A provider owned and maintained directly by HashiCorp (e.g., AWS, Azure, Google Cloud).
                 -   **Partner Provider**: A provider developed and maintained by a third-party company in collaboration with HashiCorp (e.g., MongoDB, Datadog).
                 -   **Community Provider**: A provider created and maintained by individual contributors or open-source organizations rather than a formal partner.
-
             -   **Provider Namespace**: The prefix in a provider's source address (e.g., `hashicorp/`) that identifies the organization or individual responsible for publishing it.
 
         </details>
@@ -99,24 +55,83 @@
         -   A block is a structural unit of configuration that defines specific behavior or configuration for resources, providers, modules, and other components. Blocks in Terraform contain settings or instructions in a declarative format and are the building blocks of a Terraform configuration file.
         -   Each block typically starts with a keyword (e.g., `resource`, `provider`, `variable`, etc.), followed by parameters or attributes that define the desired state or configuration for that specific entity. These blocks can be nested and often contain other blocks or key-value pairs.
 
-        -   **Key Elements of a Block**:
+        -   **Elements/Parts of a Block**:
 
-            -   `Block Type`: The keyword that defines what kind of entity the block is configuring (e.g., `resource`, `provider`, `output`, etc.).
-            -   `Block Label(s)`: Identifies the specific instance or name of the entity.
-            -   `Attributes/Arguments`: Key-value pairs or other configurations inside the block that describe the properties of the entity.
-            -   `Nested Blocks`: Other blocks inside a block that further refine its configuration.
+            -   `Block Type`: The first keyword that defines what kind of entity the block is configuring (e.g., `resource`, `provider`, `output`, etc.).
+            -   `Block Label(s)`: After the block type keyword, many blocks take one or more lebales. It identifies the specific instance or name of the entity you define in the block.
+                -   The following **resource block** takes two labels: `"aws_s3_bucket"` and `"logs"`
+                    -   `resource "aws_s3_bucket" "logs"{ ... }`
+                    -   reference: `aws_s3_bucket.logs.id`
+                -   The following blocks take one/no label.
+                    -   `provider "aws" { ... }`
+                    -   `variable "my_vpc_id" { ... }`
+                    -   `module "vpc" { ... }`
+                    -   `locals { ... }` -> it take no label at all.
+            -   `Block Body`:
+                -   `Attributes/Arguments`: Key-value pairs or other configurations inside the block that describe the properties of the entity.
+                    `Expressions`:
+                -   `Nested Blocks`: Other blocks inside a block that further refine its configuration.
+            -   `Meta Arguments`:
 
-        -   [Resource Block](https://developer.hashicorp.com/terraform/language/resources)
+        1. <details><summary style="font-size:20px;color:#C71585">terraform</summary>
+
+            - The `terraform` block is used to configure Terraform itself, such as backend settings (where the state files are stored) and version constraints.
+            - This is usually found at the top of the configuration file.
 
             ```ini
-            resource "aws_instance" "example" {
-                ami = "abc123"
-
-                network_interface {
-                    # ...
+            terraform {
+                backend "s3" {
+                    bucket = "my-terraform-state"
+                    key    = "state/terraform.tfstate"
+                    region = "us-west-2"
                 }
             }
             ```
+
+            </details>
+
+        2. <details><summary style="font-size:20px;color:#C71585">provider</summary>
+
+            - The `provider` block specifies which infrastructure provider (e.g., AWS, Azure, Google Cloud) Terraform should interact with.
+            - It defines the connection details like region, authentication, and API version.
+
+            - Providers are responsible for interacting with APIs and exposing resources for a specific infrastructure platform (e.g., AWS, Azure, Google Cloud).
+            - Providers are declared in the configuration file to specify the target platform and set configuration details.
+
+            ```ini
+            provider "aws" {
+                region = "us-west-2"
+            }
+            ```
+            </details>
+
+        3. <details><summary style="font-size:20px;color:#C71585">resource</summary>
+
+            -   [Resource Block](https://developer.hashicorp.com/terraform/language/resources)
+
+            - The `resource` block is used to define a specific infrastructure component such as compute instances, storage, or networks.
+            - It declares the type of resource and its configuration parameters.
+
+            - A representation of an infrastructure object (e.g., virtual machines, databases, networks) that Terraform manages.
+            - Resources are declared with a resource type and a unique name, and they define the desired state of the infrastructure.
+
+            ```ini
+            resource "RESOURCE_TYPE" "RESOURCE_NAME" {
+                # Configuration settings for the resource
+
+                ATTRIBUTE_NAME = ATTRIBUTE_VALUE
+                # Additional attribute configurations
+            }
+            ```
+
+            ```ini
+            resource "aws_instance" "example" {
+                ami           = "ami-12345678"
+                instance_type = "t2.micro"
+            }
+            ```
+
+            ##### Some Critical Resource Blocks
 
             -   **`resource "aws_resourcegroups_group" "test"`**:
 
@@ -138,11 +153,102 @@
                 }
                 ```
 
-        -   **[Data Block](https://developer.hashicorp.com/terraform/language/data-sources)** Block: In Terraform, a data block reads information from existing infrastructure or external services without creating new resources.
+            </details>
+
+        4. <details><summary style="font-size:20px;color:#C71585">variable (Input Variables)</summary>
+
+            > These are the **parameters** of your Terraform module. They allow users to pass values into the configuration from the outside.
+
+            -   **Analogy:** The arguments/parameters you pass into a function.
+            -   **Static:** Their values must be determined *before* Terraform starts its work. Hence assignment of an expression/function as a value to a variable name is not allowed.
+            -   **Source:** Assigned via `.tfvars` files, CLI flags, or environment variables.
+
+            ```ini
+            variable "instance_type" {
+                description = "Type of EC2 instance"
+                type        = string
+                default     = "t2.micro"
+                # default     = aws_ec2_instane.instance_type # This is not allowed
+            }
+            ```
+            </details>
+
+        5. <details><summary style="font-size:20px;color:#C71585">locals (Local Variables)</summary>
+
+            > While often called "variables" by beginners, these are actually **internal constants**. They are used to calculate values within the code to avoid repetition.
+
+            -   **Analogy:** A variable declared *inside* the body of a function.
+            -   **Dynamic:** They can change based on the logic of other variables or resource attributes.
+            -   **Source:** Defined directly in the code using dynamic expressions and functions.
+
+            ```ini
+            locals {
+                instance_type = aws_ec2_instane.instance_type # This is allowed
+                instance_name = "web-server"
+                environment   = "production"
+            }
+            ```
+
+            </details>
+
+        6. <details><summary style="font-size:20px;color:#C71585">output</summary>
+
+            > These are like **return values** for your Terraform configuration. They highlight important information after a deployment.
+
+            -   **Analogy:** The "return" statement of a function.
+            -   **Purpose:** To print information to the console or share data with other configurations (via remote state).
+
+            ```ini
+                output "instance_ip" {
+                value = aws_instance.example.public_ip
+            }
+            ```
+
+            </details>
+
+        7. <details><summary style="font-size:20px;color:#C71585">module</summary>
+
+            > A self-contained unit of Terraform configuration that groups multiple related resources together (e.g., a "Network" module containing VPC, Subnets, and Gateways).
+            -   **The Root Module**: Every Terraform project has at least one module, known as the **Root Module**, which consists of all `.tf` files in your main working directory.
+            -   **Child Modules**: These are external packages of code called by the root module. Using them allows you to keep your configuration concise and "DRY" (Don't Repeat Yourself).
+            -   **Encapsulation & Reusability**: Modules act as "containers," allowing you to share standardized infrastructure patterns across different teams or projects without rewriting code.
+            -   **Sources**: Modules can be pulled from **Local paths** (on your machine), **GitHub/GitLab**, or the **Terraform Registry**.
+            -   **Interface**:
+            -   **Inputs**: Defined by `variable` blocks in the child module; passed via the `module` block in the parent.
+            -   **Outputs**: Defined by `output` blocks in the child; used by the parent to retrieve information (like a Load Balancer's DNS).
+            -   **Calling a Module**: To "call" a module, you define a `module` block and provide the `source` location along with any required input variables.
+
+                ```ini
+                # Example: Calling a child module from the root module
+                module "network" {
+                    source = "./modules/network"     # Location of the code
+                    vpc_cidr = "10.0.0.0/16"         # Input variable passed to the module
+                }
+                ```
+
+            </details>
+
+        8. <details><summary style="font-size:20px;color:#C71585">data</summary>
+                    
+            -   [Data Block](https://developer.hashicorp.com/terraform/language/data-sources)
+
+            > The `data` block is used to fetch or read data from external existing resources without creating or modifying them. This is useful for fetching details about existing infrastructure components (like AMIs, VPCs, etc.).
 
             -   Data sources are evaluated during planning, so Terraform can use that information to build the execution plan.
             -   Terraform resolves dependencies first, then fetches the referenced data before generating the plan.
             -   Retrieved data can be used in resource arguments, outputs, and other expressions.
+
+            ```ini
+            data "aws_ami" "example" {
+                most_recent = true
+                owners      = ["amazon"]
+                filter {
+                    name   = "name"
+                    values = ["amzn2-ami-hvm-*"]
+                }
+            }
+            ```
+            ##### Some Critical Data Blocks
 
             -   **`data "aws_caller_identity" "current" {}`**: In Terraform, `data "aws_caller_identity" "current" {}` is a **Data Source**.
 
@@ -188,15 +294,79 @@
 
                         ```
 
-            -   **`data "aws_cloudformation_export" "example_name"`**: The aws_cloudformation_export data source in Terraform is used to retrieve the value of an output exported by an AWS CloudFormation stack. This is especially useful when you need to bridge existing CloudFormation infrastructure with new resources managed by Terraform.
+            -   **`data "aws_cloudformation_export" "example_name" {}`**: The aws_cloudformation_export data source in Terraform is used to retrieve the value of an output exported by an AWS CloudFormation stack. This is especially useful when you need to bridge existing CloudFormation infrastructure with new resources managed by Terraform.
 
                 ```ini
                 data "aws_cloudformation_export" "vpc_id" {
                     name = "11111"
                 }
                 ```
-        </details>
 
+            -   **`data "terraform_remote_state" "trs" {}`**: **Terraform Remote State** data source is the standard way to share information (outputs) between two completely separate Terraform configurations.
+                -   [Terraform Remote State data source](https://developer.hashicorp.com/terraform/language/state/remote-state-data)
+                -   **The Syntax (Standard S3 Backend)**: If your "source" project stores its state in AWS S3, your data source block should look like this:
+
+                    ```ini
+                    data "terraform_remote_state" "trs" {
+                        backend = "s3"
+
+                        config = {
+                            bucket = "your-terraform-state-bucket"
+                            key    = "path/to/source/project/terraform.tfstate"
+                            region = "us-east-1" # Or your specific region
+                        }
+                    }
+                    ```
+
+                -   **How to access the data**: To actually use the data from the remote state, the source project **must** have defined `output` blocks. You access them like this:
+
+                    ```ini
+                    resource "aws_instance" "app_server" { 
+                        subnet_id     = data.terraform_remote_state.trs.outputs.subnet_id
+                        ...
+                    }
+                    ```
+
+            </details>
+
+        9. <details><summary style="font-size:20px;color:#C71585">lifecycle</summary>
+
+            > The `lifecycle` block inside a resource block is used to define special lifecycle management behaviors, such as preventing resource deletion or defining creation-time dependencies.
+
+            ```ini
+            resource "aws_s3_bucket" "example" {
+                bucket = "my-bucket"
+                lifecycle {
+                    prevent_destroy = true
+                }
+            }
+            ```
+
+            </details>
+
+        10. <details><summary style="font-size:20px;color:#C71585">provisioner</summary>
+
+            > The provisioner block allows you to execute scripts or commands on a resource after it has been created or updated. Provisioners are typically used to configure resources (such as virtual machines) beyond the basic setup provided by the Terraform resource block. This might include installing software, configuring files, or setting up the environment after an instance or other resource is provisioned.
+
+            ```ini
+            provisioner "remote-exec" {
+                inline = ["echo 'Wait until SSH is ready'"]
+
+                connection {
+                type        = "ssh"
+                user        = local.ssh_user
+                private_key = file(local.private_key_path)
+                host        = aws_instance.nginx.public_ip
+                }
+            }
+            provisioner "local-exec" {
+                command = "ansible-playbook  -i ${aws_instance.nginx.public_ip}, --private-key ${local.private_key_path} nginx.yaml"
+            }
+            ```
+
+            </details>
+
+        </details>
 
     -   <details><summary style="font-size:20px;color:Magenta">Meta-Arguments</summary>
 
@@ -305,269 +475,6 @@
             ```
 
         </details>
-
-    </details>
-
----
-
--   <details><summary style="font-size:25px;color:Orange">Commands</summary>
-
-    -   `$ terraform init`
-
-    -   `$ terraform plan`
-    -   `$ terraform plane -refresh=false`
-    -   `$ terraform plane console`
-    -   `$ terraform plane -out iam.tfplane`
-    -   `$ terraform plan -out iam.tfplan`
-    -   `$ terraform plan -refresh=false -var="iam_user_name_prefix=VALUE_FROM_COMMAND_LINE"`
-
-    -   `$ terraform apply -var-file=file_name`
-    -   `$ terraform apply -var="db_user=myuser" -var="db_pass=secretpassword"`
-    -   `$ terraform apply -refresh=false`
-    -   `$ terraform apply "iam.tfplan"`
-    -   `$ terraform apply -target="aws_iam_user.tf_iam_user"`
-    -   `$ terraform apply -target=aws_default_vpc.default`
-    -   `$ terraform apply -target=data.aws_subnet_ids.default_subnets`
-    -   `$ terraform apply -target=data.aws_ami_ids.aws_linux_2_latest_ids`
-    -   `$ terraform apply -target=data.aws_ami.aws_linux_2_latest`
-
-    -   `$ terraform destroy`
-
-    -   `$ terraform console`
-
-    -   `$ terraform get -update` -> Check already-downloaded modules for available updates and install the newest versions available.
-    -   `$ terraform validate`
-    -   `$ terraform fmt`
-    -   `$ terraform show`
-    -   `$ export TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX`
-    -   `$ export TF_VAR_iam_user_name_prefix=FROM_ENV_VARIABLE_IAM_PREFIX`
-
-    -   `$ terraform workspace list`
-    -   `$ terraform workspace new production`
-    -   `$ terraform workspace show`
-    -   `$ terraform workspace new prod-env`
-    -   `$ terraform workspace select default`
-    -   `$ terraform workspace list`
-    -   `$ terraform workspace select prod-env`
-
-
-    -   **Essential Terraform Workflow Commands**: These commands represent the core steps of the standard Terraform workflow: initialize, plan, apply, and destroy.
-
-        | Command              | Flags / Parameters         | Explanation                                                                            |
-        | :------------------- | :------------------------- | :------------------------------------------------------------------------------------- |
-        | `terraform init`     | `--upgrade`                | Initializes a working directory, downloading necessary providers and modules.          |
-        |                      | `--backend-config=path`    | Configures the backend (e.g., S3 bucket name) non-interactively.                       |
-        | `terraform validate` | `-json`                    | Checks configuration files for syntax and internal consistency before planning.        |
-        | `terraform plan`     | `-out=path`                | Generates and saves an execution plan to a file for later application.                 |
-        |                      | `-destroy`                 | Generates a plan to destroy all resources defined in the configuration.                |
-        |                      | `-target=resource_address` | Focuses the plan on specific resources (use with caution).                             |
-        |                      | `-var 'key=value'`         | Sets a variable value on the command line.                                             |
-        |                      | `-var-file=path`           | Loads variable values from a specified file.                                           |
-        | `terraform apply`    | `<planfile>`               | Executes the saved plan file or generates a plan and applies it interactively.         |
-        |                      | `-auto-approve`            | Skips the interactive approval prompt for the execution plan.                          |
-        |                      | `-target=resource_address` | Applies changes only to specific resources and their dependencies (use with caution).  |
-        |                      | `-refresh-only`            | Updates the state file to reflect real-world changes without proposing config changes. |
-        | `terraform destroy`  | `-auto-approve`            | Destroys all infrastructure managed by the current configuration without prompting.    |
-        |                      | `-target=resource_address` | Destroys only the specified resources (use with caution).                              |
-
-    -   **State Management and Inspection**: These commands allow you to view, modify, and manage the Terraform state file.
-
-        | Command                | Flags / Parameters        | Explanation                                                                         |
-        | :--------------------- | :------------------------ | :---------------------------------------------------------------------------------- |
-        | `terraform show`       | `<path_to_state_or_plan>` | Provides human-readable output of the state file or a saved plan file.              |
-        |                        | `-json`                   | Displays the state or plan output in machine-readable JSON format.                  |
-        | `terraform state list` | `[address]`               | Lists all or specific resources currently tracked in the state file.                |
-        | `terraform state mv`   | `<source> <destination>`  | Moves an item's address within the state file (e.g., renaming a resource).          |
-        | `terraform state rm`   | `<address>...`            | Removes resource instances from the state file without touching the infrastructure. |
-        | `terraform import`     | `<address> <id>`          | Imports existing infrastructure into the Terraform state file.                      |
-        | `terraform refresh`    |                           | Updates the state file to reflect the current real-world status of resources.       |
-
-    -   **Utility and Maintenance Commands**: These commands handle formatting, external data, module fetching, and other general tasks.
-
-        | Command                    | Flags / Parameters   | Explanation                                                                                    |
-        | :------------------------- | :------------------- | :--------------------------------------------------------------------------------------------- |
-        | `terraform fmt`            | `--recursive`        | Rewrites all configuration files to a canonical format and style.                              |
-        |                            | `--check`            | Checks if files are formatted correctly; returns non-zero exit code if not.                    |
-        | `terraform output`         | `[name]`             | Displays the value of the root module's output variables.                                      |
-        |                            | `-json`              | Displays the output values in JSON format.                                                     |
-        | `terraform console`        |                      | Opens an interactive console for evaluating HCL expressions against the configuration/state.   |
-        | `terraform get`            | `-update`            | Downloads and updates remote modules referenced in the configuration.                          |
-        | `terraform graph`          | `-type=plan`         | Generates a visual graph of resource dependencies (outputs DOT format).                        |
-        | `terraform taint`          | `<resource_address>` | Manually marks a managed resource for replacement on the next apply.                           |
-        | `terraform untaint`        | `<resource_address>` | Removes the 'tainted' mark from a resource.                                                    |
-        | `terraform providers`      | `schema`             | Prints a schema for the installed providers, including all resource and data source arguments. |
-        | `terraform providers lock` |                      |                                                                                                |
-
-    -   **Workspace Commands (Legacy)**: These commands manage separate, isolated state files within a single working directory.
-
-        | Command                      | Flags / Parameters | Explanation                                                        |
-        | :--------------------------- | :----------------- | :----------------------------------------------------------------- |
-        | `terraform workspace list`   |                    | Lists all existing workspaces.                                     |
-        | `terraform workspace show`   |                    | Displays the name of the current workspace.                        |
-        | `terraform workspace new`    | `<name>`           | Creates a new workspace and switches to it.                        |
-        | `terraform workspace select` | `<name>`           | Switches the current state environment to the specified workspace. |
-        | `terraform workspace delete` | `<name>`           | Deletes the named workspace (must be empty of resources).          |
-
-    </details>
-
----
-
--   <details><summary style="font-size:25px;color:Orange">Terraform Directives</summary>
-
-    In Terraform, **directives** are instructions or statements that define the configuration and behavior of resources, modules, and providers within the infrastructure as code (IaC) setup. They are used to specify how Terraform should interact with the cloud or on-prem infrastructure. Each directive plays a role in structuring the configuration files and managing dependencies, resource provisioning, and lifecycle management.
-
-    1. **terraform**
-
-        - The `terraform` directive is used to configure Terraform itself, such as backend settings (where the state files are stored) and version constraints.
-        - This is usually found at the top of the configuration file.
-
-        ```ini
-        terraform {
-            backend "s3" {
-                bucket = "my-terraform-state"
-                key    = "state/terraform.tfstate"
-                region = "us-west-2"
-            }
-        }
-        ```
-
-    2. **provider**
-
-        - The `provider` directive specifies which infrastructure provider (e.g., AWS, Azure, Google Cloud) Terraform should interact with.
-        - It defines the connection details like region, authentication, and API version.
-
-        - Providers are responsible for interacting with APIs and exposing resources for a specific infrastructure platform (e.g., AWS, Azure, Google Cloud).
-        - Providers are declared in the configuration file to specify the target platform and set configuration details.
-
-        ```ini
-        provider "aws" {
-            region = "us-west-2"
-        }
-        ```
-
-    3. **resource**
-
-        - The `resource` directive is used to define a specific infrastructure component such as compute instances, storage, or networks.
-        - It declares the type of resource and its configuration parameters.
-
-        - A representation of an infrastructure object (e.g., virtual machines, databases, networks) that Terraform manages.
-        - Resources are declared with a resource type and a unique name, and they define the desired state of the infrastructure.
-
-        ```ini
-        resource "RESOURCE_TYPE" "RESOURCE_NAME" {
-            # Configuration settings for the resource
-
-            ATTRIBUTE_NAME = ATTRIBUTE_VALUE
-            # Additional attribute configurations
-        }
-        ```
-
-        ```ini
-        resource "aws_instance" "example" {
-            ami           = "ami-12345678"
-            instance_type = "t2.micro"
-        }
-        ```
-
-    4. **variable (Input Variables)**: These are the **parameters** of your Terraform module. They allow users to pass values into the configuration from the outside.
-
-       -   **Analogy:** The arguments/parameters you pass into a function.
-       -   **Static:** Their values must be determined *before* Terraform starts its work. Hence assignment of an expression/function as a value to a variable name is not allowed.
-       -   **Source:** Assigned via `.tfvars` files, CLI flags, or environment variables.
-
-        ```ini
-        variable "instance_type" {
-            description = "Type of EC2 instance"
-            type        = string
-            default     = "t2.micro"
-            # default     = aws_ec2_instane.instance_type # This is not allowed
-        }
-        ```
-
-    5. **locals (Local Variables)**: While often called "variables" by beginners, these are actually **internal constants**. They are used to calculate values within the code to avoid repetition.
-
-        -   **Analogy:** A variable declared *inside* the body of a function.
-        -   **Dynamic:** They can change based on the logic of other variables or resource attributes.
-        -   **Source:** Defined directly in the code using dynamic expressions and functions.
-
-        ```ini
-        locals {
-            instance_type = aws_ec2_instane.instance_type # This is allowed
-            instance_name = "web-server"
-            environment   = "production"
-        }
-        ```
-
-    6. **output**: These are like **return values** for your Terraform configuration. They highlight important information after a deployment.
-
-        -   **Analogy:** The "return" statement of a function.
-        -   **Purpose:** To print information to the console or share data with other configurations (via remote state).
-
-        ```ini
-            output "instance_ip" {
-            value = aws_instance.example.public_ip
-        }
-        ```
-
-    7. **module**: A self-contained unit of Terraform configuration that groups multiple related resources together (e.g., a "Network" module containing VPC, Subnets, and Gateways).
-        -   **The Root Module**: Every Terraform project has at least one module, known as the **Root Module**, which consists of all `.tf` files in your main working directory.
-        -   **Child Modules**: These are external packages of code called by the root module. Using them allows you to keep your configuration concise and "DRY" (Don't Repeat Yourself).
-        -   **Encapsulation & Reusability**: Modules act as "containers," allowing you to share standardized infrastructure patterns across different teams or projects without rewriting code.
-        -   **Sources**: Modules can be pulled from **Local paths** (on your machine), **GitHub/GitLab**, or the **Terraform Registry**.
-        -   **Interface**:
-        -   **Inputs**: Defined by `variable` blocks in the child module; passed via the `module` block in the parent.
-        -   **Outputs**: Defined by `output` blocks in the child; used by the parent to retrieve information (like a Load Balancer's DNS).
-        -   **Calling a Module**: To "call" a module, you define a `module` block and provide the `source` location along with any required input variables.
-
-            ```ini
-            # Example: Calling a child module from the root module
-            module "network" {
-                source = "./modules/network"     # Location of the code
-                vpc_cidr = "10.0.0.0/16"         # Input variable passed to the module
-            }
-            ```
-
-    8. **data**: The `data` directive is used to fetch or read data from external resources without creating or modifying them. This is useful for fetching details about existing infrastructure components (like AMIs, VPCs, etc.).
-
-        ```ini
-        data "aws_ami" "example" {
-            most_recent = true
-            owners      = ["amazon"]
-            filter {
-                name   = "name"
-                values = ["amzn2-ami-hvm-*"]
-            }
-        }
-        ```
-
-    9. **lifecycle**: The `lifecycle` directive inside a resource block is used to define special lifecycle management behaviors, such as preventing resource deletion or defining creation-time dependencies.
-
-        ```ini
-        resource "aws_s3_bucket" "example" {
-            bucket = "my-bucket"
-            lifecycle {
-                prevent_destroy = true
-            }
-        }
-        ```
-
-    10.  **provisioner**: The provisioner directive allows you to execute scripts or commands on a resource after it has been created or updated. Provisioners are typically used to configure resources (such as virtual machines) beyond the basic setup provided by the Terraform resource block. This might include installing software, configuring files, or setting up the environment after an instance or other resource is provisioned.
-
-        ```ini
-        provisioner "remote-exec" {
-            inline = ["echo 'Wait until SSH is ready'"]
-
-            connection {
-            type        = "ssh"
-            user        = local.ssh_user
-            private_key = file(local.private_key_path)
-            host        = aws_instance.nginx.public_ip
-            }
-        }
-        provisioner "local-exec" {
-            command = "ansible-playbook  -i ${aws_instance.nginx.public_ip}, --private-key ${local.private_key_path} nginx.yaml"
-        }
-        ```
 
     </details>
 
@@ -1615,38 +1522,143 @@
     </details>
 
 ---
+
+-   <details><summary style="font-size:25px;color:Orange">Terraform CLI</summary>
+
+    -   `$ terraform init`
+
+    -   `$ terraform plan`
+    -   `$ terraform plane -refresh=false`
+    -   `$ terraform plane console`
+    -   `$ terraform plane -out iam.tfplane`
+    -   `$ terraform plan -out iam.tfplan`
+    -   `$ terraform plan -refresh=false -var="iam_user_name_prefix=VALUE_FROM_COMMAND_LINE"`
+
+    -   `$ terraform apply -var-file=file_name`
+    -   `$ terraform apply -var="db_user=myuser" -var="db_pass=secretpassword"`
+    -   `$ terraform apply -refresh=false`
+    -   `$ terraform apply "iam.tfplan"`
+    -   `$ terraform apply -target="aws_iam_user.tf_iam_user"`
+    -   `$ terraform apply -target=aws_default_vpc.default`
+    -   `$ terraform apply -target=data.aws_subnet_ids.default_subnets`
+    -   `$ terraform apply -target=data.aws_ami_ids.aws_linux_2_latest_ids`
+    -   `$ terraform apply -target=data.aws_ami.aws_linux_2_latest`
+
+    -   `$ terraform destroy`
+
+    -   `$ terraform console`
+
+    -   `$ terraform get -update` -> Check already-downloaded modules for available updates and install the newest versions available.
+    -   `$ terraform validate`
+    -   `$ terraform fmt`
+    -   `$ terraform show`
+    -   `$ export TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX`
+    -   `$ export TF_VAR_iam_user_name_prefix=FROM_ENV_VARIABLE_IAM_PREFIX`
+
+    -   `$ terraform workspace list`
+    -   `$ terraform workspace new production`
+    -   `$ terraform workspace show`
+    -   `$ terraform workspace new prod-env`
+    -   `$ terraform workspace select default`
+    -   `$ terraform workspace list`
+    -   `$ terraform workspace select prod-env`
+
+
+    -   **Essential Terraform Workflow Commands**: These commands represent the core steps of the standard Terraform workflow: initialize, plan, apply, and destroy.
+
+        | Command              | Flags / Parameters         | Explanation                                                                            |
+        | :------------------- | :------------------------- | :------------------------------------------------------------------------------------- |
+        | `terraform init`     | `--upgrade`                | Initializes a working directory, downloading necessary providers and modules.          |
+        |                      | `--backend-config=path`    | Configures the backend (e.g., S3 bucket name) non-interactively.                       |
+        | `terraform validate` | `-json`                    | Checks configuration files for syntax and internal consistency before planning.        |
+        | `terraform plan`     | `-out=path`                | Generates and saves an execution plan to a file for later application.                 |
+        |                      | `-destroy`                 | Generates a plan to destroy all resources defined in the configuration.                |
+        |                      | `-target=resource_address` | Focuses the plan on specific resources (use with caution).                             |
+        |                      | `-var 'key=value'`         | Sets a variable value on the command line.                                             |
+        |                      | `-var-file=path`           | Loads variable values from a specified file.                                           |
+        | `terraform apply`    | `<planfile>`               | Executes the saved plan file or generates a plan and applies it interactively.         |
+        |                      | `-auto-approve`            | Skips the interactive approval prompt for the execution plan.                          |
+        |                      | `-target=resource_address` | Applies changes only to specific resources and their dependencies (use with caution).  |
+        |                      | `-refresh-only`            | Updates the state file to reflect real-world changes without proposing config changes. |
+        | `terraform destroy`  | `-auto-approve`            | Destroys all infrastructure managed by the current configuration without prompting.    |
+        |                      | `-target=resource_address` | Destroys only the specified resources (use with caution).                              |
+
+    -   **State Management and Inspection**: These commands allow you to view, modify, and manage the Terraform state file.
+
+        | Command                | Flags / Parameters        | Explanation                                                                         |
+        | :--------------------- | :------------------------ | :---------------------------------------------------------------------------------- |
+        | `terraform show`       | `<path_to_state_or_plan>` | Provides human-readable output of the state file or a saved plan file.              |
+        |                        | `-json`                   | Displays the state or plan output in machine-readable JSON format.                  |
+        | `terraform state list` | `[address]`               | Lists all or specific resources currently tracked in the state file.                |
+        | `terraform state mv`   | `<source> <destination>`  | Moves an item's address within the state file (e.g., renaming a resource).          |
+        | `terraform state rm`   | `<address>...`            | Removes resource instances from the state file without touching the infrastructure. |
+        | `terraform import`     | `<address> <id>`          | Imports existing infrastructure into the Terraform state file.                      |
+        | `terraform refresh`    |                           | Updates the state file to reflect the current real-world status of resources.       |
+
+    -   **Utility and Maintenance Commands**: These commands handle formatting, external data, module fetching, and other general tasks.
+
+        | Command                    | Flags / Parameters   | Explanation                                                                                    |
+        | :------------------------- | :------------------- | :--------------------------------------------------------------------------------------------- |
+        | `terraform fmt`            | `--recursive`        | Rewrites all configuration files to a canonical format and style.                              |
+        |                            | `--check`            | Checks if files are formatted correctly; returns non-zero exit code if not.                    |
+        | `terraform output`         | `[name]`             | Displays the value of the root module's output variables.                                      |
+        |                            | `-json`              | Displays the output values in JSON format.                                                     |
+        | `terraform console`        |                      | Opens an interactive console for evaluating HCL expressions against the configuration/state.   |
+        | `terraform get`            | `-update`            | Downloads and updates remote modules referenced in the configuration.                          |
+        | `terraform graph`          | `-type=plan`         | Generates a visual graph of resource dependencies (outputs DOT format).                        |
+        | `terraform taint`          | `<resource_address>` | Manually marks a managed resource for replacement on the next apply.                           |
+        | `terraform untaint`        | `<resource_address>` | Removes the 'tainted' mark from a resource.                                                    |
+        | `terraform providers`      | `schema`             | Prints a schema for the installed providers, including all resource and data source arguments. |
+        | `terraform providers lock` |                      |                                                                                                |
+
+    -   **Workspace Commands (Legacy)**: These commands manage separate, isolated state files within a single working directory.
+
+        | Command                      | Flags / Parameters | Explanation                                                        |
+        | :--------------------------- | :----------------- | :----------------------------------------------------------------- |
+        | `terraform workspace list`   |                    | Lists all existing workspaces.                                     |
+        | `terraform workspace show`   |                    | Displays the name of the current workspace.                        |
+        | `terraform workspace new`    | `<name>`           | Creates a new workspace and switches to it.                        |
+        | `terraform workspace select` | `<name>`           | Switches the current state environment to the specified workspace. |
+        | `terraform workspace delete` | `<name>`           | Deletes the named workspace (must be empty of resources).          |
+
+    </details>
+
 ---
 
-It looks like you are setting up a **Terraform Remote State** data source. This is the standard way to share information (outputs) between two completely separate Terraform configurations.
+-   <details><summary style="font-size:25px;color:Orange">Courses & Tutorials</summary>
 
-Here is the proper syntax and a breakdown of how to configure it depending on where your state is stored.
+    -   [HCL Language Documentation](https://developer.hashicorp.com/terraform/language)
+    -   [AWS: TERRAFORM DOCUMENTATION](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+        -   [Expressions](https://developer.hashicorp.com/terraform/language/expressions)
+    -   [TERRAFORM CLI](https://developer.hashicorp.com/terraform/cli)
+    -   [Terraform Tips & Tricks: loops, if-statements, and more](https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
+    -   [50+ Terraform Molules](https://github.com/clouddrove?utf8=%E2%9C%93&q=terraform-&type=&language=)
 
-### 1. The Syntax (Standard S3 Backend)
-If your "source" project stores its state in AWS S3, your data source block should look like this:
+    -   [Terraform Real World Use Case | Process SQS Messages With Lambda and Upload to S3 | 9886611117](https://www.youtube.com/watch?v=etru_8t7Dyk)
+    -   [How do I deploy AWS Lambda using Terraform?](https://www.youtube.com/watch?v=JSR7U700h0U)
+    -   [Master Terraform Interview Questions with this Easy Demo](https://www.youtube.com/watch?v=LPW3VriwLVs&list=PLH1ul2iNXl7v5qKBE62pp6GjmodSm5Wbb)
+    -   [Terraform Interview ( Mock Interview )](https://www.youtube.com/watch?v=pCoCynze4Ag)
 
-```ini
-data "terraform_remote_state" "trs" {
-  backend = "s3"
+    #### Courses:
 
-  config = {
-    bucket = "your-terraform-state-bucket"
-    key    = "path/to/source/project/terraform.tfstate"
-    region = "us-east-1" # Or your specific region
-  }
-}
-```
+    -   [HashiCorp Terraform Associate Certification Course - Pass the Exam!](https://www.youtube.com/watch?v=V4waklkBC38)
+    -   [HashiCorp Terraform Associate Certification Course (003) - Pass the Exam!](https://www.youtube.com/watch?v=SPcwo0Gq9T8&t=4685s)
+    -   [Terraform by RahulWagh](https://www.youtube.com/playlist?list=PL7iMyoQPMtAOz187ezONf7pL8oGZRobYl)
+        -   [CODE](https://github.com/in28minutes/devops-master-class/tree/master/terraform)
+    -   [Complete Terraform Course - From BEGINNER to PRO! (Learn Infrastructure as Code)](https://www.youtube.com/watch?v=7xngnjfIlK4&t=178s)
+    -   [Terraform Course - Automate your AWS cloud infrastructure](https://www.youtuzbe.com/watch?v=SLB_c_ayRMo&t=2725s)
 
-### 2. How to access the data
-To actually use the data from the remote state, the source project **must** have defined `output` blocks. You access them like this:
+    -   [How to Create AWS Lambda with Terraform? (API Gateway & GET/POST & IAM S3 Access & Dependencies)](https://antonputra.com/amazon/how-to-create-aws-lambda-with-terraform/)
+    -   [AWS Lambda – Terraform Example with API Gateway](https://tekanaid.com/posts/aws-lambda-terraform-configuration-example-with-api-gateway#code)
+    -   [Terraform to create AWS SNS | GitHub Actions](https://www.youtube.com/watch?v=e7P0TGwp1VA&t=679s)
+    -   [Terraform to create AWS SNS and AWS SQS service which invokes AWS lambda function | GitHub Actions](https://www.youtube.com/watch?v=tTD5D9ZHYUc)
+    -   [HashiCorp Vault + Terraform: The Ultimate Secrets Management Guide](https://www.youtube.com/watch?v=FQE_gyEwu0Q)
 
-```ini
-# Example: Using a VPC ID from the remote state
-resource "aws_instance" "app_server" {
-  ami           = "ami-xxxxxxxx"
-  instance_type = "t3.micro"
-  subnet_id     = data.terraform_remote_state.trs.outputs.subnet_id
-}
-```
+    </details>
+
+---
+---
+
 
 ---
 

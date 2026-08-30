@@ -45,12 +45,14 @@
     -   **Remediation** vs **Fixing**:
 
     -   **Research** vs **Investigation**:
+
     -   **Minimize** vs **minimalize**:
 
-    -   corrosion / stain
+    -   **corrosion** vs **stain**:
 
-    -   Span/Embad/Encompass
-    -   Vigilant/Deligent
+    -   **SpanEmbad** vs **Encompass**:
+
+    -   **Vigilant** vs **Deligent**:
 
     </details>
 

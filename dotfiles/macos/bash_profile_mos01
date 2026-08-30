@@ -6,6 +6,7 @@ export DOTFILES="$NTBS/dotfiles/macos"
 ln -fs $DOTFILES/bash_profile_mos01 $HOME/.bash_profile
 
 # ----------------------------------------------------------------------------
+export DT="$HOME/Desktop"
 export UV="$HOME/.local/share/uv" # Where custom uv virtual environments are stored.
 export ADS="$HOME/mydocs/Software_Development/Algorithms_and_Data_Structures"
 export SD="$HOME/mydocs/Software_Development"
