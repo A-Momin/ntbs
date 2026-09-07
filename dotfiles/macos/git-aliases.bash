@@ -2,7 +2,7 @@
 # alias "gtl"="git log --oneline"
 # alias gl='git log --graph --oneline --decorate --all'
 alias gs='git status'
-alias gl="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
+alias gl="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit --date=short"
 alias gdiff="git diff"
 alias gb='git branch'
 alias gco="git checkout"

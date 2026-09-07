@@ -1,6 +1,4 @@
-
-
--   <details><summary style="font-size:25px;color:Orange">Terms & Concepts</summary>
+-   <details><summary style="font-size:25px;color:Orange">Terraform Components, Terms & Concepts</summary>
 
     -   <details><summary style="font-size:20px;color:Magenta">Terraform Configuration</summary>
 
@@ -753,127 +751,481 @@
 
     -   [Meta-Arguments]()
 
-    #### Collections
+    -   <details><summary style="font-size:20px;color:Magenta">Collections</summary>
 
-    - [Conversion of Complex Types](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types)
+        - [Conversion of Complex Types](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types)
 
-    1. **Lists (`list(...)`)**: a sequence of values identified by consecutive whole numbers starting with zero.
+        1. **Lists (`list(...)`)**: a sequence of values identified by consecutive whole numbers starting with zero.
 
-        -   The keyword list is a shorthand for `list(any)`, which accepts any element type as long as every element is the same type. This is for compatibility with older configurations; for new code, we recommend using the full form.
+            -   The keyword list is a shorthand for `list(any)`, which accepts any element type as long as every element is the same type. This is for compatibility with older configurations; for new code, we recommend using the full form.
 
-        ```ini
-        # Declare a list of availability zones
-        variable "availability_zones" {
-            type    = list(string)
-            default = ["us-west-2a", "us-west-2b", "us-west-2c"]
-        }
-        ```
-
-    2. **Tuple (`tuple(...)`)**: a sequence of elements identified by consecutive whole numbers starting with zero, where each element has its own type.
-
-        -   The schema for tuple types is `[<TYPE>, <TYPE>, ...]` — a pair of square brackets containing a comma-separated series of types. Values that match the tuple type must have exactly the same number of elements (no more and no fewer), and the value in each position must match the specified type for that position.
-        -    a tuple type of `tuple([string, number, bool])` would match a value like the following: `["a", 15, true]`
-
-    3. **Maps**:
-
-        - Maps allow you to create key-value pairs for organizing and accessing data. Example:
-
-        ```ini
-        # Declare a map for tags
-        variable "tags" {
-            type    = map(string)
-            default = { "env" : "dev", "app" : "web" }
-        }
-        ```
-
-    4. **Object (`object(...)`)***: a collection of named attributes that each have their own type.
-
-        -   The schema for object types is `{ <KEY> = <TYPE>, <KEY> = <TYPE>, ... }` — a pair of curly braces containing a comma-separated series of `<KEY> = <TYPE>` pairs. Values that match the object type must contain all of the specified keys, and the value for each key must match its specified type. (Values with additional keys can still match an object type, but the extra attributes are discarded during type conversion.)
-
-    3. `For Each`:
-
-        - The for_each expression is used for resource iteration. Example:
-
-        ```ini
-        # Use for_each to create multiple instances of an AWS EC2 instance
-        resource "aws_instance" "example" {
-            for_each = toset(["a", "b", "c"])
-
-            ami           = "ami-0c55b159cbfafe1f0"
-            instance_type = "t2.micro"
-        }
-
-        # Define a set of instance names
-        variable "instance_names" {
-            type    = set(string)
-            default = ["web", "db", "cache"]
-        }
-
-        # Create multiple instances using for_each
-        resource "aws_instance" "example" {
-            for_each = var.instance_names
-
-            ami           = "ami-12345678"
-            instance_type = "t2.micro"
-            tags = {
-                Name = each.key
+            ```ini
+            # Declare a list of availability zones
+            variable "availability_zones" {
+                type    = list(string)
+                default = ["us-west-2a", "us-west-2b", "us-west-2c"]
             }
-        }
+            ```
 
-        # Access set elements in a resource
-        resource "aws_instance" "example" {
-            for_each = var.instance_names
+        2. **Tuple (`tuple(...)`)**: a sequence of elements identified by consecutive whole numbers starting with zero, where each element has its own type.
 
-            ami           = "ami-12345678"
-            instance_type = "t2.micro"
-            tags = {
-                Name = each.key
+            -   The schema for tuple types is `[<TYPE>, <TYPE>, ...]` — a pair of square brackets containing a comma-separated series of types. Values that match the tuple type must have exactly the same number of elements (no more and no fewer), and the value in each position must match the specified type for that position.
+            -    a tuple type of `tuple([string, number, bool])` would match a value like the following: `["a", 15, true]`
+
+        3. **Maps**:
+
+            - Maps allow you to create key-value pairs for organizing and accessing data. Example:
+
+            ```ini
+            # Declare a map for tags
+            variable "tags" {
+                type    = map(string)
+                default = { "env" : "dev", "app" : "web" }
             }
-        }
+            ```
 
-        variable "database_config" {
-        description = "Configuration settings for the database cluster"
-        type = object({
-            instance_count = number
-            instance_class = string
-            allocated_gb   = number
-            publicly_accessible = bool
-        })
+        4. **Object (`object(...)`)***: a collection of named attributes that each have their own type.
 
-        default = {
-            instance_count      = 2
-            instance_class      = "db.t3.micro"
-            allocated_gb        = 20
-            publicly_accessible = false
-        }
-        }
+            -   The schema for object types is `{ <KEY> = <TYPE>, <KEY> = <TYPE>, ... }` — a pair of curly braces containing a comma-separated series of `<KEY> = <TYPE>` pairs. Values that match the object type must contain all of the specified keys, and the value for each key must match its specified type. (Values with additional keys can still match an object type, but the extra attributes are discarded during type conversion.)
 
-        # Define a map of instance configurations
-        variable "instance_configurations" {
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Looping Techinque</summary>
+
+        In Terraform, multi-level looping requires combining a **flattening expression** (`flatten` with nested `for` loops) with `for_each`, or using **nested `dynamic` blocks** inside a resource. Below are two complete implementations demonstrating 2-level and 3-level looping using diverse collections (`map(object)`, `list(object)`, and `set`).
+
+        -   **Technique 1: 2-Level Looping (Flattening + `for_each`)**
+
+            -   **Scenario:** You have a `map(object)` representing AWS VPCs, and inside each VPC is a `list(object)` of subnets. You need to flatten this structure so `for_each` can build individual `aws_subnet` resources.
+            -   **Data Types Used:** `map(object)` parent containing a `list(object)` child.
+
+            ```ini
+            variable "vpcs" {
+                type = map(object({
+                    cidr_block = string
+                    subnets    = list(object({
+                        name              = string
+                        cidr_block        = string
+                        availability_zone = string
+                    }))
+                }))
+                default = {
+                    "app-vpc" = {
+                        cidr_block = "10.0.0.0/16"
+                        subnets = [
+                            { name = "web-1a", cidr_block = "10.0.1.0/24", availability_zone = "us-east-1a" },
+                            { name = "web-1b", cidr_block = "10.0.2.0/24", availability_zone = "us-east-1b" }
+                        ]
+                    },
+                    "data-vpc" = {
+                        cidr_block = "10.1.0.0/16"
+                        subnets = [
+                            { name = "db-1a", cidr_block = "10.1.1.0/24", availability_zone = "us-east-1a" }
+                        ]
+                    }
+                }
+            }
+
+            locals {
+                # 2-Level Loop: Loop through VPC map, then iterate through the subnet list
+                flattened_subnets = flatten([
+                    for vpc_key, vpc in var.vpcs : [
+                        for subnet in vpc.subnets : {
+                            vpc_key           = vpc_key
+                            subnet_name       = subnet.name
+                            cidr_block        = subnet.cidr_block
+                            availability_zone = subnet.availability_zone
+                        }
+                    ]
+                ])
+            }
+
+            # 1. Create the parent VPCs
+            resource "aws_vpc" "main" {
+                for_each   = var.vpcs
+                cidr_block = each.value.cidr_block
+
+                tags = {
+                    Name = each.key
+                }
+            }
+
+            # 2. Create the child Subnets using the 2-level flattened map
+            resource "aws_subnet" "subnets" {
+                for_each = {
+                    for item in local.flattened_subnets : "${item.vpc_key}-${item.subnet_name}" => item
+                }
+
+                vpc_id            = aws_vpc.main[each.value.vpc_key].id
+                cidr_block        = each.value.cidr_block
+                availability_zone = each.value.availability_zone
+
+                tags = {
+                    Name = each.value.subnet_name
+                }
+            }
+
+            ```
+
+        -   **Technique 2: 3-Level Looping (Deep Flattening across 3 Data Types)**
+
+            -   **Scenario:** Deploy S3 Bucket Lifecycle Rules. You have a `list` of application configurations, where each app has a `map` of environments, and each environment contains a `set` of lifecycle rule types.
+            -   **Data Types Used:** `list(object)` $\rightarrow$ `map(object)` $\rightarrow$ `set(string)`.
+
+            ```ini
+            variable "app_environments" {
+                type = list(object({
+                    app_name = string
+                    environments = map(object({
+                        retention_days = number
+                        rule_types     = set(string) # Level 3: Set of string flags
+                    }))
+                }))
+                default = [
+                    {
+                    app_name = "analytics"
+                    environments = {
+                        "dev" = {
+                            retention_days = 30
+                            rule_types     = ["glacier_transition", "expiration"]
+                        },
+                        "prod" = {
+                            retention_days = 365
+                            rule_types     = ["glacier_transition", "deep_archive", "expiration"]
+                        }
+                    }
+                    }
+                ]
+            }
+
+            locals {
+            # 3-Level Loop: Flatten list -> map -> set
+            flattened_rules = flatten([
+                    for app in var.app_environments : [
+                        for env_key, env_val in app.environments : [
+                            for rule in env_val.rule_types : {
+                                composite_key  = "${app.app_name}-${env_key}-${rule}"
+                                app_name       = app.app_name
+                                environment    = env_key
+                                retention_days = env_val.retention_days
+                                rule_type      = rule
+                            }
+                        ]
+                    ]
+                ])
+            }
+
+            # Output demonstrating transformed composite output
+            output "s3_lifecycle_matrix" {
+                value = {
+                    for item in local.flattened_rules : item.composite_key => {
+                        bucket_target = "${item.app_name}-${item.environment}-data"
+                        action        = item.rule_type
+                        days          = item.retention_days
+                    }
+                }
+            }
+
+            ```
+
+        -   **Technique 3: 2-Level Nested `dynamic` Blocks**
+
+            -   **Scenario:** Configure AWS WAFv2 Web ACLs or Security Groups where resources have nested block parameters. Here, an `aws_security_group` resource requires dynamic `ingress` blocks, and inside each `ingress` block, an optional nested `grant` block can be processed.
+            -   **Data Types Used:** `map(object)` parent containing a `list(object)` nested parameter.
+
+            ```ini
+            variable "security_group_rules" {
             type = map(object({
-                ami           = string
-                instance_type = string
+                description = string
+                port_ranges = list(object({
+                from_port   = number
+                to_port     = number
+                protocol    = string
+                cidr_blocks = list(string)
+                }))
             }))
             default = {
-                web   = { ami = "ami-12345678", instance_type = "t2.micro" }
-                db    = { ami = "ami-87654321", instance_type = "t2.small" }
-                cache = { ami = "ami-56781234", instance_type = "t2.nano" }
+                "web" = {
+                description = "Web Traffic"
+                port_ranges = [
+                    { from_port = 80, to_port = 80, protocol = "tcp", cidr_blocks = ["0.0.0.0/0"] },
+                    { from_port = 443, to_port = 443, protocol = "tcp", cidr_blocks = ["0.0.0.0/0"] }
+                ]
+                }
             }
-        }
-
-        # Create multiple instances using for_each
-        resource "aws_instance" "example" {
-            for_each = var.instance_configurations
-
-            ami           = each.value.ami
-            instance_type = each.value.instance_type
-            tags = {
-                Name = each.key
             }
-        }
-        ```
 
-    #### [Built-in Functions](https://developer.hashicorp.com/terraform/language/functions)
+            resource "aws_security_group" "dynamic_sg" {
+            # Level 1 Loop: Iterating over the map to create Security Groups
+            for_each    = var.security_group_rules
+            name        = "${each.key}-sg"
+            description = each.value.description
+
+            # Level 2 Loop: Dynamic block iterating over the inner list of port ranges
+            dynamic "ingress" {
+                for_each = each.value.port_ranges
+                iterator = rule # Optional: Renames the loop iterator variable from "ingress" to "rule"
+
+                content {
+                from_port   = rule.value.from_port
+                to_port     = rule.value.to_port
+                protocol    = rule.value.protocol
+                cidr_blocks = rule.value.cidr_blocks
+                }
+            }
+            }
+
+            ```
+
+        -   **Key Takeaways**
+
+            1. **Unique Map Keys:** `for_each` requires a map or set with known, unique keys. When flattening multi-level collections, construct a composite key (e.g., `"${parent_key}-${child_key}"`).
+            2. **`flatten()` Function:** Use `flatten()` whenever you nest `for` expressions `[...]` inside each other.
+            3. **`dynamic` Blocks:** Reserve nested dynamic blocks for resources that native schema hierarchy calls for (like CloudFront Origins, WAF Rules, or Security Groups). Avoid overusing them if flattening into separate resources is cleaner.
+
+        3. `For Each`:
+
+            - The for_each expression is used for resource iteration. Example:
+
+            ```ini
+            # Use for_each to create multiple instances of an AWS EC2 instance
+            resource "aws_instance" "example" {
+                for_each = toset(["a", "b", "c"])
+
+                ami           = "ami-0c55b159cbfafe1f0"
+                instance_type = "t2.micro"
+            }
+
+            # Define a set of instance names
+            variable "instance_names" {
+                type    = set(string)
+                default = ["web", "db", "cache"]
+            }
+
+            # Create multiple instances using for_each
+            resource "aws_instance" "example" {
+                for_each = var.instance_names
+
+                ami           = "ami-12345678"
+                instance_type = "t2.micro"
+                tags = {
+                    Name = each.key
+                }
+            }
+
+            # Access set elements in a resource
+            resource "aws_instance" "example" {
+                for_each = var.instance_names
+
+                ami           = "ami-12345678"
+                instance_type = "t2.micro"
+                tags = {
+                    Name = each.key
+                }
+            }
+
+            variable "database_config" {
+            description = "Configuration settings for the database cluster"
+            type = object({
+                instance_count = number
+                instance_class = string
+                allocated_gb   = number
+                publicly_accessible = bool
+            })
+
+            default = {
+                instance_count      = 2
+                instance_class      = "db.t3.micro"
+                allocated_gb        = 20
+                publicly_accessible = false
+            }
+            }
+
+            # Define a map of instance configurations
+            variable "instance_configurations" {
+                type = map(object({
+                    ami           = string
+                    instance_type = string
+                }))
+                default = {
+                    web   = { ami = "ami-12345678", instance_type = "t2.micro" }
+                    db    = { ami = "ami-87654321", instance_type = "t2.small" }
+                    cache = { ami = "ami-56781234", instance_type = "t2.nano" }
+                }
+            }
+
+            # Create multiple instances using for_each
+            resource "aws_instance" "example" {
+                for_each = var.instance_configurations
+
+                ami           = each.value.ami
+                instance_type = each.value.instance_type
+                tags = {
+                    Name = each.key
+                }
+            }
+            ```
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Control Flow</summary>
+
+        > In Terraform, **colon notation** refers to ternary conditional expressions (`condition ? true_value : false_value`). You can chain multiple ternary operators together to create **if / else if / else** logic.
+
+        -   **Basic Chaining Syntax (`if` / `else if` / `else`)**:
+
+            ```ini
+            condition1 ? value1 : (condition2 ? value2 : (condition3 ? value3 : default_value))
+
+            ```
+
+            > **Note:** Parentheses around nested conditions are optional in HCL, but they make multi-line chained ternaries significantly easier to read and maintain.
+
+        -   **Example 1: Instance Sizing Based on Environment**:
+
+            This example evaluates the target environment (`prod`, `staging`, or `dev`) and selects an appropriate EC2 instance type with a fallback default.
+
+            ```ini
+            variable "environment" {
+                type        = string
+                default     = "staging"
+                description = "Target deployment environment (prod, staging, dev)"
+            }
+
+            locals {
+                # Chined ternary: if prod -> t3.xlarge | else if staging -> t3.medium | else -> t3.micro
+                instance_type = var.environment == "prod" ? "t3.xlarge" : (
+                    var.environment == "staging" ? "t3.medium" : (
+                    var.environment == "dev" ? "t3.small" : "t3.micro"
+                    )
+                )
+            }
+
+            resource "aws_instance" "app_server" {
+                ami           = "ami-0c55b159cbfafe1f0"
+                instance_type = local.instance_type
+
+                tags = {
+                    Name        = "app-server"
+                    Environment = var.environment
+                }
+            }
+
+            ```
+
+        -   **Example 2: Dynamic S3 Bucket Encryption Configuration**:
+
+            This example checks multiple conditions (e.g., whether a custom KMS key is provided, or whether strict compliance mode is enabled) to choose the right `sse_algorithm`.
+
+            ```ini
+            variable "kms_key_arn" {
+                type    = string
+                default = null
+            }
+
+            variable "compliance_level" {
+                type    = string
+                default = "standard" # Options: "hipaa", "pci", "standard"
+            }
+
+            locals {
+                # Chained ternary logic for encryption mode
+                sse_algorithm = var.kms_key_arn != null ? "aws:kms" : (
+                    var.compliance_level == "hipaa" ? "aws:kms" : (
+                    var.compliance_level == "pci" ? "aws:kms" : "AES256"
+                    )
+                )
+
+                # Fallback KMS Key ID assignment
+                kms_key_id = local.sse_algorithm == "aws:kms" ? (
+                    var.kms_key_arn != null ? var.kms_key_arn : "arn:aws:kms:us-east-1:123456789012:key/default-alias"
+                ) : null
+            }
+
+            resource "aws_s3_bucket_server_side_encryption_configuration" "s3_sse" {
+                bucket = "my-secure-app-bucket"
+
+                rule {
+                    apply_server_side_encryption_by_default {
+                        sse_algorithm     = local.sse_algorithm
+                        kms_master_key_id = local.kms_key_id
+                    }
+                }
+            }
+
+            ```
+
+        -   **Example 3: Multi-Variable Guard & Resource Count**:
+
+            Chaining conditions across multiple boolean flags to derive resource instance counts (`count`).
+
+            ```ini
+            variable "enable_nat_gateway" {
+                type    = bool
+                default = true
+            }
+
+            variable "is_production" {
+                type    = bool
+                default = false
+            }
+
+            variable "high_availability" {
+                type    = bool
+                default = false
+            }
+
+            locals {
+                # Logic:
+                # 1. If NAT is disabled -> 0 NAT Gateways
+                # 2. If Prod AND High Availability -> 3 NAT Gateways (one per AZ)
+                # 3. If Prod OR High Availability -> 2 NAT Gateways
+                # 4. Default -> 1 NAT Gateway
+                nat_gw_count = !var.enable_nat_gateway ? 0 : (
+                    (var.is_production && var.high_availability) ? 3 : (
+                    (var.is_production || var.high_availability) ? 2 : 1
+                    )
+                )
+            }
+
+            resource "aws_eip" "nat" {
+                count  = local.nat_gw_count
+                domain = "vpc"
+            }
+
+            resource "aws_nat_gateway" "gw" {
+                count         = local.nat_gw_count
+                allocation_id = aws_eip.nat[count.index].id
+                subnet_id     = "subnet-1234567${count.index}"
+            }
+
+            ```
+
+        -   **Best Practice Alternative: `lookup()` with a Map**:
+
+            When your chain of colon operators grows beyond 3 conditions, readability drops significantly. For string matching, using a `lookup()` map is often cleaner than a chained ternary:
+
+            ```ini
+            # Instead of deeply nested chained ternaries:
+            locals {
+                instance_types = {
+                    prod    = "t3.xlarge"
+                    staging = "t3.medium"
+                    dev     = "t3.small"
+                }
+
+                # Lookup with default fallback
+                instance_type = lookup(local.instance_types, var.environment, "t3.micro")
+            }
+
+            ```
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Built-in Functions</summary>
+
+        -   [Built-in Functions](https://developer.hashicorp.com/terraform/language/functions)
+
+        </details>
 
     </details>
 
