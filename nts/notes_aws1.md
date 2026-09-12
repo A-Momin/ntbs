@@ -2234,6 +2234,8 @@
 
 -   <details><summary style="font-size:25px;color:Orange">ECS</summary>
 
+    -   [amazon-ecs-and-eks](https://digitalcloud.training/amazon-ecs-and-eks/)
+
     > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
 
 
@@ -2303,7 +2305,9 @@
 
         </details>
 
-    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints</summary>
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints & Task Placement Strategies</summary>
+
+        ##### Task Placement Constraints
 
         > **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement.
 
@@ -2312,9 +2316,7 @@
         | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
         | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
 
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Strategies</summary>
+        ##### Task Placement Strategies
 
         > **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
 
@@ -2324,100 +2326,110 @@
         | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
         | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
 
+
         </details>
 
-    -   <details><summary style="font-size: 25px;color:#C71585">Launch Types or Capacity Providers</summary>
+    -   <details><summary style="font-size: 25px;color:#C71585">Auto Scalling for ECS: Launch Types and Capacity Providers</summary>
 
-        > Amazon Elastic Container Service (ECS) offers two primary **Compute Options** (often referred to as **Launch Types** or **Capacity Providers**) for running your containerized workloads: **AWS Fargate** (Serverless) and **Amazon EC2** (Customer-Managed). The choice depends heavily on your team's operational model, control requirements, and cost optimization strategy.
+        -   **Service Auto Scalling**: **Service Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **number of running tasks** in an ECS service based on application demand. It can scale based on metrics such as **CPU utilization, memory utilization, or ALB request count**.
+            > **Service Auto Scaling = How many application tasks should be running?**
 
-        1. **AWS Fargate (Serverless Launch Type)**: **AWS Fargate** is a **serverless compute engine** for containers that removes the need for you to provision, configure, or manage the underlying virtual machines (EC2 instances). You simply define the CPU and memory requirements for your containerized application, and AWS handles the rest.
+        -   **Cluster Auto Scalling**: **Cluster Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **compute capacity available in an ECS cluster**, typically by adding or removing EC2 instances through an ECS Capacity Provider and Auto Scaling Group.
+            > **Cluster Auto Scaling = How many EC2 machines are needed to run those tasks?**
 
-            - **Key Characteristics**:
+        -   <details><summary style="font-size: 18px;color:#C71585">Launch Type Abstraction</summary>
+
+            > **Launch Type Abstraction** standardize how ECS interacts with the two main compute options:
+
+
+            1. **AWS Fargate (Serverless Launch Type)**: **AWS Fargate** is a **serverless compute engine** for containers that removes the need for you to provision, configure, or manage the underlying virtual machines (EC2 instances). You simply define the CPU and memory requirements for your containerized application, and AWS handles the rest.
+                > **AWS Fargate:** Uses **Fargate** and **Fargate Spot** capacity, abstracting infrastructure management entirely.
 
                 - **Infrastructure Management:** **Fully managed by AWS**. You focus only on the container tasks; AWS manages the instance fleet, scaling, patching, and security hardening of the container hosts.
                 - **Resource Allocation:** **Per-Task Granularity**. You specify the exact vCPU and memory (e.g., 0.5 vCPU and 4 GB memory) your **Task** needs, rather than selecting a fixed instance type. This leads to better resource utilization and less over-provisioning.
-                - **Pricing:** **Pay-per-use**. You are billed for the requested vCPU and memory resources for the duration your tasks are running (billed per second). There is no cost for idle EC2 instances.
                 - **Scalability:** **Automatic**. Fargate automatically provisions and scales the compute resources to meet the demand of your running tasks, making it ideal for variable, spiky, or unpredictable workloads.
+                - **Current State:** For pure Fargate, using the Fargate Launch Type is functionally equivalent to using the **Fargate Capacity Provider**, but using the Capacity Provider is the **recommended best practice** as it enables strategies.
                 - **Control/Customization:** **Low**. You have no access to the host operating system (OS), which simplifies security but restricts the use of host-level features (like DaemonSets or specific kernel configurations).
+                - **Pricing:** **Pay-per-use**. You are billed for the requested vCPU and memory resources for the duration your tasks are running (billed per second). There is no cost for idle EC2 instances.
 
-            - **When to Choose Fargate**:
-                - When **operational simplicity** and speed of deployment are the top priorities.
-                - For **bursty, unpredictable workloads** or short-lived jobs (like batch processing), where paying per-second for only what you use provides cost efficiency.
-                - For **microservices** where tasks are independent and can be scaled quickly.
-                - When your team has **limited operational expertise** in managing EC2 clusters and Auto Scaling Groups.
+                - **When to Choose Fargate**:
+                    - When **operational simplicity** and speed of deployment are the top priorities.
+                    - For **bursty, unpredictable workloads** or short-lived jobs (like batch processing), where paying per-second for only what you use provides cost efficiency.
+                    - For **microservices** where tasks are independent and can be scaled quickly.
+                    - When your team has **limited operational expertise** in managing EC2 clusters and Auto Scaling Groups.
 
-        2. **Amazon EC2 (Customer-Managed Launch Type)**: The **Amazon EC2 Launch Type** requires you to manage a cluster of EC2 instances that host your containers. ECS uses these instances to place and run your container tasks.
-
-            - **Key Characteristics**:
+            2. **Amazon EC2 (Customer-Managed Launch Type)**: The **Amazon EC2 Launch Type** requires you to manage a cluster of EC2 instances that host your containers. ECS uses these instances to place and run your container tasks.
+                > **EC2 Auto Scaling Group:** Manages scaling for EC2 capacity. The Capacity Provider ensures the Auto Scaling Group scales _in_ and _out_ based on task demand.
 
                 - **Infrastructure Management:** **Customer-Managed**. You are responsible for provisioning, configuring, scaling (via Auto Scaling Groups), patching the OS, and security hardening the EC2 instances that form the cluster.
                 - **Resource Allocation:** **Instance-Level**. You choose a fixed EC2 instance type (e.g., `c5.large`, `t3.medium`) and utilize the aggregate resources of the entire instance fleet. ECS then "bin-packs" container tasks onto the available instances.
-                - **Pricing:** **Pay-per-instance**. You pay for the EC2 instance capacity and associated EBS storage regardless of how much of that capacity is actually utilized by your containers. Cost optimization requires careful capacity planning (using Reserved Instances or Savings Plans).
                 - **Scalability:** **Manual/Configured**. Scaling is managed through **Auto Scaling Groups (ASG)** which use CloudWatch metrics to add or remove instances based on demand. Requires careful setup and maintenance.
-                - **Control/Customization:** **High**. You have full control over the EC2 instance type (allowing for GPU, high I/O, or custom network configuration), the OS, and can install custom software or agents directly on the host.
-
-            - **When to Choose EC2**:
-                - When **cost optimization** is paramount for **long-running, predictable, high-utilization workloads** (where Reserved Instances provide significant savings).
-                - When your workload requires **specific instance types** (e.g., GPU acceleration, specialized hardware).
-                - When you need **OS-level access** or advanced networking and security configurations not exposed by Fargate.
-                - When you need to run **DaemonSet-like agents** or security software directly on the container host.
-
-        -   **Capacity Providers**: AWS recommends using **Capacity Providers** as the modern way to manage compute in an ECS cluster, allowing you to define the infrastructure capacity in a flexible way and use both Fargate and EC2 capacity within the same cluster.
-
-            -   Capacity Providers enable **automatic managed scaling** for EC2, and allow ECS to use a **capacity provider strategy** to determine which capacity type (Fargate or EC2) to use when placing a new task.
-            -   **Fargate Capacity Provider:** Points to the AWS Fargate infrastructure.
-            -   **EC2 Capacity Provider:** Points to an Auto Scaling Group (ASG) of EC2 instances that you manage. ECS automatically manages the scaling of the ASG and the registration of instances into the cluster.
-
-            | Feature               | AWS Fargate                                  | Amazon EC2                                              |
-            | :-------------------- | :------------------------------------------- | :------------------------------------------------------ |
-            | **Operational Model** | **Serverless**                               | **Customer-Managed VM**                                 |
-            | **Infrastructure**    | Managed by AWS                               | Managed by Customer/ASG                                 |
-            | **Resource Billing**  | Per-Task (vCPU/Memory per second)            | Per-Instance (Fixed hourly rate)                        |
-            | **Cost Efficiency**   | Better for **spiky/low-utilization**         | Better for **high/steady-state utilization**            |
-            | **Control**           | Low (No host access)                         | High (Full OS/Instance control)                         |
-            | **Scaling**           | Automatic and seamless                       | Configured via Auto Scaling Group                       |
-            | **Ideal For**         | Microservices, batch jobs, dynamic workloads | Predictable long-running services, specialized hardware |
-
-        -   **External Launch Type (ECS Anywhere):** This allows you to register external instances (like on-premises servers or VMs) with your ECS clusters. This provides a consistent way to manage container workloads across hybrid environments.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Launch Types vs Capacity Providers</summary>
-
-        The relationship between **Launch Types** and **Capacity Providers** in AWS ECS is one of an older, foundational concept (**Launch Types**) being largely superseded and enhanced by a newer, more flexible, and automated concept (**Capacity Providers**).
-
-        In short, **Launch Types define _what kind of_ infrastructure your tasks run on**, while **Capacity Providers define _how that_ infrastructure is managed, scaled, and distributed**.
-
-        1. **Launch Types (The "What" and "Where")**: A **Launch Type** is the fundamental designation for the compute environment that runs your ECS Tasks. It is a binary choice defined at the time of service or task creation (though its use is discouraged in modern deployments in favor of Capacity Providers).
-
-            - **EC2 Launch Type (Customer-Managed):**
-                - **What:** Specifies that tasks run on **Amazon EC2 instances** that you provision and manage (or use an Auto Scaling Group).
-                - **Management:** You are responsible for scaling, patching, and maintaining the underlying virtual machines.
                 - **Pre-Capacity Providers:** This was the only way to run containers on your own VMs in ECS, requiring separate, manual Auto Scaling Group setup.
-            - **Fargate Launch Type (AWS-Managed/Serverless):**
-                - **What:** Specifies that tasks run on **AWS Fargate** (serverless compute).
-                - **Management:** AWS automatically provisions, manages, and scales the underlying compute environment.
-                - **Current State:** For pure Fargate, using the Fargate Launch Type is functionally equivalent to using the Fargate Capacity Provider, but using the Capacity Provider is the **recommended best practice** as it enables strategies.
+                - **Control/Customization:** **High**. You have full control over the EC2 instance type (allowing for GPU, high I/O, or custom network configuration), the OS, and can install custom software or agents directly on the host.
+                - **Pricing:** **Pay-per-instance**. You pay for the EC2 instance capacity and associated EBS storage regardless of how much of that capacity is actually utilized by your containers. Cost optimization requires careful capacity planning (using Reserved Instances or Savings Plans).
 
-        2. **Capacity Providers (The "How" and "Strategy")**: **Capacity Providers** were introduced to decouple the task placement logic from the capacity management logic. They are attached to an ECS Cluster and represent the available infrastructure pools.
+                - **When to Choose EC2**:
+                    - When **cost optimization** is paramount for **long-running, predictable, high-utilization workloads** (where Reserved Instances provide significant savings).
+                    - When your workload requires **specific instance types** (e.g., GPU acceleration, specialized hardware).
+                    - When you need **OS-level access** or advanced networking and security configurations not exposed by Fargate.
+                    - When you need to run **DaemonSet-like agents** or security software directly on the container host.
 
-            - **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling**. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** (i.e., when a task is pending but there is no room) and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
-            - **Capacity Provider Strategies:** This is the most powerful feature. It allows you to define **how ECS should spread tasks** across multiple, heterogeneous capacity pools.
-                - You can assign **weights** (to determine the ratio of tasks) and **base** (to define the minimum tasks) to different providers.
-                - **Example:** A strategy might be: "Run 5 minimum tasks on `FARGATE` (base), and then distribute all remaining tasks 80% to `EC2_Spot` and 20% to `EC2_OnDemand` (weights)."
-            - **Fargate and Fargate Spot:** Dedicated capacity providers exist for Fargate and Fargate Spot, enabling the use of strategies to easily mix and match these options.
+            -   **AWS Fargate (Serverless Launch Type)** vs **Amazon EC2 (Customer-Managed Launch Type)**:
 
-        -   **Relationship and Modern Best Practice**: The modern best practice is to **always use Capacity Providers** instead of explicitly setting a Launch Type on a service or task.
+                | Feature               | AWS Fargate                                  | Amazon EC2                                              |
+                | :-------------------- | :------------------------------------------- | :------------------------------------------------------ |
+                | **Operational Model** | **Serverless**                               | **Customer-Managed VM**                                 |
+                | **Infrastructure**    | Managed by AWS                               | Managed by Customer/ASG                                 |
+                | **Resource Billing**  | Per-Task (vCPU/Memory per second)            | Per-Instance (Fixed hourly rate)                        |
+                | **Cost Efficiency**   | Better for **spiky/low-utilization**         | Better for **high/steady-state utilization**            |
+                | **Control**           | Low (No host access)                         | High (Full OS/Instance control)                         |
+                | **Scaling**           | Automatic and seamless                       | Configured via Auto Scaling Group                       |
+                | **Ideal For**         | Microservices, batch jobs, dynamic workloads | Predictable long-running services, specialized hardware |
 
-            | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
-            | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
-            | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
-            | **Configuration** | Set directly on the service or task (old way).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
-            | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
-            | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
-            | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
+            -   **External Launch Type (ECS Anywhere):** This allows you to register external instances (like on-premises servers or VMs) with your ECS clusters. This provides a consistent way to manage container workloads across hybrid environments.
 
-            If you use a **Capacity Provider Strategy** when creating an ECS service, you do not specify a Launch Type; the Capacity Provider effectively handles that designation as part of its definition.
+            </details>
+
+        -   <details><summary style="font-size: 18px;color:#C71585">Capacity Providers</summary>
+
+            > **Capacity Providers** simplify the management and scaling of the compute capacity that your ECS tasks use. They automate the process of provisioning and scaling the underlying infrastructure (EC2 instances or Fargate).
+
+            -   **Capacity Provider Strategy:** This is a key feature that allows you to define how tasks are distributed across **multiple Capacity Providers** (e.g., 80% on Fargate, 20% on Fargate Spot). This distribution is controlled by two parameters:
+                -   **Base:** The minimum number of tasks to run on a specific capacity provider.
+                -   **Weight:** The relative portion of the _remaining_ desired task count that should be placed on a capacity provider.
+
+            > Capacity Providers shift the focus from managing the compute layer to simply defining the **desired capacity ratio** for your application.
+
+            -   **Capacity Providers** (Modern Approch): AWS recommends using **Capacity Providers** as the modern way to manage compute in an ECS cluster, allowing you to define the infrastructure capacity in a flexible way and use both **Fargate** and **EC2** capacity within the same cluster.
+
+                -   Capacity Providers enable **automatic managed scaling** for EC2, and allow ECS to use a **capacity provider strategy** to determine which capacity type (Fargate or EC2) to use when placing a new task.
+                -   **Fargate Capacity Provider:** Points to the AWS Fargate infrastructure.
+                -   **EC2 Capacity Provider:** Points to an Auto Scaling Group (ASG) of EC2 instances that you manage. ECS automatically manages the scaling of the ASG and the registration of instances into the cluster.
+
+                - **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling**. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** (i.e., when a task is pending but there is no room) and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
+                - **Capacity Provider Strategies:** This is the most powerful feature. It allows you to define **how ECS should spread tasks** across multiple, heterogeneous capacity pools.
+                    - You can assign **weights** (to determine the ratio of tasks) and **base** (to define the minimum tasks) to different providers.
+                    - **Example:** A strategy might be: "Run 5 minimum tasks on `FARGATE` (base), and then distribute all remaining tasks 80% to `EC2_Spot` and 20% to `EC2_OnDemand` (weights)."
+                - **Fargate and Fargate Spot:** Dedicated capacity providers exist for Fargate and Fargate Spot, enabling the use of strategies to easily mix and match these options.
+
+                -   If you use a **Capacity Provider Strategy** when creating an ECS service, you do not specify a Launch Type; the Capacity Provider effectively handles that designation as part of its definition.
+
+                -   The modern best practice is to **always use Capacity Providers** instead of explicitly setting a **Launch Type** on a service or task.
+
+                    | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
+                    | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+                    | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
+                    | **Configuration** | Set directly on the **service** or **task** (**old way**).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
+                    | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
+                    | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
+                    | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
+
+                -   **Launch Types** vs **Capacity Providers**: The relationship between **Launch Types** and **Capacity Providers** in AWS ECS is one of an older and foundational concept (**Launch Types**) being largely superseded and enhanced by a newer, more flexible, and automated concept (**Capacity Providers**). **Launch Types define _what kind of_ infrastructure your tasks run on**, while **Capacity Providers define not only _whatkind of_ but also _how that_ infrastructure is managed, scaled, and distributed**.
+
+                -   **Capacity Providers** were introduced to decouple the task placement logic from the capacity management logic. They are attached to an ECS Cluster and represent the available infrastructure pools.
+
+            </details>
+
 
         </details>
 
@@ -2515,22 +2527,6 @@
             -   **Increased Density and Utilization:** The primary advantage is being able to run multiple instances of the same service on a single EC2 container instance. This maximizes the utilization of your computing resources and reduces costs.
             -   **Simplified Scaling:** You can scale your service up or down without worrying about which EC2 instances have available, unused, static ports. ECS simply finds an available ephemeral port.
             -   **Zero Downtime Deployment:** Dynamic port mapping, combined with an ALB, facilitates rolling updates and blue/green deployments by allowing new tasks to launch on the same instance as old tasks (on a new dynamic port) before the old ones are terminated.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Capacity Providers</summary>
-
-        > **Capacity Providers** simplify the management and scaling of the compute capacity that your ECS tasks use. They automate the process of provisioning and scaling the underlying infrastructure (EC2 instances or Fargate).
-
-        -   **Launch Type Abstraction:** They standardize how ECS interacts with the two main compute options:
-            1.  **EC2 Auto Scaling Group:** Manages scaling for EC2 capacity. The Capacity Provider ensures the Auto Scaling Group scales _in_ and _out_ based on task demand.
-            2.  **AWS Fargate:** Uses **Fargate** and **Fargate Spot** capacity, abstracting infrastructure management entirely.
-
-        -   **Capacity Provider Strategy:** This is a key feature that allows you to define how tasks are distributed across **multiple Capacity Providers** (e.g., 80% on Fargate, 20% on Fargate Spot). This distribution is controlled by two parameters:
-            -   **Base:** The minimum number of tasks to run on a specific capacity provider.
-            -   **Weight:** The relative portion of the _remaining_ desired task count that should be placed on a capacity provider.
-
-        > Capacity Providers shift the focus from managing the compute layer to simply defining the **desired capacity ratio** for your application.
 
         </details>
 
