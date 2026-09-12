@@ -1991,7 +1991,7 @@
 
         </details>
 
-    -   <details><summary style="font-size:20px;color:Magenta">Auto Scaling Groups</summary>
+    -   <details><summary style="font-size:20px;color:Magenta">EC2 Auto Scaling Groups</summary>
 
         -   **Auto Scaling Group**: AWS **Auto Scaling Groups (ASG)** is a key component of AWS Auto Scaling that ensures the right number of Amazon EC2 instances are running to handle application load efficiently. ASG helps maintain availability, improve performance, and optimize costs by automatically scaling instances based on demand.
 
@@ -2236,6 +2236,96 @@
 
     > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
 
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Cluster</summary>
+
+        > A **Cluster** is a logical grouping of the resources that run your containerized applications. It acts as the organizational boundary for your ECS components.
+
+        -   **Logical Grouping:** It groups the compute capacity (either Amazon EC2 instances or AWS Fargate) on which your tasks and services run.
+        -   **Availability:** Clusters are region-specific, but they facilitate high availability by allowing tasks to be spread across multiple **Availability Zones** within that region.
+        -   **Analogy:** Think of the Cluster as the **datacenter** or the overall collection of compute resources dedicated to your applications.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Service (The Manager) </summary>
+
+        > An **ECS Service** is a mechanism used to manage and ensures that a specified number of Tasks (instances of a Task Definition) are always running in the cluster.
+
+        -   **Core Responsibilities:**
+            -   **Maintenance and Self-Healing:** The Service acts as a scheduler and manager. If a Task fails, stops, or becomes unhealthy for any reason, the Service automatically replaces it to maintain the **Desired Count** of running Tasks.
+            -   **Load Balancing:** Services can integrate with Elastic Load Balancing (ELB) to distribute incoming application traffic across the running Tasks. Tasks launched directly (standalone tasks) cannot use a load balancer.
+            -   **Scaling:** Services manage scaling—either manually or automatically via Auto Scaling policies—to increase or decrease the number of running Tasks based on demand.
+            -   **Deployment:** Services handle rolling updates when you deploy a new Task Definition revision, replacing old Tasks with new ones in a controlled manner.
+
+        | Feature                   | Task Definition                          | Task                                     | Service                                                |
+        | :------------------------ | :--------------------------------------- | :--------------------------------------- | :----------------------------------------------------- |
+        | **Purpose**               | Blueprint/Template                       | Single running instance of the blueprint | Manager for long-running Tasks                         |
+        | **Output**                | A JSON configuration file                | A running set of container(s)            | Continuous operation and scaling of Tasks              |
+        | **Typical Use**           | Defining an application's resource needs | One-off jobs, batch scripts              | Web servers, microservices, highly available apps      |
+        | **High Availability**     | No                                       | No (single run/unmanaged)                | Yes (maintains desired count)                          |
+        | **Load Balancer Support** | Defines ports for mapping                | No                                       | Yes (manages LB registration for all associated Tasks) |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task (The Running Instance)</summary>
+
+        A **Task** is an _instantiation_ (a running instance) of a **Task Definition**. It represents one or more running containers that are configured and launched based on the blueprint provided by the Task Definition.
+
+        -   **Lifecycle:**
+            -   A Task is created when you run a Task Definition directly (a _standalone task_) or when a **Service** launches it.
+            -   **Standalone Tasks** are typically used for one-off jobs, batch processing, or scheduled tasks (like cron jobs). Once the containers in a standalone task finish their work or stop, they are not automatically replaced.
+        -   **Analogy:** If the Task Definition is the _recipe_, the Task is the _cooked meal_ following that recipe.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Definition (The Blueprint)</summary>
+
+        > The **Task Definition** acts as a blueprint or template for your application. It is a JSON file that specifies all the necessary configurations for one or more containers that should run together as a single application unit.
+
+        -   The **Docker images** to use for each container.
+        -   **CPU and memory** allocation for the entire task and for individual containers.
+        -   **Networking** configuration (like port mappings).
+        -   **IAM roles** for the task to access other AWS services.
+        -   **Logging** configuration, environment variables, and data volume mounts.
+        -   **Revisioning:** Task Definitions are versioned (or "revisioned"). When you change a definition, ECS creates a new revision, allowing for rollbacks.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Container Instance</summary>
+
+        A **Container Instance** is a single **Amazon EC2 instance** that is registered to an ECS Cluster. This is the host machine that provides the computing power (CPU, memory, storage) for your containers.
+
+        -   **ECS Agent:** Each Container Instance must run the **ECS Container Agent** software. This agent is the crucial piece of middleware that communicates with the ECS control plane. It is responsible for:
+            -   Registering the EC2 instance with the cluster.
+            -   Reporting the instance's current resource utilization.
+            -   Starting and stopping containers (Tasks) as instructed by the ECS scheduler.
+        -   **Note:** If you use the **AWS Fargate** launch type, you don't manage Container Instances, as Fargate is a serverless compute engine that abstracts away the underlying infrastructure.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints</summary>
+
+        > **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement.
+
+        | Constraint             | Description                                                                        | Use Case                                                                                   |
+        | :--------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+        | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
+        | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Strategies</summary>
+
+        > **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
+
+        | Strategy      | Goal                                                                                                             | Use Case                                                                                                   |
+        | :------------ | :--------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+        | **`binpack`** | Maximize resource utilization by placing tasks on the instance with the least available memory or CPU.           | Cost optimization: Consolidate tasks to minimize the number of running instances.                          |
+        | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
+        | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
+
+        </details>
+
     -   <details><summary style="font-size: 25px;color:#C71585">Launch Types or Capacity Providers</summary>
 
         > Amazon Elastic Container Service (ECS) offers two primary **Compute Options** (often referred to as **Launch Types** or **Capacity Providers**) for running your containerized workloads: **AWS Fargate** (Serverless) and **Amazon EC2** (Customer-Managed). The choice depends heavily on your team's operational model, control requirements, and cost optimization strategy.
@@ -2425,95 +2515,6 @@
             -   **Increased Density and Utilization:** The primary advantage is being able to run multiple instances of the same service on a single EC2 container instance. This maximizes the utilization of your computing resources and reduces costs.
             -   **Simplified Scaling:** You can scale your service up or down without worrying about which EC2 instances have available, unused, static ports. ECS simply finds an available ephemeral port.
             -   **Zero Downtime Deployment:** Dynamic port mapping, combined with an ALB, facilitates rolling updates and blue/green deployments by allowing new tasks to launch on the same instance as old tasks (on a new dynamic port) before the old ones are terminated.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Task Definition (The Blueprint)</summary>
-
-        > The **Task Definition** acts as a blueprint or template for your application. It is a JSON file that specifies all the necessary configurations for one or more containers that should run together as a single application unit.
-
-        -   The **Docker images** to use for each container.
-        -   **CPU and memory** allocation for the entire task and for individual containers.
-        -   **Networking** configuration (like port mappings).
-        -   **IAM roles** for the task to access other AWS services.
-        -   **Logging** configuration, environment variables, and data volume mounts.
-        -   **Revisioning:** Task Definitions are versioned (or "revisioned"). When you change a definition, ECS creates a new revision, allowing for rollbacks.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Task (The Running Instance)</summary>
-
-        A **Task** is an _instantiation_ (a running instance) of a **Task Definition**. It represents one or more running containers that are configured and launched based on the blueprint provided by the Task Definition.
-
-        -   **Lifecycle:**
-            -   A Task is created when you run a Task Definition directly (a _standalone task_) or when a **Service** launches it.
-            -   **Standalone Tasks** are typically used for one-off jobs, batch processing, or scheduled tasks (like cron jobs). Once the containers in a standalone task finish their work or stop, they are not automatically replaced.
-        -   **Analogy:** If the Task Definition is the _recipe_, the Task is the _cooked meal_ following that recipe.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Service (The Manager) </summary>
-
-        > An **ECS Service** is a mechanism used to manage **long-running, highly available** applications. It ensures that a specified number of Tasks (instances of a Task Definition) are always running in the cluster.
-
-        -   **Core Responsibilities:**
-            -   **Maintenance and Self-Healing:** The Service acts as a scheduler and manager. If a Task fails, stops, or becomes unhealthy for any reason, the Service automatically replaces it to maintain the **Desired Count** of running Tasks.
-            -   **Load Balancing:** Services can integrate with Elastic Load Balancing (ELB) to distribute incoming application traffic across the running Tasks. Tasks launched directly (standalone tasks) cannot use a load balancer.
-            -   **Scaling:** Services manage scaling—either manually or automatically via Auto Scaling policies—to increase or decrease the number of running Tasks based on demand.
-            -   **Deployment:** Services handle rolling updates when you deploy a new Task Definition revision, replacing old Tasks with new ones in a controlled manner.
-
-        | Feature                   | Task Definition                          | Task                                     | Service                                                |
-        | :------------------------ | :--------------------------------------- | :--------------------------------------- | :----------------------------------------------------- |
-        | **Purpose**               | Blueprint/Template                       | Single running instance of the blueprint | Manager for long-running Tasks                         |
-        | **Output**                | A JSON configuration file                | A running set of container(s)            | Continuous operation and scaling of Tasks              |
-        | **Typical Use**           | Defining an application's resource needs | One-off jobs, batch scripts              | Web servers, microservices, highly available apps      |
-        | **High Availability**     | No                                       | No (single run/unmanaged)                | Yes (maintains desired count)                          |
-        | **Load Balancer Support** | Defines ports for mapping                | No                                       | Yes (manages LB registration for all associated Tasks) |
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Cluster</summary>
-
-        > A **Cluster** is a logical grouping of the resources that run your containerized applications. It acts as the organizational boundary for your ECS components.
-
-        -   **Logical Grouping:** It groups the compute capacity (either Amazon EC2 instances or AWS Fargate) on which your tasks and services run.
-        -   **Availability:** Clusters are region-specific, but they facilitate high availability by allowing tasks to be spread across multiple **Availability Zones** within that region.
-        -   **Analogy:** Think of the Cluster as the **datacenter** or the overall collection of compute resources dedicated to your applications.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Container Instance</summary>
-
-        A **Container Instance** is a single **Amazon EC2 instance** that is registered to an ECS Cluster. This is the host machine that provides the computing power (CPU, memory, storage) for your containers.
-
-        -   **ECS Agent:** Each Container Instance must run the **ECS Container Agent** software. This agent is the crucial piece of middleware that communicates with the ECS control plane. It is responsible for:
-            -   Registering the EC2 instance with the cluster.
-            -   Reporting the instance's current resource utilization.
-            -   Starting and stopping containers (Tasks) as instructed by the ECS scheduler.
-        -   **Note:** If you use the **AWS Fargate** launch type, you don't manage Container Instances, as Fargate is a serverless compute engine that abstracts away the underlying infrastructure.
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints</summary>
-
-        > **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement.
-
-        | Constraint             | Description                                                                        | Use Case                                                                                   |
-        | :--------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-        | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
-        | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
-
-        </details>
-
-    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Strategies</summary>
-
-        > **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
-
-        | Strategy      | Goal                                                                                                             | Use Case                                                                                                   |
-        | :------------ | :--------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
-        | **`binpack`** | Maximize resource utilization by placing tasks on the instance with the least available memory or CPU.           | Cost optimization: Consolidate tasks to minimize the number of running instances.                          |
-        | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
-        | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
 
         </details>
 
