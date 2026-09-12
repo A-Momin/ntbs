@@ -366,6 +366,8 @@
     -   `$ poetry cache clear --all` → Clear all cached dependencies
     -   `$ poetry config --list` → Show current Poetry configuration
     -   `$ poetry export -f requirements.txt > requirements.txt` → Export dependencies to a `requirements.txt` file
+    -   `$ poetry export --without-hashes -o requirements.txt`
+    -   `$ poetry run pytest --cov . --junitxml reports/xunit.xml --cov-report xml:reports/coverage.xml --cov-report term-missing`
 
     -   `$ poetry env` → 
     -   `$ poetry env info` → 

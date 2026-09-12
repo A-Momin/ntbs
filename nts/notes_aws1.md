@@ -252,553 +252,6 @@
 
 ---
 
--   <details><summary style="font-size:25px;color:Orange">EC2</summary>
-
-    -   [DigitalCloud: EC2](https://www.youtube.com/watch?v=8bIW7qlldLg&t=108s)
-
-    Amazon Elastic Compute Cloud (Amazon EC2) is a web service provided by Amazon Web Services (AWS) that allows users to rent virtual servers on which they can run their applications. Below are some key terms and concepts associated with AWS EC2:
-
-    Amazon EC2 (Elastic Compute Cloud) is a central service in AWS that provides scalable computing capacity in the cloud. It allows users to launch virtual servers (instances) with flexible configurations. Below is an explanation of all the components and concepts associated with AWS EC2:
-
-    -   **EC2 Instance**: An instance is a virtual server in the cloud. It represents the computing resources (CPU, memory, storage, etc.) that you can rent from AWS. Instances are the fundamental building blocks of EC2.
-
-        -   **Definition**: A virtual server that runs on the AWS cloud infrastructure. You can choose the hardware specifications, OS, and applications.
-        -   **Purpose**: EC2 instances provide compute resources for running applications, processing data, or hosting services.
-        -   **Key Attributes**:
-            -   **vCPU**: Virtual CPU capacity.
-            -   **RAM**: Memory for applications.
-            -   **Network**: Networking performance (low, medium, or high bandwidth).
-
-    -   **Amazon Machine Image (AMI)**: An AMI is a pre-configured template used to create instances. It contains the necessary information to launch an instance, including the operating system, application server, and applications.
-
-        -   **Definition**: A pre-configured template containing the operating system, application server, and applications for launching EC2 instances.
-        -   **Purpose**: AMIs allow you to create consistent EC2 instances based on a saved image.
-        -   **Types**:
-            -   **AWS-provided**: Amazon offers base AMIs (e.g., Amazon Linux, Ubuntu).
-            -   **Custom**: Users can create custom AMIs with specific software configurations.
-            -   **Marketplace AMIs**: Third-party vendors offer AMIs with specific software solutions.
-
-    -   **Instance Types**
-
-        -   **Definition**: Pre-defined combinations of CPU, memory, storage, and network performance. Different instance types suit different workloads.
-        -   **Purpose**: Helps users choose the right compute power based on their application needs.
-        -   **Categories**:
-            -   **General Purpose (e.g., t2.micro, m5.large)**: Balanced compute, memory, and networking resources.
-            -   **Compute Optimized (e.g., c5.large)**: Designed for compute-intensive tasks.
-            -   **Memory Optimized (e.g., r5.xlarge)**: Ideal for memory-intensive applications.
-            -   **Storage Optimized (e.g., i3.xlarge)**: High-performance for applications needing fast local storage.
-            -   **Accelerated Computing (e.g., p3.xlarge)**: Instances with GPUs for machine learning and graphic-intensive tasks.
-
-    -   **Elastic Block Store (EBS)**: EBS provides block-level storage volumes that you can attach to EC2 instances. It is used for data that requires persistent storage. EBS volumes can be used as the root file system or attached to an instance as additional storage.
-
-        -   **Definition**: A block-level storage service used to attach persistent storage to EC2 instances.
-        -   **Purpose**: Provides scalable, durable storage volumes that can be attached to instances. These volumes persist independently of the instance lifecycle.
-        -   **Types**:
-            -   **General Purpose SSD (gp2/gp3)**: Balanced performance and cost.
-            -   **Provisioned IOPS SSD (io1/io2)**: High performance for I/O-intensive workloads.
-            -   **Magnetic (st1/sc1)**: Cost-effective for sequential access workloads like logging or backup.
-
-    -   **Elastic IP Address (EIP)**
-
-        -   **Definition**: A static, public IPv4 address that you can allocate and associate with your EC2 instance.
-        -   **Purpose**: Ensures your instance retains a consistent public IP address even if the instance is stopped and restarted.
-
-    -   **Security Groups**: Security groups act as virtual firewalls for instances. They control inbound and outbound traffic based on rules that you define. Each instance can be associated with one or more security groups.
-
-        -   **Definition**: Virtual firewalls that control inbound and outbound traffic to EC2 instances.
-        -   **Purpose**: Security groups allow or block traffic based on rules defined by IP address, protocol, and port.
-        -   **Stateful**: Security groups remember allowed traffic for responses without needing separate rules.
-
-    -   **Key Pairs**: A key pair consists of a public key and a private key. It is used for securely connecting to an EC2 instance. The public key is placed on the instance, and the private key is kept secure.
-
-        -   **Definition**: A public-private key pair used for SSH access to EC2 instances.
-        -   **Purpose**: The public key is stored on the instance, and the private key is used by the user to securely connect to the instance.
-
-    -   **Elastic Load Balancing (ELB)**: ELB automatically distributes incoming application traffic across multiple EC2 instances. It enhances the availability and fault tolerance of your application.
-
-        -   **Definition**: A service that automatically distributes incoming traffic across multiple EC2 instances.
-        -   **Purpose**: Ensures high availability and reliability by distributing incoming requests to healthy instances.
-        -   **Types**:
-            -   **Application Load Balancer**: Layer 7 load balancing (for HTTP/HTTPS traffic).
-            -   **Network Load Balancer**: Layer 4 load balancing (for TCP/UDP traffic).
-            -   **Gateway Load Balancer**: Enables third-party virtual appliances.
-
-    -   **Placement Groups**
-
-        -   **Definition**: Logical grouping of instances to influence how EC2 instances are placed on the underlying hardware.
-        -   **Purpose**: Enhances performance for specific workloads.
-        -   **Types**:
-            -   **Cluster Placement Group**: Instances are grouped closely in a single Availability Zone for low-latency, high-throughput networking.
-            -   **Spread Placement Group**: Instances are distributed across underlying hardware to reduce simultaneous failures.
-            -   **Partition Placement Group**: Divides instances into partitions where they are placed on distinct sets of racks to minimize correlated failures.
-
-    -   **Launch Template**
-
-        -   **Definition**: A configuration template that defines how to launch EC2 instances.
-        -   **Purpose**: Standardizes the instance creation process by including configurations like instance types, AMIs, key pairs, and security groups.
-
-    -   **Elastic Network Interface (ENI)**
-
-        -   **Definition**: A network interface that can be attached to an EC2 instance to manage multiple IP addresses.
-        -   **Purpose**: Allows instances to have multiple private and public IP addresses, multiple security groups, and can be detached/reattached across instances.
-
-    -   **Network Address Translation (NAT) Gateway**
-
-        -   **Definition**: A managed gateway that allows instances in private subnets to connect to the internet while preventing incoming traffic from reaching them.
-        -   **Purpose**: Enables private EC2 instances to download updates or access public internet resources securely.
-
-    -   **Elastic GPUs**
-
-        -   **Definition**: A feature that allows you to attach GPU resources to existing EC2 instances.
-        -   **Purpose**: Adds GPU capability to instances for tasks like graphics rendering, machine learning, and other GPU-intensive operations.
-
-    -   **IPv4 and IPv6 Addresses**
-
-        -   **Definition**: Public and private IP addresses assigned to EC2 instances for communication.
-        -   **Purpose**: IP addresses allow EC2 instances to communicate with other instances, on-premises networks, or the internet.
-
-    -   **Region**: AWS divides the world into geographic areas called regions. Each region contains multiple Availability Zones. Examples of regions include us-east-1 (North Virginia), eu-west-1 (Ireland), and ap-southeast-2 (Sydney).
-    -   **Availability Zone (AZ)**: An Availability Zone is a data center or a collection of data centers within a region. Each Availability Zone is isolated but connected to the others. Deploying instances across multiple Availability Zones increases fault tolerance.
-    -   **Auto Scaling**: Auto Scaling allows you to automatically adjust the number of EC2 instances in a group based on demand. It helps maintain application availability and ensures that the desired number of instances are running.
-    -   **Placement Groups**: Placement groups are logical groupings of instances within a single Availability Zone. They are used to influence the placement of instances to achieve low-latency communication.
-    -   **Spot Instances**: Spot Instances are spare EC2 capacity that is available at a lower price. You can bid for this capacity, and if your bid is higher than the current spot price, your instances will run. However, they can be terminated if the spot price exceeds your bid.
-    -   **On-Demand Instances**: On-Demand Instances allow you to pay for compute capacity by the hour or second with no upfront costs. This is a flexible and scalable pricing model suitable for variable workloads.
-    -   **Reserved Instances**: Reserved Instances offer significant savings over On-Demand pricing in exchange for a commitment to a one- or three-year term. They provide a capacity reservation, ensuring availability.
-
-    -   <details><summary style="font-size:20px;color:Magenta">EC2 Resources</summary>
-
-        The AWS Elastic Compute Cloud (EC2) service is built upon a variety of core resources and features that enable you to run virtual servers in the cloud.
-
-        ## 💻 Core Compute Resources
-
-        These are the fundamental building blocks for running a virtual machine:
-
-        -   **EC2 Instances**: The **virtual servers** themselves. You choose the operating system, the hardware profile, and the location (VPC, Subnet, Availability Zone).
-        -   **Amazon Machine Images (AMIs)**: Templates that contain a **software configuration** (operating system, application server, applications). You use an AMI to launch an instance.
-        -   **Instance Types**: Defines the hardware profile of your virtual server, including the **CPU, memory, storage, and networking capacity**. They are grouped into families like General Purpose (M), Compute Optimized (C), Memory Optimized (R), etc.
-        -   **Key Pairs**: A set of security credentials, consisting of a **public key** (stored by AWS) and a **private key** (stored by you), used to securely connect to your Linux instances.
-        -   **Launch Templates/Configurations**: Used to **define the parameters** for launching an EC2 instance or an entire Auto Scaling Group (e.g., AMI, instance type, key pair, security groups).
-
-        ## 💾 Storage Resources
-
-        These resources provide persistent and temporary storage for your EC2 instances:
-
-        -   **Amazon Elastic Block Store (EBS) Volumes**: **Durable, block-level storage** volumes that can be attached to a running EC2 instance. They persist independently of the life of the instance.
-            -   **EBS Snapshots**: Point-in-time backups of EBS volumes, stored in Amazon S3.
-        -   **Instance Store**: **Temporary block-level storage** physically located on the host machine of the EC2 instance. The data is lost if the instance is stopped or terminated.
-        -   **Amazon Elastic File System (EFS)**: A **scalable, elastic file storage** service for EC2 instances. It provides a shared file system that multiple EC2 instances can access concurrently. _While not exclusively EC2, it's a common resource used with it._
-
-        ***
-
-        ## 🔒 Networking and Security Resources
-
-        These resources control the connectivity and security boundaries for your EC2 environment:
-
-        -   **Virtual Private Cloud (VPC)**: The **isolated virtual network** where your EC2 instances are launched.
-        -   **Subnets**: A range of IP addresses in your VPC, placed within a single Availability Zone.
-        -   **Security Groups**: **Virtual firewalls** that control inbound and outbound traffic for one or more EC2 instances.
-        -   **Elastic Network Interfaces (ENIs)**: Virtual network cards that can be attached to an instance, providing a consistent network address.
-        -   **Elastic IP Addresses (EIPs)**: **Static public IPv4 addresses** designed for dynamic cloud computing. They are associated with your AWS account, not a specific instance, allowing you to quickly remap the address to another instance.
-
-        ***
-
-        ## 📈 Scaling and Management Resources
-
-        These resources help manage and scale your fleet of instances:
-
-        -   **EC2 Auto Scaling**: Automatically adjusts the number of EC2 instances in a group based on demand, using **Launch Configurations** or **Launch Templates**.
-        -   **Elastic Load Balancing (ELB)**: Distributes incoming application traffic across multiple EC2 instances to increase application availability and fault tolerance.
-        -   **Capacity Reservations**: Allows you to reserve compute capacity for your EC2 instances in a specific Availability Zone for any duration.
-        -   **EC2 Fleet/Spot Fleet**: Allows you to request and manage a large number of EC2 instances across different instance types, Availability Zones, and purchasing options.
-
-        ***
-
-        ## 💵 Purchasing Options (Pricing Models)
-
-        The way you pay for the compute capacity is also considered a resource type in managing your EC2 usage:
-
-        -   **On-Demand Instances**: Pay for compute capacity by the hour or second, with no long-term commitment.
-        -   **Reserved Instances (RIs)**: Commitment to a specific instance configuration for a 1- or 3-year term in exchange for a significant discount.
-        -   **Spot Instances**: Request spare AWS compute capacity for up to a 90% discount off the On-Demand price. Instances can be interrupted with a two-minute warning.
-        -   **Dedicated Hosts**: Physical servers dedicated for your use, which can help with licensing requirements.
-        -   **Dedicated Instances**: EC2 instances that run on hardware dedicated to a single customer.
-
-        An **AWS EC2 Instance Profile** is a container for an **AWS Identity and Access Management (IAM) role** that you can use to pass the role information to an Amazon Elastic Compute Cloud (EC2) instance when the instance starts.
-
-        Its core purpose is to allow applications running on your EC2 instance to **securely access other AWS services** (like S3, DynamoDB, or CloudWatch) without needing to store long-term security credentials (like access keys and secret keys) directly on the instance.
-
-        The EC2 instance uses the credentials provided by the instance profile, which are **temporary security credentials** that AWS automatically generates and rotates. The instance retrieves these credentials via the Instance Metadata Service (IMDS).
-
-        ***
-
-        ## 🏗️ How it Works
-
-        1.  You create an **IAM Role** with the necessary permissions (e.g., read-only access to an S3 bucket).
-        2.  An **Instance Profile** is created (often automatically by the AWS Console when creating the role for an EC2 service) and associated with that IAM role.
-        3.  You attach the **Instance Profile** to your EC2 instance during launch or modification.
-        4.  Applications/AWS SDKs on the EC2 instance can then query the IMDS for the temporary credentials associated with the attached role, allowing them to make API calls to the permitted AWS services.
-
-        ***
-
-        ## 🗺️ Scenarios Where Instance Profiles are Used
-
-        Instance Profiles are considered an AWS security best practice and are primarily used in scenarios where an EC2 instance needs secure, managed access to other AWS resources.
-
-        | Scenario                       | Use Case                                                                                                                                                                                                                               | Security Benefit                                                                                                                           |
-        | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-        | **Data Access**                | An application on an EC2 instance needs to **read or write data** to an **Amazon S3 bucket** (e.g., storing user uploads, fetching configuration files).                                                                               | The instance only has temporary, limited access based on the IAM role, avoiding hardcoded, permanent S3 keys.                              |
-        | **Logging & Monitoring**       | The EC2 instance needs to **send logs** to **Amazon CloudWatch** or **Amazon Kinesis**.                                                                                                                                                | Ensures the logging agent has _only_ the permission to write logs to the specified resource, adhering to the principle of least privilege. |
-        | **Configuration Management**   | The instance needs to retrieve configuration parameters or secrets from **AWS Systems Manager Parameter Store** or **AWS Secrets Manager**.                                                                                            | Securely fetches sensitive information at runtime without the secrets ever residing on the instance's file system.                         |
-        | **Automation & Orchestration** | An instance is part of an **Auto Scaling Group** or a deployment service like **AWS CodeDeploy/Elastic Beanstalk**, and it needs to make calls to other AWS services (e.g., updating a DynamoDB table, interacting with an SQS queue). | Grants the required service-specific permissions for automated workflows to function correctly.                                            |
-        | **Database Connectivity**      | The EC2 instance needs to retrieve an **IAM authentication token** to connect to an **Amazon RDS** or **Amazon Aurora** database instance that uses IAM database authentication.                                                       | Provides a secure, short-lived token for database access, instead of managing long-lived database passwords.                               |
-
-        The compute resources of an **AWS EC2 instance** are the fundamental components that define its processing power, memory, storage, and networking capacity. These resources are configured in different combinations to create the wide selection of EC2 **Instance Types** (like `t3.micro` or `c5.xlarge`).
-
-        The core compute resources are:
-
-        ***
-
-        ## 💻 1. Central Processing Unit (CPU)
-
-        The CPU provides the processing power for the instance.
-
-        -   **vCPUs (Virtual CPUs):** Each EC2 instance is allocated a specific number of vCPUs. A vCPU is an abstraction of the underlying physical CPU core, usually represented as a thread.
-        -   **Processor Type:** Instances use different processors, including:
-            -   **Intel Xeon** and **AMD EPYC** processors (x86 architecture).
-            -   **AWS Graviton** processors (Arm architecture), which are custom-designed by AWS and often offer better price/performance for certain workloads.
-        -   **CPU Credit System (Burstable Instances):** Burstable performance instances (like the **T-family**) use a CPU credit mechanism. They provide a **baseline CPU performance** with the ability to **burst** to higher CPU usage when needed, using accumulated credits.
-
-        ***
-
-        ## 🧠 2. Memory (RAM)
-
-        This is the volatile, high-speed working memory available to the instance's operating system and applications.
-
-        -   **RAM Capacity:** Instances are provisioned with a fixed amount of GiB (Gigabytes) of RAM, which is one of the primary differentiators between instance types (e.g., Memory Optimized instances have a very high RAM-to-vCPU ratio).
-
-        ***
-
-        ## 💾 3. Storage
-
-        EC2 instances use two main types of storage resources.
-
-        -   **Amazon Elastic Block Store (EBS):** This is **persistent** block storage that you attach to the instance. The EBS volume exists independently of the instance's lifecycle (data remains even if the instance is stopped). EBS performance is measured in IOPS (Input/Output Operations Per Second) and throughput.
-        -   **Instance Store (Ephemeral Storage):** This provides **temporary** block storage from disks physically attached to the host machine. Data in the Instance Store is **lost** when the instance is stopped, terminated, or fails. It's ideal for temporary scratch space, buffer/cache, or data replicated across a cluster.
-
-        ***
-
-        ## 🌐 4. Networking
-
-        This resource determines the instance's connectivity and bandwidth capabilities.
-
-        -   **Network Performance:** Instances are classified by their network performance, ranging from "Low" (e.g., older T2 instances) to dedicated bandwidth tiers (e.g., 25, 50, or 100 Gbps for high-end instances).
-        -   **Elastic Network Adapter (ENA):** ENA is a network interface that supports high-performance networking capabilities, offering high throughput and low-latency networking.
-        -   **Elastic Fabric Adapter (EFA):** A network device that you can attach to an EC2 instance to accelerate High-Performance Computing (HPC) and machine learning applications.
-
-        ***
-
-        The way these resources are packaged and prioritized leads to the different **Instance Families**:
-
-        | Instance Family                     | Resource Focus                              | Example Use Cases                                                                 |
-        | :---------------------------------- | :------------------------------------------ | :-------------------------------------------------------------------------------- |
-        | **General Purpose (M, T)**          | Balance of all resources                    | Web servers, small/medium databases, development/test environments.               |
-        | **Compute Optimized (C)**           | High-performance CPU                        | Batch processing, media transcoding, scientific modeling, dedicated game servers. |
-        | **Memory Optimized (R, X)**         | High RAM capacity                           | High-performance databases (in-memory), distributed web-scale caches.             |
-        | **Storage Optimized (I, D)**        | High sequential I/O and large local storage | Data warehousing, transactional databases, big data processing.                   |
-        | **Accelerated Computing (P, G, F)** | Hardware accelerators (GPUs/FPGAs)          | Machine learning training/inference, graphics-intensive applications.             |
-
-        The **Virtual CPU (vCPU)** is the fundamental unit of compute power provisioned to an AWS EC2 instance. It represents a share of the underlying physical CPU resources on the host server.
-
-        Understanding vCPUs requires knowing its components, its relationship to physical hardware, and how it is managed by AWS.
-
-        ***
-
-        ## ⚙️ Core Components and Architecture
-
-        The vCPU is not a one-to-one mapping with a physical core but is an abstraction managed by AWS's virtualization technology.
-
-        ### 1. The Physical Processor (Host CPU)
-
-        -   **Physical Cores:** The underlying host server is equipped with high-core-count physical CPUs (like Intel Xeon, AMD EPYC, or AWS Graviton).
-        -   **Threads (Hyper-Threading/SMT):** Modern Intel/AMD x86 processors often use Simultaneous Multi-Threading (SMT), known by Intel as Hyper-Threading. This technology allows a single physical core to execute **two threads** concurrently, improving overall throughput.
-        -   **AWS Graviton Difference:** AWS Graviton processors (based on Arm architecture) are typically designed to be single-threaded per core. For these instances, **1 vCPU maps to 1 physical core**.
-
-        ### 2. The vCPU Definition (Abstraction Layer)
-
-        -   **x86 Architecture (Intel/AMD):** For most instances using Intel or AMD processors, **1 vCPU is defined as one thread** of an x86-based processor core.
-            -   This means an instance with **2 vCPUs** generally corresponds to **1 physical core** with SMT/Hyper-Threading enabled.
-        -   **Arm Architecture (Graviton):** For instances using AWS Graviton processors, **1 vCPU is defined as one physical core**. This means an instance with **2 vCPUs** corresponds to **2 physical cores**.
-
-        ### 3. The AWS Nitro System
-
-        The **AWS Nitro System** is the dedicated hardware and software that powers the virtualization of modern EC2 instances. It is a critical component for managing vCPUs and their resources:
-
-        -   **Hypervisor:** The Nitro Hypervisor is lightweight and isolates the guest OS (your EC2 instance) from the host hardware, allocating CPU, memory, and networking resources efficiently and securely.
-        -   **Resource Allocation:** By offloading many virtualization functions to dedicated hardware, the Nitro system ensures that nearly **all the host's compute and memory resources** are available to the customer's instance.
-
-        ***
-
-        ## 📊 Resources and Configuration Options
-
-        The resources associated with vCPUs are defined by the EC2 instance type and can sometimes be customized.
-
-        ### 1. Dedicated vs. Shared vCPUs
-
-        -   **Dedicated (Most Instance Types):** For most instance families (C, R, M, P, etc.), the vCPUs you select are **dedicated** to your instance on the host machine. You get the guaranteed performance of that vCPU allocation.
-        -   **Shared/Burstable (T-Family):** For **T-family (Burstable)** instances, vCPUs are shared among multiple tenants on the host. These instances have a **baseline level of CPU performance** and use a **CPU Credit** system.
-            -   They **accrue credits** when under the baseline usage.
-            -   They **spend credits** to **burst** to a higher vCPU utilization when needed.
-
-        ### 2. Customizing CPU Options
-
-        For newer EC2 instance types, you can customize the vCPU allocation to manage software licensing costs or optimize performance for specific workloads:
-
-        -   **Core Count:** You can specify the total number of **CPU Cores** for your instance.
-        -   **Threads per Core:** You can specify the number of **threads per core** (usually 1 or 2). Setting this to **1** effectively **disables SMT/Hyper-Threading**, which can be necessary for certain security- or performance-critical high-performance computing (HPC) workloads.
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">Auto Scaling Groups</summary>
-
-        -   **Auto Scaling Group**: AWS **Auto Scaling Groups (ASG)** is a key component of AWS Auto Scaling that ensures the right number of Amazon EC2 instances are running to handle application load efficiently. ASG helps maintain availability, improve performance, and optimize costs by automatically scaling instances based on demand.
-
-            -   Manages the group of EC2 instances based on policies.
-            -   Key properties:
-                -   **Minimum Capacity:** Minimum number of instances that must run.
-                -   **Desired Capacity:** The ideal number of instances at a given time.
-                -   **Maximum Capacity:** The upper limit of instances that can be launched.
-
-        #### Components of ASGs
-
-        1. **Launch Template or Launch Configuration**
-
-            - Defines the settings for EC2 instances within the Auto Scaling Group.
-            - Includes:
-                - **AMI (Amazon Machine Image):** The base image for instances.
-                - **Instance Type:** The hardware specifications (CPU, RAM, etc.).
-                - **Key Pair:** SSH key for remote access.
-                - **Security Groups:** Controls inbound/outbound traffic.
-                - **IAM Role:** Grants permissions to instances.
-                - **User Data Script:** Custom startup commands.
-
-        2. **Scaling Policies**
-
-            - Determines when and how ASG should scale in or out.
-            - Types of Auto Scaling Policies:
-                - **Dynamic Scaling**: Adjusts instances based on real-time metrics.
-                    - **Target Tracking Scaling**: Maintains a CloudWatch target metric (e.g., CPU usage at 50%).
-                    - **Step Scaling**: Scales in increments (e.g., add 2 instances if CPU > 70%) and out decrement.
-                    - **Simple Scaling**: Adds/removes a fixed number of instances based on a single alarm.
-                - **Predictive Scaling**: Uses machine learning to anticipate scaling needs.
-                - **Scheduled Scaling**:
-
-        3. **Health Checks**
-
-            - Ensures that unhealthy instances are terminated and replaced.
-            - Types:
-                - **EC2 Health Check:** Checks if instance responds to system status checks.
-                - **ELB Health Check:** Checks if the instance is responsive to an Elastic Load Balancer.
-            - **Health Check Grace Period**:
-
-        4. **Load Balancer Integration**
-
-            - **Elastic Load Balancer (ELB)** ensures traffic is distributed among instances.
-            - Auto Scaling Group automatically registers/deregisters instances.
-
-        5. **Termination Policies**
-
-            - Determines which instance is terminated first during scale-in.
-            - Options include:
-                - **Default (Oldest Launch Template First):** Terminates instances from the oldest launch template.
-                - **Oldest Instance:** Terminates the longest-running instance first.
-                - **Newest Instance:** Terminates the most recently launched instance.
-                - **Closest to Billing Hour:** Optimizes cost by terminating instances nearing their next billing hour.
-            - Termination Protection
-
-        6. **Lifecycle Hooks**
-
-            - Allows custom actions before an instance is launched or terminated.
-            - Common use cases:
-                - Pre-installing software before making the instance active.
-                - Sending logs before terminating an instance.
-
-        7. **Warm Pools**
-
-            - Keeps pre-initialized instances on standby to speed up scaling.
-            - Reduces boot time by allowing instances to be launched partially configured.
-
-        #### Key Concepts of AWS Auto Scaling Groups
-
-        8. **Cooldowns**:
-        9. **Standby State**:
-        10. **Lifecycle Hooks**:
-
-        11. **Elasticity**
-
-            - Automatically adjusts capacity to meet traffic demands.
-            - Ensures availability during peak times and cost savings during low traffic.
-
-        12. **High Availability**
-
-            - Auto Scaling Group distributes instances across multiple **Availability Zones (AZs)**.
-            - Prevents application downtime due to hardware failure.
-
-        13. **Cost Optimization**
-
-            - Ensures that only the necessary number of instances are running.
-            - Uses **Spot Instances** for cost savings when appropriate.
-
-        14. **Fault Tolerance**
-
-            - Automatically replaces failed instances to maintain application health.
-
-        15. **Region and Availability Zone Awareness**
-
-            - ASG can span multiple **Availability Zones (AZs)** but remains within a single **AWS Region**.
-
-            - **Web Applications:** Scale based on incoming HTTP traffic.
-            - **Batch Processing:** Scale based on queued jobs.
-            - **Big Data Analytics:** Scale based on compute needs.
-            - **Microservices:** Adjusts instances for each service independently.
-
-        Auto Scaling in the context of AWS EC2 is a robust, fully managed service that automatically adjusts the number of Amazon EC2 instances in your application to meet demand fluctuations, ensuring optimal performance, availability, and cost efficiency. It primarily performs **horizontal scaling** (adding or removing instances).
-
-        Here is a vivid and detailed explanation of how it works and its core components:
-
-        ***
-
-        ### The Core Components
-
-        EC2 Auto Scaling is centered around three primary components working in tandem:
-
-        #### 1. Auto Scaling Group (ASG)
-
-        The ASG is the **logical grouping** of EC2 instances that are treated as a single unit for scaling and management. It is the central configuration for your fleet of servers.
-
-        -   **Min/Max/Desired Capacity:**
-
-            -   **Minimum Capacity:** The lowest number of instances the group will _ever_ scale down to. This maintains essential application availability.
-            -   **Maximum Capacity:** The highest number of instances the group will _ever_ scale out to. This acts as a protective cap against runaway costs or resource limits.
-            -   **Desired Capacity:** The number of instances the ASG attempts to maintain under normal conditions.
-
-        -   **Health Checks and Maintenance:** The ASG continuously monitors the health of its instances using EC2 status checks or Elastic Load Balancer (ELB) health checks. If an instance fails a health check, the ASG automatically **terminates the unhealthy instance** and launches a replacement to maintain the **Desired Capacity**. This provides self-healing and fault tolerance.
-
-        #### 2. Launch Template (or Launch Configuration)
-
-        This component acts as the **blueprint** for creating new EC2 instances. When the ASG needs to launch a new instance (a "scale-out" event), it uses this template.
-
-        The Launch Template defines:
-
-        -   **AMI (Amazon Machine Image):** The operating system and pre-installed software for the instance.
-        -   **Instance Type:** The hardware configuration (e.g., $t2.micro$, $m5.large$).
-        -   **Key Pair:** For secure login.
-        -   **Security Groups:** Firewall rules controlling access.
-        -   **User Data:** A script to run upon launch for bootstrapping the application (e.g., installing software, pulling code).
-
-        #### 3. Scaling Policies
-
-        These are the **rules** that dictate _when_ and _how_ the ASG should increase or decrease the number of instances. They translate application demand into capacity adjustments. Scaling policies rely on **Amazon CloudWatch alarms** to monitor metrics (like CPU utilization, network traffic, or custom metrics).
-
-        ***
-
-        ### Types of Scaling Policies
-
-        AWS EC2 Auto Scaling offers several sophisticated methods to handle different demand patterns:
-
-        #### A. Dynamic Scaling (Reactive)
-
-        This is the most common type, reacting to real-time changes in load.
-
-        1.  **Target Tracking Scaling:**
-
-            -   **How it works:** You define a target value for a specific metric (e.g., "Maintain average CPU utilization at 50%").
-            -   **Analogy:** Like a home thermostat. The policy calculates the necessary capacity change to keep the metric as close to the target value as possible. This is the simplest and often most effective method.
-
-        2.  **Step Scaling:**
-
-            -   **How it works:** You define a series of scaling adjustments (steps) that are triggered when a metric crosses various thresholds.
-            -   **Example:**
-                -   If CPU $> 70\%$: Add 1 instance.
-                -   If CPU $> 90\%$: Add 3 instances.
-            -   This provides a nuanced, graduated response to rapidly increasing or decreasing load.
-
-        3.  **Simple Scaling (Legacy):**
-            -   **How it works:** Similar to Step Scaling but with a single, fixed scaling adjustment for a single threshold breach. It is generally recommended to use Target Tracking or Step Scaling instead.
-
-        #### B. Scheduled Scaling (Predictive)
-
-        This is ideal for **predictable load changes** (e.g., a massive traffic spike every Monday at 9 AM).
-
-        -   **How it works:** You define a date, time, and new Min/Max/Desired capacity for the group. The scaling action executes at the scheduled time.
-        -   **Benefit:** Allows the application to scale **proactively** before the spike hits, avoiding performance degradation that reactive dynamic scaling might experience while new instances boot up.
-
-        #### C. Predictive Scaling (Advanced)
-
-        This uses machine learning to **forecast future load** based on up to two weeks of historical metrics.
-
-        -   **How it works:** It generates a forecast of future demand and schedules scaling actions in advance to ensure capacity is available _before_ the traffic arrives.
-        -   **Benefit:** Combines the proactive scaling of Scheduled Scaling with the precision of Dynamic Scaling, great for applications with recurring but complex traffic patterns.
-
-        ***
-
-        ### The Auto Scaling Process in Action
-
-        1.  **Initial Launch:** The ASG launches the **Desired Capacity** of instances using the **Launch Template**.
-        2.  **Load Increase (Scale-Out):**
-            -   Application load increases (e.g., web traffic spikes).
-            -   **CloudWatch** detects the defined metric (e.g., CPU utilization) has breached the threshold specified in a **Scaling Policy** (e.g., Target Tracking).
-            -   The Scaling Policy instructs the **ASG** to increase the **Desired Capacity** by a calculated amount (but not above **Maximum Capacity**).
-            -   The ASG uses the **Launch Template** to provision and launch new EC2 instances.
-        3.  **Load Decrease (Scale-In):**
-            -   Application load drops (e.g., the workday ends).
-            -   CloudWatch detects the metric has dropped below the lower threshold (e.g., CPU $< 30\%$).
-            -   The Scaling Policy instructs the ASG to decrease the **Desired Capacity** (but not below **Minimum Capacity**).
-            -   The ASG terminates one or more instances, preferentially choosing the ones with the least connections or based on a defined **Termination Policy**.
-
-        AWS EC2 Auto Scaling uses **Cooldowns**, the **Standby State**, and **Lifecycle Hooks** to provide control and stability over the automatic scaling of your EC2 instances.
-
-        ***
-
-        ## Cooldowns
-
-        A **Cooldown** is a configurable waiting period after a scaling activity (either launching or terminating instances) completes, during which the Auto Scaling group suspends any subsequent scaling activities that are triggered by **simple scaling policies** or **manual scaling**.
-
-        -   **Purpose:** To prevent rapid, unnecessary, or runaway scaling actions that could result in over- or under-provisioning. It gives the newly launched instances time to warm up, complete essential configuration tasks, start processing traffic, and for the related CloudWatch metrics to stabilize and reflect the current load.
-        -   **Mechanism:** Once a scaling action finishes, the Auto Scaling group enters the cooldown period. During this time, it ignores other scaling triggers from simple scaling policies.
-        -   **Note:** Cooldowns primarily apply to **simple scaling policies**. **Target tracking** and **step scaling policies** use a similar concept called **Instance Warmup** to manage scaling frequency based on when new instances are ready to handle traffic.
-
-        ***
-
-        ## Standby State
-
-        The **Standby State** is a feature that allows you to temporarily remove an instance from the active service set of your Auto Scaling group for maintenance or troubleshooting, without the Auto Scaling group terminating the instance or attempting to replace it.
-
-        -   **Purpose:** To allow a user to perform updates, patching, or debugging on an instance while keeping it within the Auto Scaling group's management, but preventing it from being served traffic (if integrated with a Load Balancer) or being terminated during a scale-in event.
-        -   **Mechanism:**
-            1.  You move a running instance from the **`InService`** state to the **`Standby`** state.
-            2.  If the Auto Scaling group is attached to a load balancer, the instance is **deregistered** and stops receiving traffic.
-            3.  You can choose to **decrement the desired capacity** of the group (no replacement instance is launched) or **not to decrement it** (a replacement instance is launched to maintain the original capacity).
-            4.  The instance is still counted against the group's `MinSize` and `MaxSize` limits.
-            5.  When finished, you manually move the instance back to the **`InService`** state, and it is re-registered with any attached load balancers.
-
-        ***
-
-        ## Lifecycle Hooks
-
-        **Lifecycle Hooks** give you the ability to pause an instance as it launches or terminates, allowing you to perform custom actions before the instance is fully put into service or completely terminated.
-
-        -   **Purpose:** To inject custom logic into the instance lifecycle, ensuring your instances are fully configured before handling traffic (on launch) or that all necessary cleanup is performed (on termination).
-        -   **Mechanism:**
-            -   **Instance Launching:** A new instance launches and enters a **`Pending:Wait`** state instead of going straight to `InService`. This pause allows a custom script, AWS Lambda function, or other process (often triggered by an Amazon Simple Notification Service (SNS) or Amazon EventBridge event) to perform final configuration like software installation, data synchronization, or registration with third-party services. Once the action is complete, the process sends a signal (`CompleteLifecycleAction`) to the Auto Scaling group to move the instance to `InService`.
-            -   **Instance Terminating:** An instance targeted for termination enters a **`Terminating:Wait`** state. This pause allows for actions like draining connections, saving application logs, or deregistering from a custom service discovery system. A signal is then sent to complete the termination.
-        -   **Configuration:** You define a heartbeat timeout (up to 7200 seconds or 2 hours) which specifies how long the instance can remain in the `*Wait` state. If the custom action does not send a `CompleteLifecycleAction` signal before the timeout, the Auto Scaling group proceeds based on a configured `DefaultResult` (either `CONTINUE` or `ABANDON`).
-
-        </details>
-
-    </details>
-
----
-
 -   <details><summary style="font-size:25px;color:Orange">VPC (Virtual Private Cloud)</summary>
 
     -   [Linux Academy: AWS Essentials: Project Omega!](https://www.youtube.com/watch?v=CGFrYNDpzUM&list=PLv2a_5pNAko0Mijc6mnv04xeOut443Wnk)
@@ -1678,181 +1131,553 @@
 
 ---
 
--   <details><summary style="font-size:25px;color:Orange">CloudWatch</summary>
+-   <details><summary style="font-size:25px;color:Orange">Lambda Function</summary>
 
-    -   [Be a Better Dev: AWS Cloudwatch Guides - Learn AWS Monitoring Techniques](https://www.youtube.com/playlist?list=PL9nWRykSBSFir2FLla2thQkEwmLpxPega)
-    -   [What is AWS CloudWatch? Metric | Alarms | Logs Custom Metric](https://www.youtube.com/watch?v=G4_ay2_h9GI)
+    > AWS Lambda is a serverless computing service provided by Amazon Web Services (AWS) that allows users to run their code without having to manage servers or infrastructure. Here are some key terms and concepts related to AWS Lambda:
+    > AWS Lambda is a serverless computing service that automatically runs code in response to events, managing the underlying compute infrastructure. It allows you to execute your code without provisioning or managing servers, enabling you to focus solely on your application logic. Here are the main concepts and components of AWS Lambda:
+    > A **Lambda function** is the core concept of AWS Lambda. It is a piece of code that you write and deploy, which AWS Lambda automatically executes in response to events or triggers.
 
-    > Amazon CloudWatch is a monitoring service provided by Amazon Web Services (AWS) that allows you to monitor and collect metrics, collect and monitor log files, and set alarms. Here are some important terms and concepts related to AWS CloudWatch:
+    -   **Lambda Definition in Terraform**:
 
-    -   `Metrics`: A metric is a variable that you want to monitor, such as CPU usage, disk space usage, or network traffic. CloudWatch provides a set of predefined metrics for AWS resources, and you can also create your own custom metrics.
-    -   `Events`: CloudWatch Events is a service that allows you to monitor and respond to changes in your AWS resources. You can create rules that trigger automated actions when certain events occur, such as launching an EC2 instance or creating a new S3 bucket.
-        -   `Event Sources`: an "event source" refers to the entity or service that generates events that CloudWatch Events can capture and process. An event source is the origin or producer of events that you want to monitor and respond to within the AWS ecosystem. CloudWatch Events can capture events from various AWS services and custom applications, and each of these sources is considered an event source.
-    -   `Alarms`: An alarm is a notification that is triggered when a metric breaches a specified threshold. You can configure CloudWatch to send notifications to various destinations, such as email, SMS, or other AWS services.
-    -   `Rules`: A rule matches incoming events and routes them to targets for processing. A single rule can route to multiple targets, all of which are processed in parallel. Rules are not processed in a particular order. A rule can customize the JSON sent to the target, by passing only certain parts or by overwriting it with a constant.
-    -   `Target`: A target processes events. Targets can include Amazon EC2 instances, AWS Lambda functions, Kinesis streams, Amazon ECS tasks, Step Functions state machines, Amazon SNS topics, Amazon SQS queues, and built-in targets. A target receives events in JSON format.
-    -   `Dashboards`: A dashboard is a customizable view of metrics and alarms that you can create to monitor the health and performance of your AWS resources. You can add multiple metrics and alarms to a single dashboard, and you can create multiple dashboards to monitor different aspects of your infrastructure.
-    -   `Logs`: CloudWatch Logs is a service that allows you to collect, monitor, and store log files generated by your applications and AWS resources. You can also use CloudWatch Logs to search and analyze log data.
-        -   `Log Groups`: Log groups are containers for log streams.
-        -   `Log Streams`: Log streams represent the sequence of log events coming from a specific source, such as an EC2 instance or Lambda function.
-    -   `Retention periods`: CloudWatch allows you to specify how long you want to retain your metric data and log data. By default, CloudWatch retains` metric data for 15 months` and `log data for 30 days`, but you can customize these retention periods to suit your needs.
-    -   `Namespaces`: A namespace is a container for CloudWatch metrics. AWS resources are organized into namespaces, and you can create custom namespaces for your own metrics.
-    -   `Dimensions`: A dimension is a name-value pair that helps you to uniquely identify a metric. For example, a dimension for an EC2 instance might include the instance ID and the region where the instance is running.
-    -   `CloudWatch Agent`: The CloudWatch agent is a software component that you can install on your EC2 instances to collect and send system-level metrics and logs to CloudWatch. The agent supports both Windows and Linux operating systems.
+        ```ini
+        resource "aws_lambda_function" "sqs_processor" {
+            function_name    = "sqs-processor"
+            description      = "Processes messages from SQS and performs analysis tasks"
+            runtime          = "python3.9"
+            role             = aws_iam_role.lfn_analysis_role.arn
+            handler          = "lambda_handler.sqs_processor_handler"
+            filename         = data.archive_file.lambda_zip.output_path
+            source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
-    #### CloudWatch Events vs EventBridge
+            memory_size = 512 # Default is 128 MB, can be set between 128 MB and 10,240 MB
+            timeout     = 120 # Default is 3 seconds, can be set up to 900 seconds (15 minutes)
 
-    Amazon Web Services (AWS) provides two services for managing events and automating responses: Amazon CloudWatch Events and Amazon EventBridge. While both services are designed for event-driven architectures, they have some key differences in terms of functionality and use cases.
+            architectures = ["x86_64"] # Default is "x86_64", other option is "arm64"
 
-    -   `AWS CloudWatch Events`:
+            ## Reserved Concurrency (max limit)
+            #   reserved_concurrent_executions = 9
 
-        -   `Use Case`: CloudWatch Events primarily focuses on events related to AWS resources. It is designed for monitoring and reacting to events from AWS services, such as EC2, Lambda, S3, and more.
-        -   `Event Sources`: It integrates with AWS services and can capture events from those services. These events are typically related to resource changes, operational activities, and management.
-        -   `Targets`: CloudWatch Events can route events to targets such as AWS Lambda functions, Amazon SNS topics, Kinesis streams, and more.
-        -   `Event Rules`: You can create event rules that define which events to capture and how to respond to them. These rules are based on events from AWS services.
-        -   `Retention`: CloudWatch Events retains events for a maximum of 1 or 2 weeks, depending on the event source.
+            # Whether to publish creation/change as new Lambda Function Version. Defaults to false.
+            publish = false
 
-    -   `AWS EventBridge`:
+            layers = [aws_lambda_layer_version.lfn_layer.arn]
+            vpc_config {
+                # subnet_ids         = [for s in aws_subnet.detf_subnets : s.id]
+                subnet_ids         = values(var.subnets)
+                security_group_ids = [aws_security_group.lambda_analysis_sg.id]
+            }
 
-        -   `Use Case`: EventBridge, previously known as CloudWatch Events bus, is an advanced event bus service. It is designed for a broader range of event sources and use cases, including AWS services and custom applications.
-        -   `Event Sources`: EventBridge can capture events from both AWS services and custom applications, making it suitable for hybrid and multi-cloud environments.
-        -   `Schema Registry`: It includes a schema registry that allows you to define the structure of events, making it easier to work with event data.
-        -   `Event Buses`: EventBridge supports multiple event buses that allow you to segment and manage events effectively. Each bus can have its own permissions and event sources.
-        -   `Targets`: Similar to CloudWatch Events, EventBridge can route events to AWS Lambda functions, SNS topics, Kinesis streams, and more.
-        -   `Archiving`: EventBridge offers event archiving, which allows you to retain events for a longer duration than CloudWatch Events.
-        -   `Rules and EventBridge API`: EventBridge introduces more advanced rules and support for the EventBridge API, providing finer-grained control over event routing and transformation.
+            file_system_config {
+                arn              = aws_efs_access_point.lfn_analysis_file_access_point.arn
+                local_mount_path = "/mnt/efs"
+            }
 
-    -   `Key Considerations`:
+            # Increase `/tmp` storage to 5GB
+            ephemeral_storage {
+                size = 512 # Default is 512 MB, can be set up to 10,240 MB (10 GB)
+            }
 
-        -   If you primarily need to handle AWS service events, CloudWatch Events may suffice.
-        -   If you need to manage events from custom applications, multiple AWS accounts, or other AWS services in a more structured and scalable way, EventBridge is a better choice.
-        -   EventBridge is often the preferred service for building event-driven architectures for microservices, serverless applications, and complex integrations.
+            # Enable SnapStart for faster cold starts
+            snap_start {
+                apply_on = "None" # Default is "None"; other option is "PublishedVersions"
+            }
 
-    In summary, AWS CloudWatch Events is a specialized service for AWS resource events, while AWS EventBridge is a more versatile event bus service designed for a broader range of event sources and use cases, including custom applications and multi-cloud environments. Your choice depends on your specific use case and requirements.
+            environment {
+                variables = {
+                INPUT_QUEUE_URL   = aws_sqs_queue.input_queue.id
+                FAILURE_QUEUE_URL = aws_sqs_queue.failure_queue.id
+                SUCCESS_TOPIC_ARN = aws_sns_topic.success_topic.arn
+                PROJECT           = "Lambda Analysis"
+                }
+            }
 
-    </details>
+            tags = {
+                Name    = "sqs-processor"
+                Project = "${var.project}-sqs-processor"
+            }
 
----
+            depends_on = [aws_efs_mount_target.lfn_analysis_efs_mnt_target]
+        }
 
--   <details><summary style="font-size:25px;color:Orange">SNS</summary>
-
-    Amazon Simple Notification Service (SNS) is a messaging service provided by Amazon Web Services (AWS) that enables the publishing and delivery of messages to multiple subscribers or endpoints. Here are some important terms and concepts related to AWS SNS:
-
-    ![sns](../assets/aws/sns.png)
-
-    -   `Topic`: A topic is a communication channel in SNS. Publishers send messages to a topic, and subscribers receive messages from a topic. A topic can have one or more subscribers.
-
-        ```python
-        sns = boto3.client('sns')
-        sns.publish(
-            TopicArn='ARN_OF_EC2StateChangeTopic',
-            Message=message,
-            Subject='EC2 State Change Notification'
-        )
         ```
 
-    -   `Subscription`: A subscription is a request to receive messages from a topic. Subscribers can receive messages via a variety of protocols, such as email, SMS, HTTP, HTTPS, Lambda, or mobile push notifications.
-    -   `Publisher`: A publisher is an entity that sends messages to a topic. Publishers can be AWS services or applications that use an SNS client.
-    -   `Message`: A message is the content that is sent to a topic. Messages can be up to 256 KB in size and can be in a variety of formats, including text, JSON, and binary data.
-    -   `Protocol`: A protocol is the method used to send messages to subscribers. SNS supports multiple protocols, including HTTP, HTTPS, email, SMS, Lambda, and mobile push notifications.
-    -   `Endpoint`: An endpoint is the destination for a message. Endpoints can be email addresses, mobile device tokens, HTTP/HTTPS URLs, or Amazon resource names (ARNs) for Lambda functions.
-    -   `ARN`: An Amazon Resource Name (ARN) is a unique identifier for an AWS resource, such as an SNS topic or a Lambda function.
-    -   `Message filtering`: SNS allows you to filter messages based on attributes or message content. This enables you to send targeted messages to specific subscribers.
-    -   `Dead-letter queue`: A dead-letter queue is a queue where messages are sent if they cannot be delivered to their intended recipients. SNS provides support for dead-letter queues to help you troubleshoot message delivery issues.
-    -   `Message attributes`: SNS allows you to add custom attributes to messages, which can be used for filtering and routing messages to specific subscribers.
-    -   `Access policies`: SNS allows you to control access to topics and subscriptions using access policies. Access policies define which AWS accounts or users are authorized to perform specific actions on a topic or subscription.
-    -   `SNS Mobile Push`: SNS provides a mobile push service that enables you to send push notifications to iOS, Android, and Kindle Fire devices. SNS Mobile Push supports Apple Push Notification Service (APNS), Google Cloud Messaging (GCM), Firebase Cloud Messaging (FCM), and Amazon Device Messaging (ADM).
+    -   **Components**:
 
-    </details>
+        -   **Code**: Written in supported languages (Python, Node.js, Java, Go, Ruby, C#, etc.).
+        -   **Handler**: The entry point of the Lambda function, where the execution begins.
+        -   **Deployment Package**: Includes your code and any dependencies in a zip file or a container image (if using container-based Lambda).
 
----
+    -   <details><summary style="font-size:20px;color:Magenta">Function Configuration</summary>
 
--   <details><summary style="font-size:25px;color:Orange">SQS</summary>
+        Each Lambda function has a set of configurations that define how it behaves, including memory, timeout, and concurrency settings.
 
-    ![sqs](../assets/aws/sqs.png)
+        1. **Basic Settings**
 
-    AWS Simple Queue Service (SQS) is a fully managed message queuing service that enables you to **decouple and scale** microservices, distributed systems, and serverless applications. It acts as a buffer between the component that sends the message (**producer**) and the component that processes the message (**consumer**), allowing them to operate asynchronously and independently.
+            - **Function Name**:
 
-    -   <details><summary style="font-size:20px;color:Magenta">Core Components and Concepts</summary>
+                - The name assigned to the function, which must be unique within an AWS Region and account.
 
-        1. **Queue**: The **Queue** is the temporary repository for messages. It is distributed across multiple AWS servers for high availability and durability.
+            - **Runtime**:
 
-        2. **Message**: A **Message** is the unit of communication sent to the queue by a producer and retrieved by a consumer.
+                - Specifies the programming language and version that the Lambda function will use (e.g., Python 3.9, Node.js 18.x, Java 11).
+                - AWS Lambda manages and updates runtimes, but deprecated versions eventually lose support, so updating periodically is crucial.
 
-            - **Maximum Size:** Up to **256 KB** of text in any format (e.g., JSON, XML). For larger messages (up to 2 GB), you can use the SQS Extended Client Library for Java, which stores the payload in Amazon S3 and sends a reference via SQS.
-            - **Message Retention Period:** The amount of time SQS keeps a message in the queue. It ranges from 1 minute to 14 days, with a default of 4 days.
+            - **Execution Role & Policies**:
 
-        3. **Producer (Sending Component)**: An application component that sends messages to the SQS queue. The producer does not need to know if the consumer is available or how many consumers there are. The primary API action is `SendMessage`.
+                - Lambda functions require an **Identity and Access Management (IAM) role** with permissions to interact with AWS resources.
+                - The role grants the function access to resources such as S3 buckets, DynamoDB tables, or the CloudWatch Logs service where function logs are stored.
+                - Following the principle of least privilege, the role should have the minimum permissions needed.
+                - `Resource-Based Policies`: Lambda functions can have resource-based policies to control which AWS accounts or services can invoke the function. This is especially useful for cross-account or cross-service access, like allowing an S3 bucket from another account to trigger a Lambda function.
 
-        4. **Consumer (Receiving Component)**: An application component that polls the queue to retrieve and process messages. Once processed, the consumer must delete the message from the queue. The primary API actions are `ReceiveMessage` and `DeleteMessage`.
+            - **Handler**:
+                - Defines the entry point of the function. The handler is a function within your code that AWS Lambda calls to start execution.
+                - The format is typically `filename.method_name` (e.g., `lambda_function.lambda_handler`), where `lambda_function` is the filename and `lambda_handler` is the method name.
+
+        2. **Memory and Timeout**
+
+            - **Memory Allocation**:
+
+                - The memory (in MB) allocated to a Lambda function can range from 128 MB to 10 GB, in increments of 1 MB.
+                - More memory usually results in more **CPU** and **network bandwidth** allocation, which can speed up execution but also increase costs.
+                - Lambda pricing is based on memory and execution time, so optimizing memory for performance and cost balance is essential.
+
+            - **Timeout**:
+
+                - The maximum time that a Lambda function can run per invocation, with a range from 1 second to 15 minutes (900 seconds).
+                - If the function exceeds the timeout, it is terminated, so setting an appropriate timeout based on expected execution duration is critical to prevent early termination.
+                - Specifies the maximum duration for function execution. Lambda terminates the function if it exceeds this time, ensuring resource cleanup and preventing long-running executions.
+
+            - **Retry Policies**:
+                - You can configure retry policies for asynchronous invocations and event source mappings. These are useful for automatically handling transient failures, allowing your function more opportunities to complete.
+
+        3. **Environment Variables**
+
+            - Key-value pairs used to store configuration data or secrets needed by the function, such as API keys, database credentials, or resource configurations.
+            - **Environment Variable Encryption**: By default, Lambda encrypts environment variables using AWS Key Management Service (KMS). You can also specify a custom KMS key for added security.
+
+        4. **Networking**: AWS Lambda can be configured to run inside a **Virtual Private Cloud (VPC)**, allowing your function to access private resources like RDS or EC2 instances.
+
+            - When you configure a Lambda function to connect to a VPC, you specify subnets and security groups to control network access.
+            - Note that adding VPC connectivity may impact Lambda’s cold start time because it requires additional network setup.
+            - `VPC Subnets`: Functions running in VPC can interact with private subnets and on-premises resources through a VPN or Direct Connect.
+            - `VPC Endpoints`: Can be used to access AWS services privately without internet access.
 
         </details>
 
-    -   <details><summary style="font-size:20px;color:Magenta">Queue Types</summary>
+    -   <details><summary style="font-size:20px;color:Magenta">Event Source Mapping</summary>
 
-        AWS SQS offers two main queue types, catering to different application requirements:
+        An **AWS Lambda Event Source Mapping (ESM)** is a Lambda resource that acts as a **managed poller** to connect stream-based and queue-based event sources to a Lambda function.
 
-        1. **Standard Queues**:
+        It is a key component in Lambda's architecture that enables the **"Pull" model** for certain services, relieving you of the burden of writing and managing your own polling or consumption logic.
 
-            - **Throughput:** Support a nearly **unlimited number of transactions per second (TPS)**.
-            - **Ordering:** Provide **best-effort ordering**. Messages are generally delivered in the order they were sent, but the exact order is not guaranteed.
-            - **Delivery:** Provide **At-Least-Once Delivery**. A message is delivered at least once, but occasionally, more than one copy of a message may be delivered (duplicates can occur). They are suitable for scenarios where duplicates and out-of-order processing can be tolerated.
+        ```ini
+        resource "aws_lambda_event_source_mapping" "sqs_trigger" {
+            function_name    = aws_lambda_function.sqs_processor.arn
+            event_source_arn = aws_sqs_queue.input_queue.arn
+            batch_size       = 10
+            enabled          = true
+            # 👉 Together, they define the retry policy: Lambda retries until either retry attempts are exhausted OR record age expires, whichever comes first.
+            maximum_retry_attempts        = 0  # How many times to retry failed batches
+            maximum_record_age_in_seconds = 60 # Maximum age of a record that Lambda sends to a function for processing; default is 60 seconds
+        }
+        ```
 
-        2. **FIFO (First-In-First-Out) Queues**:
+        ##### The Pull Model vs. Push Model
 
-            - **Ordering:** Guarantee **strict message ordering** (First-In-First-Out).
-            - **Delivery:** Guarantee **Exactly-Once Processing**. A message is delivered once and remains available until a consumer processes and deletes it, preventing duplicates.
-            - **Throughput:** Support a lower, but still high, throughput (up to 3,000 messages per second with batching).
-            - **Message Group ID:** Required for all messages in a FIFO queue. It specifies the group the message belongs to, and ordering is maintained **strictly within that group**. This allows for multiple ordered groups within a single queue, enabling parallel processing while preserving order for related messages.
-            - **Message Deduplication ID:** Used to ensure exactly-once processing. It can be provided explicitly or enabled automatically via **Content-Based Deduplication** (based on the message body).
+        The concept of the Event Source Mapping is best understood in the context of Lambda's two fundamental event invocation models:
+
+        1. **The Push Model** (Direct Invocation): In this model, the AWS service itself is configured to **directly invoke** your Lambda function when an event occurs. The service "pushes" the event to Lambda.
+
+            - **Examples:** Amazon S3 (on file upload), Amazon SNS, Amazon API Gateway, Amazon EventBridge.
+            - **Role:** The invoking service is responsible for sending the event and handling invocation details (synchronous or asynchronous).
+
+        2. **The Pull Model** (Event Source Mapping): In this model, the **Lambda service** is responsible for actively **reading (polling)** records or messages from the source and then invoking your function. The Event Source Mapping is the resource that defines this polling connection.
+            - **Event Source Mapping:** This is the AWS resource you create. It tells the Lambda service:
+                - _Where_ to poll (e.g., an SQS queue ARN or Kinesis Stream ARN).
+                - _Which_ Lambda function to invoke with the records.
+                - _How_ to handle the records (e.g., batch size, filtering, error handling).
+            - **Examples:** Amazon DynamoDB Streams, Amazon Kinesis Data Streams (KDS), Amazon Simple Queue Service (SQS), Amazon Managed Streaming for Apache Kafka (Amazon MSK), Amazon MQ.
+
+        ##### How Event Source Mapping Works
+
+        For services that use the Pull Model, the ESM manages the following internal process:
+
+        3.  **Polling:** The Lambda service creates dedicated **event pollers** (highly available and auto-scaling resources) that continuously poll the configured stream or queue for new records/messages.
+        4.  **Batching and Filtering:** The pollers collect the messages into a **batch** based on your configured settings. Before invoking the function, you can optionally apply **filter criteria** to the batch payload to discard records that don't match your rules, which can reduce cost and complexity.
+            -   **Batch Size:** The maximum number of records to include in a single invocation (e.g., up to 10,000 for SQS).
+            -   **Batching Window:** The maximum amount of time Lambda waits to collect records before invoking the function (up to 300 seconds).
+        5.  **Invocation:** Once a batch is ready (either the maximum size is reached, the batching window expires, or the payload size reaches 6 MB), the Lambda service **synchronously invokes** your Lambda function with the batch of records as the input event.
+        6.  **Checkpointing/Deletion:**
+            -   For **Streams** (Kinesis/DynamoDB), Lambda automatically manages the **iterator/checkpoint** for the stream shard. If processing is successful, the checkpoint is advanced.
+            -   For **Queues** (SQS), if the function returns successfully (no error), Lambda automatically **deletes** the messages from the queue.
+
+        ##### Error Handling and Control
+
+        A major benefit of the ESM is its built-in error handling and flow control for the pull model sources:
+
+        -   **Retries:** For streams (KDS/DynamoDB), if a function fails, the ESM automatically **retries** the batch. You can configure the number of retries (`MaximumRetryAttempts`) and whether to split the batch (`BisectBatchOnFunctionError`).
+        -   **Maximum Age:** For streams, you can set the `MaximumRecordAgeInSeconds` to discard records that are too old, preventing a single bad record from blocking the processing of newer records (a "poison pill").
+        -   **Concurrency Control:** You can control the number of concurrent batches processed from each shard (for streams) using the `ParallelizationFactor`.
+        -   **Destinations:** For certain services (Kinesis, DynamoDB, SQS), you can configure an **on-failure destination** (e.g., an SNS topic or SQS queue) where the entire failed batch record is sent after all retries are exhausted.
 
         </details>
 
-    -   <details><summary style="font-size:20px;color:Magenta">Key Features and Configuration</summary>
+    -   <details><summary style="font-size:20px;color:Magenta">Synchronous Invocation & Asynchronous Invocation</summary>
 
-        1. **Message Lifecycle and Visibility Timeout**: The **Visibility Timeout** is a critical concept in the SQS message lifecycle.
+        AWS Lambda functions can be invoked in two fundamental ways: **Synchronously** and **Asynchronously**. The choice between the two depends heavily on the application's requirements for response time, error handling, and whether an immediate response is required by the caller.
 
-            - When a consumer retrieves a message using `ReceiveMessage`, the message remains in the queue but becomes **temporarily invisible** to other consumers. This is often referred to as "message locking."
-            - The **Visibility Timeout** defines the duration of this invisibility (default is 30 seconds, configurable from 0 seconds to 12 hours).
-            - If the consumer successfully processes the message before the timeout expires, it calls `DeleteMessage` to remove it permanently.
-            - If the consumer fails to process or delete the message within the timeout, the message becomes **visible again** and can be retrieved by another consumer, potentially leading to duplicate processing (in Standard Queues) or a re-attempt (in FIFO Queues). Consumers can also extend the timeout programmatically using `ChangeMessageVisibility`.
+        ##### Synchronous Invocation
 
-        2. **Polling**: The method consumers use to retrieve messages.
+        In a **synchronous** invocation, the caller makes a request, the function is executed immediately, and the caller **waits** for the function to complete and return a response. This is the default invocation type.
 
-            - **Short Polling:** The default behavior. It queries only a subset of SQS servers, returning immediately, even if the queue is empty. This can lead to more empty responses and higher costs.
-            - **Long Polling:** The `ReceiveMessage` API call waits for a specified time (up to 20 seconds, the **Receive Message Wait Time**) for a message to arrive before returning a response. This reduces the number of empty responses, minimizes extraneous polling, and lowers costs.
+        -   **How it Works**:
 
-        3. **Dead-Letter Queues (DLQ)**: A separate, designated queue for messages that a consumer has failed to process successfully after a specified number of attempts (the **Maximum Receive Count** defined in the **Redrive Policy**). DLQs help isolate problematic messages for debugging without blocking the main queue. DLQs must be the same type as the source queue (Standard or FIFO).
+            1.  **Caller Sends Request:** The client (e.g., API Gateway, AWS CLI, AWS SDK, or another Lambda function) calls the Lambda `Invoke` API with `InvocationType` set to `RequestResponse` (the default).
+            2.  **Immediate Execution:** AWS Lambda executes the function's code immediately.
+            3.  **Caller Waits:** The calling client's connection remains open until the function finishes execution or times out.
+            4.  **Response/Error:** When the function completes, Lambda returns the function's response payload (including the result or any error details) directly back to the caller. The API response HTTP status code is typically $\mathbf{200}$ for a successful invocation, regardless of errors within the function's code.
 
-        4. **Delay Queues / Delivery Delay**:
+        -   **Key Characteristics**:
 
-            - **Delivery Delay (per message):** An attribute set on an individual message that determines the amount of time (0 seconds to 15 minutes) the message will be hidden before it is made available to a consumer.
-            - **Delay Queue (per queue):** A setting that applies a delay to _all_ messages sent to the queue. This is useful for delaying processing of newly written messages by a fixed time.
+            -   **Response Time:** You get an **immediate** response with the result.
+            -   **Error Handling:** The **caller is responsible** for handling function errors and implementing any necessary retry logic.
+            -   **Payload Size:** Maximum input payload is **6 MB**.
+            -   **Common Integrations:** AWS services that require an immediate response often use synchronous invocation, such as **Amazon API Gateway** (for REST APIs), **Elastic Load Balancers (ELB)**, and **AWS Step Functions**.
+            -   **Use Case:** Ideal for real-time, user-facing operations like web APIs, data transformations where the result is immediately needed, or request-response style workflows.
 
-        5. **Batch Operations**: You can perform `SendMessage`, `DeleteMessage`, and `ReceiveMessage` operations in batches of up to **10 messages** or **256 KB** of data in a single API request. This reduces costs by consolidating requests.
+        ##### Asynchronous Invocation
 
-        6. **Security**:
+        In an **asynchronous** invocation, the caller makes a request, and the Lambda service takes the event, queues it for processing, and **returns an immediate acceptance response** without waiting for the function to execute. The function runs in the background.
 
-            - **Server-Side Encryption (SSE):** Protects the contents of messages using encryption keys managed by the **AWS Key Management Service (AWS KMS)**. Messages are encrypted at rest and decrypted only when sent to an authorized consumer.
-            - **Access Control:** Integration with **AWS Identity and Access Management (IAM)** and **Queue Access Policies** to control which users or AWS accounts can send or receive messages from the queue.
+        -   **How it Works**:
+
+            1.  **Caller Sends Request:** The client calls the Lambda `Invoke` API with `InvocationType` set to `Event`.
+            2.  **Lambda Queues Event:** The Lambda service immediately places the event onto an **internal, managed queue**.
+            3.  **Immediate Response:** The caller receives an immediate $\mathbf{202}$ **ACCEPTED** status code, confirming the event was successfully queued, but containing no information about the function's execution result.
+            4.  **Background Processing:** A separate Lambda process reads the event from the queue and invokes the function.
+            5.  **Error Handling (Retries):** If the function fails (e.g., returns an error or times out), the Lambda service automatically **retries** the invocation **up to two more times** by default.
+            6.  **Destinations:** For both successful and failed asynchronous executions (after all retries), you can configure **Lambda Destinations** (e.g., SQS, SNS, EventBridge, or another Lambda function) to receive an **invocation record** detailing the outcome.
+
+        -   **Key Characteristics**:
+
+            -   **Response Time:** The caller receives an **immediate** $\mathbf{202}$ status code; execution happens in the background.
+            -   **Error Handling:** The **Lambda service manages retries**. Failed events can be sent to a **Dead-Letter Queue (DLQ)** or an **on-failure Destination** after retries are exhausted.
+            -   **Payload Size:** Maximum input payload is **1 MB**.
+            -   **Common Integrations:** AWS services that inherently operate in an event-driven, fire-and-forget manner, such as **Amazon S3** (on object creation), **Amazon SNS**, and **Amazon EventBridge**.
+            -   **Use Case:** Perfect for background jobs, long-running processes (up to 15-minute timeout), non-critical tasks like sending emails, processing log files, or data aggregation where the caller doesn't need an immediate result.
+
+        ##### Summary Comparison Table 📊
+
+        | Feature                  | Synchronous Invocation                                  | Asynchronous Invocation                                                   |
+        | :----------------------- | :------------------------------------------------------ | :------------------------------------------------------------------------ |
+        | **Invocation Type**      | `RequestResponse` (Default)                             | `Event`                                                                   |
+        | **Caller Waits**         | **Yes** (Blocks until execution finishes or times out)  | **No** (Returns immediately)                                              |
+        | **Response Code**        | $\mathbf{200}$ (Includes function result/error details) | $\mathbf{202}$ (Accepted/Queued)                                          |
+        | **Retry Responsibility** | **Caller** must implement retries                       | **Lambda Service** manages retries (up to 2 attempts for function errors) |
+        | **Intermediary**         | None (Direct Call)                                      | **Internal Queue** managed by Lambda                                      |
+        | **Max Payload Size**     | 6 MB                                                    | 1 MB                                                                      |
+        | **Recommended For**      | Real-time APIs, user-facing requests                    | Background tasks, event-driven workflows, long-running processes          |
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">AWS Lambda Destinations</summary>
+
+        AWS Lambda Destinations is a powerful feature that provides **visibility, routing, and control** over the results of a Lambda function's **asynchronous invocation**. It allows you to automatically send a detailed **execution record** to a downstream service based on whether the function invocation was successful or failed, all without writing extra code in your function.
+
+        ```ini
+        resource "aws_lambda_function_event_invoke_config" "lambda_destinations" {
+            function_name = aws_lambda_function.gpc_cuckoo.function_name
+
+            # 👉 Together, they define the retry policy: Lambda retries until either retry attempts are exhausted OR event age expires, whichever comes first.
+            maximum_event_age_in_seconds = 21600 # Event age (in seconds) after which Lambda discards the event. Default is 6 hours (21600 seconds)
+            maximum_retry_attempts       = 0     # Retry attempts (0 means no retry) on failure
+
+            destination_config {
+                on_failure { destination = aws_sqs_queue.failure_queue.arn }
+                on_success { destination = aws_sns_topic.success_topic.arn }
+            }
+        }
+        ```
+
+        ##### Primary Purpose and Scope
+
+        The core function of Lambda Destinations is to simplify the building of **event-driven workflows** and enhance **error handling** for non-real-time applications.
+
+        -   **Applicable Invocations:** Destinations are primarily for **asynchronous invocations** (when using `InvocationType: Event`), where the caller doesn't wait for the result (e.g., from SNS, S3, or a direct asynchronous invoke).
+        -   **Execution Record:** Instead of just sending the original event, the destination receives a full **invocation record** which is a JSON document containing:
+            -   The **request payload** (the original event).
+            -   The **response payload** (the function's return value on success, or error details like stack traces on failure).
+            -   Contextual information (source ARN, destination ARN, Request ID, function version).
+        -   **Zero Code Integration:** The routing is configured entirely on the Lambda function itself, decoupling the post-execution logic from the function's business logic.
+
+        ##### Configuration and Targets
+
+        You can configure two separate destinations for a single Lambda function:
+
+        1. **On Success (`OnSuccess`)**: If the function is invoked asynchronously and successfully completes (returns without an exception) after all retries are exhausted, the execution record is sent to this destination.
+
+            - **Use Cases:** Chaining functions together asynchronously, notifying a successful completion, or logging the final result.
+
+        2. **On Failure (`OnFailure`)**: If the function is invoked asynchronously and fails (throws an exception or times out) after exhausting the configured retry attempts or exceeding the maximum event age, the failure record is sent to this destination.
+
+            - **Use Cases:** Automated error investigation, sending a notification to an operations team, or triggering a cleanup workflow.
+
+        -   **Supported Destination Targets**: Lambda Destinations can route the execution record to the following services:
+
+            | Destination Target          | Data Format                                                          |
+            | :-------------------------- | :------------------------------------------------------------------- |
+            | **Another Lambda Function** | The record is passed as the **payload** to the destination function. |
+            | **Amazon SQS**              | The record is passed as the **message body** to the queue.           |
+            | **Amazon SNS**              | The record is passed as the **message** to the topic.                |
+            | **Amazon EventBridge**      | The record is passed as the **Detail** in the `PutEvents` call.      |
+
+        ##### Destinations vs. Dead Letter Queues (DLQ)
+
+        Lambda Destinations are generally the **preferred solution** for asynchronous error handling, offering significant advantages over the older Dead Letter Queue (DLQ) mechanism configured directly on the function.
+
+        | Feature              | Lambda Destination (OnFailure)                                                        | Dead Letter Queue (DLQ)                                                 |
+        | :------------------- | :------------------------------------------------------------------------------------ | :---------------------------------------------------------------------- |
+        | **Triggered When**   | Failure after **all retries** are exhausted (or event age is exceeded).               | Failure after **all retries** are exhausted (or event age is exceeded). |
+        | **Targets**          | Lambda Function, SQS, SNS, EventBridge.                                               | SQS or SNS only.                                                        |
+        | **Payload Content**  | **Execution Record** (includes original event **and** function response/stack trace). | **Original Event Payload** only.                                        |
+        | **Success Handling** | **Supported** via `OnSuccess` configuration.                                          | **Not Supported** (Failure only).                                       |
+
+        While a DLQ is simpler, a Destination gives you the full context of _why_ the function failed (the stack trace) and _what_ the original request was, enabling much richer error handling and automated recovery.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Concurrency and Scaling</summary>
+
+        **Concurrency** in AWS Lambda refers to the number of instances (or executions) of a function that can run simultaneously. AWS Lambda is inherently scalable and can handle multiple invocations in parallel, but understanding how concurrency works is crucial for ensuring predictable scaling behavior. You can manage concurrency to control costs and limit resource usage. AWS Lambda’s concurrency and scaling capabilities are essential for building scalable, serverless applications. Here’s a breakdown of key terms and concepts related to concurrency and scaling in AWS Lambda:
+
+        1.  **Concurrency Limit**:
+
+            -   AWS Lambda has default concurrency limits, which can be adjusted within AWS account settings. This limit is important for managing the maximum number of concurrent executions your account can have across all Lambda functions.
+            -   Concurrency settings help ensure that Lambda functions don't overwhelm downstream services, databases, or other resources by invoking too many instances at once.
+
+        2.  **Reserved Concurrency**:
+
+            -   Reserved concurrency is the maximum number of concurrent executions that a specific Lambda function can handle. This is an optional configuration that isolates a portion of account-wide concurrency for a specific Lambda function.
+            -   For example, if you reserve concurrency of `50` for one Lambda function, AWS guarantees that up to 50 concurrent executions of that function will run, while preventing it from using more than 50 concurrent executions and consuming resources that other functions need.
+
+        3.  **Provisioned Concurrency**:
+
+            -   Provisioned concurrency is a feature designed to reduce the latency of Lambda functions. It pre-warms a specific number of instances to ensure they are immediately available when requests arrive, preventing cold starts (the delay from initializing resources when a function is first invoked).
+            -   This is particularly useful for applications where low latency is critical, such as interactive applications or APIs that require consistent response times.
+
+        4.  **Cold Start**
+
+            -   A **cold start** occurs when AWS Lambda needs to initialize a new environment for an incoming request. When a Lambda function is invoked, AWS must set up resources such as the execution environment, runtime, and dependencies.
+            -   Cold starts can lead to latency in the initial request. For functions that require low latency, cold starts can be mitigated by using **Provisioned Concurrency** or by periodically invoking the function to keep it "warm."
+
+        5.  **Auto Scaling**
+
+            -   AWS Lambda automatically scales based on the number of incoming requests and concurrency limits. When more requests arrive than existing Lambda instances can handle, AWS Lambda automatically scales up by creating new instances.
+            -   This process is automatic and can handle bursts of traffic efficiently, but scaling is limited by **concurrency configurations**, **reserved concurrency**, and **account-wide concurrency quotas**.
+
+        6.  **Burst Concurrency**
+
+            -   **Burst concurrency** is the initial scaling capacity that AWS Lambda provides within a short time for functions within a particular AWS Region.
+            -   AWS Lambda can initially handle a burst of 500 to 3000 concurrent requests per second (depending on the Region). After this burst, Lambda gradually scales up at a rate of 500 additional concurrent invocations per minute until it reaches the maximum concurrency limit of the AWS account.
+
+        7.  **Throttling**
+
+            -   Throttling occurs when AWS Lambda exceeds its maximum concurrency limit (either at the account level or at the function level through reserved concurrency).
+            -   When throttling happens, additional requests to a Lambda function are rejected with a `429 TooManyRequests` error. To handle this, the calling service (like API Gateway or SQS) can implement retry logic, or you can increase concurrency limits if throttling is frequent.
+
+        8.  **Scaling Behavior and Invocation Model**
+
+            -   **Synchronous Invocations**:
+                -   In synchronous invocations (like those triggered by API Gateway, AWS SDK, or application integrations), Lambda returns the response immediately after execution, and the caller waits for the function to complete.
+                -   When the request rate exceeds the function’s concurrency limit, new synchronous invocations are throttled.
+            -   **Asynchronous Invocations**: For asynchronous invocations (like those triggered by S3 or CloudWatch Events), Lambda queues the events. It then retries these events if they fail or are throttled until they succeed or until Lambda exhausts the retry limit.
+            -   **Event Source Mapping**: When integrating Lambda with services like Amazon SQS or Kinesis (stream-based services), Lambda reads and processes events as they arrive in the source. The scaling of Lambda for these integrations is determined by the event source's processing characteristics and partitioning.
+
+        9.  **Lambda Scaling with Event Sources**
+
+            -   **Amazon SQS**: Lambda can process up to 10 messages at a time from a single Amazon SQS queue and scales horizontally as the number of messages increases, limited by concurrency.
+            -   **Amazon Kinesis and DynamoDB Streams**:
+                -   Lambda scaling with Kinesis or DynamoDB streams is partitioned. AWS Lambda processes records from each shard or partition concurrently, but only one Lambda instance can process data from a specific shard at a time.
+                -   The number of shards defines the maximum concurrency Lambda can achieve with these sources, so you may need to increase the shard count if the function requires greater concurrency.
+
+        10. **Concurrency Scaling Considerations**: Concurrency affects costs, latency, and performance, so configuring concurrency properly is key to balancing efficiency and cost in AWS Lambda:
+
+            -   **Cost**: Each instance adds cost, so unbounded concurrency can lead to high expenses. Reserved and provisioned concurrency options give finer control over costs.
+            -   **Latency**: Low-latency applications may need provisioned concurrency to avoid cold starts.
+            -   **Throttling Impact**: Throttling at peak times can cause delays or errors in applications, making it important to monitor concurrency usage and plan capacity according to traffic patterns.
+
+        11. **Monitoring and Scaling Metrics**: AWS provides metrics in CloudWatch that help in monitoring and tuning Lambda function scaling:
+            -   **ConcurrentExecutions**: Shows the total concurrent executions in the account.
+            -   **UnreservedConcurrentExecutions**: Reflects concurrency left after reserved concurrency allocations.
+            -   **Throttles**: Indicates throttling events due to exceeded concurrency limits, helping identify scaling needs.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Lambda Throttling</summary>
+
+        Lambda throttling is a mechanism used in AWS Lambda to limit the rate at which function executions can occur. This mechanism helps protect your resources and ensures the smooth operation of your AWS infrastructure by preventing a Lambda function from being overwhelmed with excessive requests. AWS Lambda provides two types of throttling:
+
+        -   `Concurrent Execution Throttling`:
+
+            -   Concurrent execution throttling limits the number of function executions that can run simultaneously. AWS imposes a default concurrency limit on your AWS account and can adjust this limit upon request.
+            -   When the limit is reached, AWS will queue any additional invocation requests. These queued requests will be processed as soon as existing executions complete and resources become available. Throttled invocations do not result in errors; they are simply delayed.
+            -   You can view and modify the concurrent execution limit for a specific function in the AWS Lambda Management Console.
+
+        -   `Invocation Throttling`:
+
+            -   Invocation throttling occurs when you send too many requests to invoke a Lambda function in a short period. This can happen when you repeatedly call the function with a high request rate.
+            -   AWS enforces soft limits on the number of requests per second (RPS) that can be sent to a function. If you exceed these soft limits, AWS may throttle your requests, resulting in delays and retries.
+            -   To mitigate invocation throttling, you can:
+                -   Implement exponential backoff and retries in your code to handle throttled requests gracefully.
+                -   Request a limit increase from AWS Support if your workload requires a higher request rate.
+
+        -   `Implement Retries`: Build retry logic with exponential backoff into your Lambda client code to handle throttled requests and retries automatically.
+        -   `Error Handling`: Check for error codes in the Lambda response to detect throttled invocations and take appropriate action.
+        -   `Throttle Metrics`: Monitor CloudWatch metrics, such as `Throttles` and `ThrottleCount` to gain insight into the rate of throttled invocations.
+        -   `Limit Increases`: If you anticipate higher traffic, request a concurrency limit increase from AWS Support. Ensure that your architecture and resource usage can handle the increased load.
+        -   `Batch Processing`: If you're processing large numbers of records, consider batch processing to reduce the rate of function invocations.
+        -   `Distributed Workloads`: Distribute workloads across multiple Lambda functions to avoid overwhelming a single function.
+        -   `Provisioned Concurrency`: Consider using AWS Lambda Provisioned Concurrency to pre-warm your functions, ensuring that they can handle surges in traffic without experiencing cold start delays.
 
         </details>
 
     -   <details><summary style="font-size:20px;color:Magenta">Terms & Concepts</summary>
 
-        -   `Queue`: A queue is a container for messages in SQS. Queues allow messages to be stored and retrieved asynchronously between components or services.
-        -   `Message`: A message is the information being sent between components or services. Messages can contain up to 256KB of text in any format.
-        -   `Producer`: A producer is a system or application that sends messages to a queue.
-        -   `Consumer`: A consumer is a system or application that receives messages from a queue.
-        -   `Visibility timeout`: When a consumer retrieves a message from a queue, the message becomes "invisible" to other consumers for a specified period of time known as the visibility timeout. This allows the consumer time to process the message without the risk of another consumer processing the same message.
-        -   `Long polling`: Long polling is a method of retrieving messages from a queue where the request to retrieve messages stays open for an extended period of time, waiting for new messages to arrive. This reduces the number of empty responses and can improve the efficiency of message retrieval.
-        -   `Dead-letter queue`: A dead-letter queue is a queue where messages are sent if they cannot be processed successfully by a consumer. SQS provides support for dead-letter queues to help you troubleshoot message processing issues.
-        -   `FIFO queue`: A FIFO queue is a queue that supports "first-in, first-out" ordering of messages. FIFO queues are designed for applications that require the exact order of messages to be preserved.
-        -   `Standard queue`: A standard queue is a queue that provides at-least-once delivery of messages. Standard queues are designed for applications that can handle the possibility of duplicate messages or messages that are not delivered in the exact order they were sent.
-        -   `Message attributes`: SQS allows you to add custom attributes to messages, which can be used for filtering and routing messages to specific consumers.
-        -   `Access policies`: SQS allows you to control access to queues using access policies. Access policies define which AWS accounts or users are authorized to perform specific actions on a queue.
-        -   `Batch operations`: SQS supports batch operations that allow you to send, delete, or change the visibility timeout of multiple messages in a single API call.
-        -   `Delay queues`: Delay queues allow you to delay the delivery of messages for a specified amount of time, up to 15 minutes. This can be useful for scenarios where messages need to be delayed until certain conditions are met.
+        1. **Dead Letter Queue (DLQ)**
+
+            - Specifies an Amazon SQS queue or an Amazon SNS topic as a **Dead Letter Queue** for asynchronous invocation errors.
+            - When a Lambda function cannot process an event after a certain number of retries, the event is sent to the DLQ for later analysis or reprocessing.
+            - Useful for handling errors gracefully, ensuring events aren’t lost.
+
+        2. **Error Handling and Retry Policies**
+
+            - **Asynchronous Invocation**: Lambda automatically retries asynchronous invocations (e.g., from S3, SNS, CloudWatch) up to two times if there’s an error. You can configure the retry attempts to 0, 1, or 2.
+            - **Event Source Mapping**: For sources like SQS, Kinesis, and DynamoDB streams, Lambda retries until the message expires, is processed successfully, or is moved to a **destination** or **DLQ** after a set number of attempts.
+            - **Destinations**: With **AWS Lambda destinations**, you can route successful or failed asynchronous invocations to an SNS topic, SQS queue, EventBridge, or another Lambda function, which allows for advanced error handling and processing workflows.
+
+        3. **Logging and Monitoring**: AWS Lambda integrates with **Amazon CloudWatch** for logging, monitoring, and observability.
+
+            - `CloudWatch Logs`: Every function invocation produces logs, which can be viewed and monitored through CloudWatch. Lambda sends logs of function execution (including errors, timeouts, and custom logs) to Amazon CloudWatch by default. These logs are useful for debugging, monitoring, and performance tuning.
+            - `X-Ray Tracing`: AWS X-Ray provides insights into function performance and latency by tracing requests as they pass through the application. It helps pinpoint bottlenecks, understand dependencies, and monitor overall performance.
+
+            - `Invocations`: The number of times a function is called.
+            - `Errors`: The number of errors that occurred during function execution.
+            - `Duration`: The time it took for the function to execute.
+            - `Throttles`: The number of times the function was throttled due to reaching the concurrency limit.
+
+        4. **File System (EFS) Configuration**
+
+            - **Amazon EFS (Elastic File System)**:
+                - Allows Lambda functions to access a persistent file system across function invocations. This is helpful for functions that require shared storage, such as large models or datasets.
+                - EFS can be mounted on Lambda functions configured within a VPC, and it’s useful for stateful workloads or functions with large code dependencies that exceed Lambda’s 10 GB limit.
+
+        5. **Function Code Configuration**
+
+            - **Deployment Package**:
+                - A Lambda function’s deployment package contains the function code and dependencies, packaged in a `.zip` file or container image.
+                - **Layers**: Lambda layers let you share code, libraries, or binaries across multiple Lambda functions without including them in each function’s deployment package. Up to 5 layers can be used per function, reducing package size and simplifying maintenance.
+            - **Container Images**:
+                - Lambda supports container images up to 10 GB, allowing you to package code and dependencies in Docker images for more complex applications or specific runtime requirements.
+                - Images are stored in Amazon ECR and provide a way to deploy large applications with custom runtimes or dependencies.
+
+        6. **Aliases and Versions**
+
+            - **Versions**: Lambda functions can be versioned, with each published version being immutable. Versions allow you to reference specific function code and configuration states, providing stability for production applications.
+            - **Aliases**: An alias is a pointer to a specific function version, often used to manage different environments (e.g., `dev`, `test`, `prod`). Aliases allow routing traffic between versions and enable canary deployments by splitting traffic to different versions.
+
+        7. **Event Sources / Triggers**: **Event sources** are AWS services or external systems that generate events that can trigger a Lambda function to execute. These triggers define when and how Lambda functions are invoked.
+
+            - **Common Event Sources**:
+                - **S3**: Lambda can trigger when an object is created or deleted in an S3 bucket.
+                - **API Gateway**: Lambda can be invoked via HTTP requests, making it suitable for serverless APIs.
+                - **SNS (Simple Notification Service)**: Lambda can process messages from SNS.
+                - **SQS (Simple Queue Service)**: Lambda can process messages from SQS queues.
+                - **CloudWatch Events**: Lambda can trigger on scheduled events or based on system events (e.g., EC2 instance state change).
+                - **DynamoDB Streams**: Lambda can trigger on changes in DynamoDB tables.
+
+        8. **Lambda Execution Environment**: The **execution environment** is the runtime in which Lambda functions run. AWS Lambda automatically manages the environment that runs your code, scaling it based on demand.
+
+            - **Features**:
+                - **Isolated environment**: Functions run in isolated environments to ensure security.
+                - **Runtime management**: AWS manages the language runtime and updates it.
+                - **Environment variables**: Allows the use of environment variables for dynamic configuration.
+
+        9. **Lambda Layers**: **Lambda layers** allow you to package external libraries, dependencies, or configuration files separately from your function code. These layers can be shared across multiple Lambda functions, reducing code duplication and improving maintainability.
+
+            - **Features**:
+                - You can include libraries, custom runtimes, or configuration data.
+                - You can use up to 5 layers per Lambda function.
+                - Layers can be reused by multiple Lambda functions or shared across accounts.
+
+        10. **Lambda Pricing Model**: AWS Lambda follows a pay-per-use model, where you're charged based on the number of function invocations and the compute time used.
+
+            - **Pricing Factors**:
+                - **Number of invocations**: Charged for every request.
+                - **Compute time**: Charged based on the function's memory and execution duration, measured in milliseconds.
+
+        11. **AWS Lambda@Edge**: **Lambda@Edge** is an extension of AWS Lambda that allows you to run code closer to users (at Amazon CloudFront edge locations), reducing latency for global users.
+
+            - **Features**:
+                - Modify content delivery and customize responses for users.
+                - Perform operations like URL rewrites, header manipulations, and cache key customizations.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Features of Lambda Function</summary>
+
+        -   `Serverless Execution`: AWS Lambda allows you to run your code without managing servers. You upload your code, and AWS Lambda takes care of provisioning and scaling the infrastructure needed to execute it.
+        -   `Event-Driven Execution`: Lambda functions can be triggered by various AWS services or custom events. Examples of triggers include changes to data in an S3 bucket, updates to a DynamoDB table, or HTTP requests through API Gateway.
+        -   `Supported Runtimes`: Lambda supports multiple programming languages, known as runtimes. These include Node.js, Python, Java, Ruby, Go, .NET, and custom runtimes through the use of custom execution environments.
+        -   `Automatic Scaling`: Lambda automatically scales your applications in response to incoming traffic. Each function can scale independently, and you pay only for the compute time consumed.
+        -   `Built-in Fault Tolerance`: AWS Lambda maintains compute capacity, and if a function fails, it automatically retries the execution. If a function execution fails repeatedly, Lambda can be configured to send the event to a Dead Letter Queue (DLQ) for further analysis.
+        -   `Integrated Logging and Monitoring`: Lambda provides built-in logging through Amazon CloudWatch. You can monitor the performance of your functions, view logs, and set up custom CloudWatch Alarms to be notified of specific events or issues.
+        -   `Environment Variables`: Lambda allows you to set environment variables for your functions. These variables can be used to store configuration settings or sensitive information, such as API keys.
+        -   `Execution Role and Permissions`: Each Lambda function is associated with an IAM (Identity and Access Management) role that defines the permissions needed to execute the function and access other AWS resources.
+        -   `Stateless Execution`: Lambda functions are designed to be stateless. However, you can store persistent data using other AWS services like Amazon S3, DynamoDB, or AWS RDS.
+        -   `Cold Starts and Warm Containers`: Cold starts occur when a function is invoked for the first time or when there is a need to scale. Subsequent invocations reuse warm containers, reducing cold start times.
+        -   `VPC Integration`: Lambda functions can be integrated with a VPC, allowing them to access resources inside a VPC, such as databases, and allowing private connectivity.
+        -   `Cross-Region Execution`: You can configure Lambda functions to run in different AWS regions, providing flexibility and redundancy.
+        -   `Versioning and Aliases`: Lambda supports versioning and aliases, allowing you to manage different versions of your functions and direct traffic to specific versions.
+        -   `Maximum Execution Duration`: Each Lambda function has a maximum execution duration (timeout) that can be set. If the function runs longer than the specified duration, it is terminated.
+        -   `Immutable Deployment Packages`: Once a Lambda function is created, its deployment package (code and dependencies) becomes immutable. If you need to make changes, you create a new version of the function.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Limitation on Lambda Functions</summary>
+
+        -   `Execution timeout`: The maximum execution time for a Lambda function is `900 seconds (15 minutes)`.
+        -   `Concurrent executions`: By default, there is a soft `limit of 1,000 concurrent executions per account per region`. However, you can request a higher limit if you need it.
+        -   `Environment variables`: You can set environment variables for your Lambda function, but `the maximum size of all environment variables combined is 4 KB`.
+
+        -   `Deployment package size`: `The maximum compressed deployment package size for a Lambda function is 50 MB`. There are some exceptions for certain runtimes, as outlined in my previous answer.
+
+            -   Uncompressed code & dependencies < 250 MB
+            -   Compressed function package < 50MB
+            -   Total function packages in a region < 75 GB
+            -   Ephemeral storage < 512 MB
+            -   Maximum execution duration < 900 seconds
+            -   Concurrent Lambda functions < 1000
+
+        -   `Memory allocation`: Up to 10 GB of memory to a Lambda function. The amount of memory you allocate also determines the amount of CPU and network resources that the function gets.
+            -   `Memory allocation`: Up to 10 GB of memory starting from 128 MB with CPU 3GB.
+        -   `Execution environment`: Lambda functions run in a stateless execution environment, so you can't store data on the local file system. However, you can use other AWS services like S3 or DynamoDB to store data.
+        -   `Function invocations`: You can trigger a Lambda function in several ways, including through `API Gateway`, `S3 events`, `SNS notifications`, and more. However, there may be some limits or quotas on the number of invocations you can make in a given period.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Usecases of Lambda</summary>
+
+        AWS Lambda is a serverless compute service that lets you run code without provisioning or managing servers. It's often used for various use cases across different industries. Here are the top five most common use cases for AWS Lambda:
+
+        -   **Event-Driven Processing**: AWS Lambda is frequently used to process events from various AWS services, such as Amazon S3, Amazon DynamoDB, Amazon SNS, Amazon SQS, and more. For example, you can trigger Lambda functions to process new objects uploaded to an S3 bucket, process messages from an SQS queue, or react to changes in a DynamoDB table.
+
+        -   **Real-time File Processing**: Lambda functions can be used for real-time processing of data streams. For instance, you can use Lambda to analyze streaming data from Amazon Kinesis Data Streams or process logs from Amazon CloudWatch Logs in real-time.
+
+        -   **Backend for Web Applications**: Lambda functions can serve as the backend for web applications, providing scalable and cost-effective compute resources. You can build APIs using AWS API Gateway and trigger Lambda functions to handle incoming HTTP requests, allowing you to build serverless web applications without managing infrastructure.
+
+        -   **Scheduled Tasks and Cron Jobs**: Lambda functions can be scheduled to run at specific intervals using AWS CloudWatch Events. This allows you to automate tasks such as data backups, log archiving, or regular data processing jobs without needing to maintain dedicated servers or cron jobs.
+
+        -   **Data Processing and ETL**: Lambda functions are commonly used for data processing and ETL (Extract, Transform, Load) tasks. You can trigger Lambda functions to process data as soon as it becomes available, perform transformations on the data, and then load it into a data warehouse or database. This approach enables real-time or near-real-time data processing without the need for complex infrastructure.
 
         </details>
 
@@ -1860,2101 +1685,972 @@
 
 ---
 
--   <details><summary style="font-size:25px;color:Orange">EventBridge</summary>
+-   <details><summary style="font-size:25px;color:Orange">EC2</summary>
 
-    ![event_bridge](../assets/aws/event_bridge.png)
+    -   [DigitalCloud: EC2](https://www.youtube.com/watch?v=8bIW7qlldLg&t=108s)
 
-    -   `Event-Driven Architecture`: Amazon EventBridge facilitates event-driven architecture, where services or applications communicate by emitting and consuming events. An event can be anything from a simple notification to a significant change in your application's state.
+    Amazon Elastic Compute Cloud (Amazon EC2) is a web service provided by Amazon Web Services (AWS) that allows users to rent virtual servers on which they can run their applications. Below are some key terms and concepts associated with AWS EC2:
 
-    Amazon EventBridge is a serverless event bus service that simplifies the building of event-driven architectures. It enables you to connect different AWS services, SaaS applications, and custom applications using events, making it easier to build scalable, decoupled, and flexible applications.
-    AWS EventBridge is a serverless event bus service that enables you to connect applications using data from your own apps, integrated Software-as-a-Service (SaaS) apps, and AWS services. It simplifies event-driven architectures, allowing services to communicate through events. Below are the crucial components and concepts in AWS EventBridge:
+    Amazon EC2 (Elastic Compute Cloud) is a central service in AWS that provides scalable computing capacity in the cloud. It allows users to launch virtual servers (instances) with flexible configurations. Below is an explanation of all the components and concepts associated with AWS EC2:
 
-    -   **Events**: An **event** is a data record that signifies a change in the state of a system, application, or AWS resource. The event is in JSON format and contains details like the source of the event, the event type, and the event data (payload).
+    -   **EC2 Instance**: An instance is a virtual server in the cloud. It represents the computing resources (CPU, memory, storage, etc.) that you can rent from AWS. Instances are the fundamental building blocks of EC2.
 
-        -   Events in EventBridge are typically generated by:
-            -   AWS services (e.g., S3 file creation).
-            -   Custom applications.
-            -   Integrated SaaS applications.
+        -   **Definition**: A virtual server that runs on the AWS cloud infrastructure. You can choose the hardware specifications, OS, and applications.
+        -   **Purpose**: EC2 instances provide compute resources for running applications, processing data, or hosting services.
+        -   **Key Attributes**:
+            -   **vCPU**: Virtual CPU capacity.
+            -   **RAM**: Memory for applications.
+            -   **Network**: Networking performance (low, medium, or high bandwidth).
 
-    -   **Event Buses**: EventBridge uses an event bus, a central message broker that receives and distributes events to the relevant targets. The event bus acts as the intermediary for the communication between different event sources and event targets.
+    -   **Amazon Machine Image (AMI)**: An AMI is a pre-configured template used to create instances. It contains the necessary information to launch an instance, including the operating system, application server, and applications.
 
-        -   **Event Bus** is the central component where events are sent and from where they are routed to the appropriate targets.
-            -   **Default Event Bus**: Every AWS account has a default event bus that receives events from AWS services (e.g., EC2, S3).
-            -   **Custom Event Bus**: You can create custom event buses for your applications or microservices to handle specific events.
-            -   **SaaS Partner Event Bus**: SaaS applications can send events directly to your event bus using partner event sources.
+        -   **Definition**: A pre-configured template containing the operating system, application server, and applications for launching EC2 instances.
+        -   **Purpose**: AMIs allow you to create consistent EC2 instances based on a saved image.
+        -   **Types**:
+            -   **AWS-provided**: Amazon offers base AMIs (e.g., Amazon Linux, Ubuntu).
+            -   **Custom**: Users can create custom AMIs with specific software configurations.
+            -   **Marketplace AMIs**: Third-party vendors offer AMIs with specific software solutions.
 
-    -   **Event Patterns**: Event Pattern is a set of conditions used to filter and match specific events based on their attributes or content. Event patterns help you identify which events you want to capture and respond to by defining criteria that events must meet before they are processed by rules in EventBridge.
+    -   **Instance Types**
 
-        -   **Event Patterns** are used in rules to filter events and specify which events should trigger a specific rule.
-        -   Patterns can match specific fields in an event, such as event source, detail type, or the contents of custom event data.
-        -   EventBridge checks incoming events against defined patterns, and when there’s a match, it routes the event to the specified target.
+        -   **Definition**: Pre-defined combinations of CPU, memory, storage, and network performance. Different instance types suit different workloads.
+        -   **Purpose**: Helps users choose the right compute power based on their application needs.
+        -   **Categories**:
+            -   **General Purpose (e.g., t2.micro, m5.large)**: Balanced compute, memory, and networking resources.
+            -   **Compute Optimized (e.g., c5.large)**: Designed for compute-intensive tasks.
+            -   **Memory Optimized (e.g., r5.xlarge)**: Ideal for memory-intensive applications.
+            -   **Storage Optimized (e.g., i3.xlarge)**: High-performance for applications needing fast local storage.
+            -   **Accelerated Computing (e.g., p3.xlarge)**: Instances with GPUs for machine learning and graphic-intensive tasks.
 
-    -   **Rules**: A rule in AWS EventBridge is a configuration that matches incoming events to specific patterns and routes them to one or more target destinations, such as AWS Lambda, SQS, or other services. Rules act as filters, ensuring that only events that meet the defined criteria trigger the specified actions. - **Event Pattern Matching**: EventBridge matches events to rules based on defined event patterns, which are JSON objects that specify the structure and content of the event to be matched. - Rules can trigger multiple targets when a matching event is received. Each rule can have one or more targets.
+    -   **Elastic Block Store (EBS)**: EBS provides block-level storage volumes that you can attach to EC2 instances. It is used for data that requires persistent storage. EBS volumes can be used as the root file system or attached to an instance as additional storage.
 
-    -   **Targets**: Targets are the destination resources or services where events are routed after being matched by a rule.
+        -   **Definition**: A block-level storage service used to attach persistent storage to EC2 instances.
+        -   **Purpose**: Provides scalable, durable storage volumes that can be attached to instances. These volumes persist independently of the instance lifecycle.
+        -   **Types**:
+            -   **General Purpose SSD (gp2/gp3)**: Balanced performance and cost.
+            -   **Provisioned IOPS SSD (io1/io2)**: High performance for I/O-intensive workloads.
+            -   **Magnetic (st1/sc1)**: Cost-effective for sequential access workloads like logging or backup.
 
-        -   Some common targets include:
-            -   AWS Lambda functions
-            -   Step Functions
-            -   Amazon SNS or SQS for messaging
-            -   Kinesis Streams or Firehose for data streaming
-            -   Amazon EC2 or ECS
-            -   Other event buses (you can route events between buses)
+    -   **Elastic IP Address (EIP)**
 
-    -   **Event Sources**: Event sources are the entities that emit events to EventBridge. AWS services, such as AWS CloudTrail, Amazon S3, or AWS Step Functions, can be event sources. Custom applications and SaaS applications can also emit events to EventBridge using the PutEvents API.
+        -   **Definition**: A static, public IPv4 address that you can allocate and associate with your EC2 instance.
+        -   **Purpose**: Ensures your instance retains a consistent public IP address even if the instance is stopped and restarted.
 
-        -   **Event Sources** are the entities that generate events. EventBridge can handle events from:
-            -   **AWS services**: Many AWS services (e.g., S3, EC2) automatically emit events when specific actions occur.
-            -   **Custom Event Producers**: Your own applications or microservices can act as event sources, publishing custom events to EventBridge.
-            -   **SaaS Applications**: Third-party SaaS applications can send events to your EventBridge using SaaS partner integration.
+    -   **Security Groups**: Security groups act as virtual firewalls for instances. They control inbound and outbound traffic based on rules that you define. Each instance can be associated with one or more security groups.
 
-    -   **Schemas Registry**
+        -   **Definition**: Virtual firewalls that control inbound and outbound traffic to EC2 instances.
+        -   **Purpose**: Security groups allow or block traffic based on rules defined by IP address, protocol, and port.
+        -   **Stateful**: Security groups remember allowed traffic for responses without needing separate rules.
 
-        -   **Schema Registry** allows you to automatically discover and manage event schemas used by EventBridge.
-            -   **Schema Discovery**: When you enable schema discovery, EventBridge automatically analyzes incoming events and creates a schema for them.
-            -   Schemas can be downloaded as code bindings for programming languages like Python or Java to make it easier to work with events in your code.
+    -   **Key Pairs**: A key pair consists of a public key and a private key. It is used for securely connecting to an EC2 instance. The public key is placed on the instance, and the private key is kept secure.
 
-    -   **Key Use Cases for AWS EventBridge**:
+        -   **Definition**: A public-private key pair used for SSH access to EC2 instances.
+        -   **Purpose**: The public key is stored on the instance, and the private key is used by the user to securely connect to the instance.
 
-        -   `Event-Driven Architectures`: Helps decouple microservices, where services react to events without direct communication.
-        -   `Monitoring and Automation`: Trigger workflows or Lambda functions in response to events like EC2 state changes or file uploads in S3.
-        -   `SaaS Integrations`: Seamlessly integrate third-party SaaS services like Zendesk, Datadog, or Shopify into your AWS environment.
+    -   **Elastic Load Balancing (ELB)**: ELB automatically distributes incoming application traffic across multiple EC2 instances. It enhances the availability and fault tolerance of your application.
 
-    </details>
+        -   **Definition**: A service that automatically distributes incoming traffic across multiple EC2 instances.
+        -   **Purpose**: Ensures high availability and reliability by distributing incoming requests to healthy instances.
+        -   **Types**:
+            -   **Application Load Balancer**: Layer 7 load balancing (for HTTP/HTTPS traffic).
+            -   **Network Load Balancer**: Layer 4 load balancing (for TCP/UDP traffic).
+            -   **Gateway Load Balancer**: Enables third-party virtual appliances.
 
----
+    -   **Placement Groups**
 
--   <details><summary style="font-size:25px;color:Orange">DynamoDB</summary>
+        -   **Definition**: Logical grouping of instances to influence how EC2 instances are placed on the underlying hardware.
+        -   **Purpose**: Enhances performance for specific workloads.
+        -   **Types**:
+            -   **Cluster Placement Group**: Instances are grouped closely in a single Availability Zone for low-latency, high-throughput networking.
+            -   **Spread Placement Group**: Instances are distributed across underlying hardware to reduce simultaneous failures.
+            -   **Partition Placement Group**: Divides instances into partitions where they are placed on distinct sets of racks to minimize correlated failures.
 
-    -   [Be A Better Dev: AWS DynamoDB Guides](https://www.youtube.com/playlist?list=PL9nWRykSBSFi5QD8ssI0W5odL9S0309E2)
-    -   [AWS DynamoDB](https://www.youtube.com/playlist?list=PLJo-rJlep0EApPrKspmHybxvbZsXruhzR)
-    -   [boto3.DynamoDB Dcos](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html)
+    -   **Launch Template**
 
-    AWS DynamoDB is a fully managed **Key-Value Stores** NoSQL database service provided by Amazon Web Services (AWS). It is designed to handle large volumes of data with low latency and high performance, offering automatic scaling, high availability, and robust security features. DynamoDB is particularly well-suited for applications that require consistent, single-digit millisecond response times at any scale.
+        -   **Definition**: A configuration template that defines how to launch EC2 instances.
+        -   **Purpose**: Standardizes the instance creation process by including configurations like instance types, AMIs, key pairs, and security groups.
 
-    -   **Key-Value Stores**: Key-Value Store is a type of NoSQL database that uses a simple key-value pair mechanism to store data. It is one of the most straightforward types of databases, where each unique key is associated with a value, which can be any type of data, from simple strings to complex objects like JSON, BLOBs, or serialized objects.
+    -   **Elastic Network Interface (ENI)**
 
-        -   `Data Model`: Simple key-value pairs; values can be binary blobs or strings.
+        -   **Definition**: A network interface that can be attached to an EC2 instance to manage multiple IP addresses.
+        -   **Purpose**: Allows instances to have multiple private and public IP addresses, multiple security groups, and can be detached/reattached across instances.
 
-            -   `Keys`: Unique identifiers used to access the associated values. Keys are usually simple strings.
-            -   `Values`: The data associated with the keys, which can be any datatype.
-            -   `Schema-less`: No fixed schema, allowing for flexible and dynamic data storage.
+    -   **Network Address Translation (NAT) Gateway**
 
-        -   `High Performance`: Optimized for fast read and write operations, often achieving low latency due to the simplicity of key-value access patterns.
-        -   `Scalability`: Designed to scale horizontally, making it easy to distribute data across multiple servers.
+        -   **Definition**: A managed gateway that allows instances in private subnets to connect to the internet while preventing incoming traffic from reaching them.
+        -   **Purpose**: Enables private EC2 instances to download updates or access public internet resources securely.
 
-        -   `Strengths`:
+    -   **Elastic GPUs**
 
-            -   Extremely fast and scalable for read and write operations.
-            -   Ideal for caching, session management, and real-time analytics.
-            -   Well-suited for high-throughput applications.
+        -   **Definition**: A feature that allows you to attach GPU resources to existing EC2 instances.
+        -   **Purpose**: Adds GPU capability to instances for tasks like graphics rendering, machine learning, and other GPU-intensive operations.
 
-        -   `Weaknesses`:
-            -   Limited query capabilities (no complex queries or joins).
-            -   May not support data types beyond strings and binary.
+    -   **IPv4 and IPv6 Addresses**
 
-    #### Terms & Concepts
+        -   **Definition**: Public and private IP addresses assigned to EC2 instances for communication.
+        -   **Purpose**: IP addresses allow EC2 instances to communicate with other instances, on-premises networks, or the internet.
 
-    -   `Schema`: The term "schema" refers to the structure and organization of the data stored in your DynamoDB tables. Unlike traditional relational databases, DynamoDB is a NoSQL database that does not require a fixed schema defined ahead of time. Instead, each item (record) within a DynamoDB table can have its own attributes, and different items within the same table can have different attributes.
-    -   `Tables`: A DynamoDB table is a collection of items that share the same primary key. Tables are used to store and retrieve data in a scalable and durable manner.
-    -   `Items`: An item is a collection of attributes that is uniquely identifiable by a primary key. In a DynamoDB table, items are the individual records that are stored.
-    -   `Atributes`: Attributes are the fundamental data elements stored in a table. In DynamoDB, attributes are stored in a flexible schema, meaning that you do not need to define a fixed schema for your table beforehand. Instead, you can simply create a table and add or remove attributes as needed when you insert or update items.
+    -   **Region**: AWS divides the world into geographic areas called regions. Each region contains multiple Availability Zones. Examples of regions include us-east-1 (North Virginia), eu-west-1 (Ireland), and ap-southeast-2 (Sydney).
+    -   **Availability Zone (AZ)**: An Availability Zone is a data center or a collection of data centers within a region. Each Availability Zone is isolated but connected to the others. Deploying instances across multiple Availability Zones increases fault tolerance.
+    -   **Auto Scaling**: Auto Scaling allows you to automatically adjust the number of EC2 instances in a group based on demand. It helps maintain application availability and ensures that the desired number of instances are running.
+    -   **Placement Groups**: Placement groups are logical groupings of instances within a single Availability Zone. They are used to influence the placement of instances to achieve low-latency communication.
+    -   **Spot Instances**: Spot Instances are spare EC2 capacity that is available at a lower price. You can bid for this capacity, and if your bid is higher than the current spot price, your instances will run. However, they can be terminated if the spot price exceeds your bid.
+    -   **On-Demand Instances**: On-Demand Instances allow you to pay for compute capacity by the hour or second with no upfront costs. This is a flexible and scalable pricing model suitable for variable workloads.
+    -   **Reserved Instances**: Reserved Instances offer significant savings over On-Demand pricing in exchange for a commitment to a one- or three-year term. They provide a capacity reservation, ensuring availability.
 
-        -   Each attribute is made up of a name-value pair.
-        -   Attributes can also be used as primary or sort keys to enable fast and efficient queries.
-        -   Can also define attribute-level access controls.
+    -   <details><summary style="font-size:20px;color:Magenta">EC2 Resources</summary>
 
-    -   `Primary Key`: DynamoDB tables are organized around a primary key composed of one or two attributes, which uniquely identifies the item in the table. There are two types of primary keys: partition key and composite key.
+        The AWS Elastic Compute Cloud (EC2) service is built upon a variety of core resources and features that enable you to run virtual servers in the cloud.
 
-        -   `Partition Key`: Also known as a hash key, this is a simple primary key composed of a single attribute. DynamoDB uses the partition key value as input to an internal hash function to determine the partition in which an item is stored.
-        -   `Composite Key`: Also known as a partition key and sort key, this is a primary key composed of two attributes.
-            -   `Partition Key`: is used to determine the partition in which an item is stored.
-            -   `Sort Key`: is used to sort items within the partition. It's also known as Range key.
+        ## 💻 Core Compute Resources
 
-    -   `Secondary Index`: Secondary Index in Amazon DynamoDB is a separate data structure that allows you to query and retrieve data from a DynamoDB table using attributes other than the primary key. There are two types of secondary indexes: global secondary index and local secondary index.
+        These are the fundamental building blocks for running a virtual machine:
 
-        -   `Global Secondary Index`: A Global Secondary Index is an independent data structure that has its own partition key and sort key. It does not require to be created at the same time as the table. GSIs index all items in the table by default, provided the indexed attributes (partition key and/or sort key) exist. If an item lacks the attributes defined in the GSI key schema, it is excluded from the index. It enables querying based on attributes not included in the main table's primary key. Here's how it works:
+        -   **EC2 Instances**: The **virtual servers** themselves. You choose the operating system, the hardware profile, and the location (VPC, Subnet, Availability Zone).
+        -   **Amazon Machine Images (AMIs)**: Templates that contain a **software configuration** (operating system, application server, applications). You use an AMI to launch an instance.
+        -   **Instance Types**: Defines the hardware profile of your virtual server, including the **CPU, memory, storage, and networking capacity**. They are grouped into families like General Purpose (M), Compute Optimized (C), Memory Optimized (R), etc.
+        -   **Key Pairs**: A set of security credentials, consisting of a **public key** (stored by AWS) and a **private key** (stored by you), used to securely connect to your Linux instances.
+        -   **Launch Templates/Configurations**: Used to **define the parameters** for launching an EC2 instance or an entire Auto Scaling Group (e.g., AMI, instance type, key pair, security groups).
 
-            -   `Data Copying`: DynamoDB automatically copies data from the main table to the GSI. The copied data includes the primary key attributes as well as projected attributes.
-            -   `Querying`: You can query a GSI using the Query operation, providing the GSI's partition key and optional sort key values. The query results are limited to the data present in the GSI.
-            -   `Projection`: GSIs also support projected attributes, allowing you to optimize query performance by including frequently accessed attributes.
-            -   `Read and Write Capacity`: GSIs have their own provisioned read and write capacity settings, allowing you to allocate resources specifically for index operations.
-            -   `Consistency`: GSIs support both eventually consistent and strongly consistent reads.
+        ## 💾 Storage Resources
 
-        -   `Sparse Index`: A Sparse Index is a type of index (usually a GSI) that includes only a subset of the items in the table. This happens because only items with the attributes defined in the index key schema are indexed.
+        These resources provide persistent and temporary storage for your EC2 instances:
 
-            -   Unlike a regular GSI, a Sparse Index intentionally excludes items that do not have the required attributes.
-            -   The sparseness is a result of using a design where the indexed attributes only exist on certain items.
-            -   Designed to filter out irrelevant data and optimize queries for specific subsets of data. For example, indexing only "high-priority" orders in an orders table.
+        -   **Amazon Elastic Block Store (EBS) Volumes**: **Durable, block-level storage** volumes that can be attached to a running EC2 instance. They persist independently of the life of the instance.
+            -   **EBS Snapshots**: Point-in-time backups of EBS volumes, stored in Amazon S3.
+        -   **Instance Store**: **Temporary block-level storage** physically located on the host machine of the EC2 instance. The data is lost if the instance is stopped or terminated.
+        -   **Amazon Elastic File System (EFS)**: A **scalable, elastic file storage** service for EC2 instances. It provides a shared file system that multiple EC2 instances can access concurrently. _While not exclusively EC2, it's a common resource used with it._
 
-        -   `Local Secondary Index`: A Local Secondary Index is an index that shares the same partition key as the base table but has a different sort key. It requires to be created at the same time as the table and can be used to query and retrieve data in a specific order based on the alternate sort key. Here's how it works:
-            -   `Data Copying`: DynamoDB automatically copies data from the main table to the LSI, using the same partition key value as the main table but with a different sort key.
-            -   `Querying`: You can query an LSI using the Query operation. The partition key value is taken from the main table's partition, but you can specify a range of sort key values for your query.
-            -   `Projection`: Like GSIs, LSIs allow you to specify projected attributes that are included in the index, avoiding the need to access the main table for those attributes during queries.
-            -   `Consistency`: LSIs support both eventually consistent and strongly consistent reads.
+        ***
 
-    #### DynamoDB Throughput
+        ## 🔒 Networking and Security Resources
 
-    -   `Throughput`: Throughput is a mechanism to specify the reading and writing capacity of the DynamoDB table. When you create a table in DynamoDB, you can specify the desired throughput capacity in terms of `RCU`s and `WCU`s. These provisioned throughput values determine how much capacity is allocated to your table, allowing you to handle the expected read and write loads. Keep in mind that DynamoDB's pricing is based on the provisioned throughput capacity you specify. Throughput is measured in `Capacity Units`. There are two types of capacity units:
+        These resources control the connectivity and security boundaries for your EC2 environment:
 
-        -   `Read Capacity Unit (RCUs)`: A read capacity unit is the amount of read throughput that is required to read one item per second from a DynamoDB table. One RCU represents the capacity to perform one strongly consistent read per second of an item up to 4 KB in size, or two eventually consistent reads per second of an item up to 4 KB in size. If your items are larger than 4 KB, you will need to provision additional RCUs to handle the extra size.
-        -   `Write Capacity Unit (WCUs)`: A write capacity unit is the amount of write throughput that is required to write one item per second to a DynamoDB table. One WCU represents the capacity to perform one write per second for an item up to 1 KB in size. Like with RCUs, if your items are larger, you'll need to provision additional WCUs.
+        -   **Virtual Private Cloud (VPC)**: The **isolated virtual network** where your EC2 instances are launched.
+        -   **Subnets**: A range of IP addresses in your VPC, placed within a single Availability Zone.
+        -   **Security Groups**: **Virtual firewalls** that control inbound and outbound traffic for one or more EC2 instances.
+        -   **Elastic Network Interfaces (ENIs)**: Virtual network cards that can be attached to an instance, providing a consistent network address.
+        -   **Elastic IP Addresses (EIPs)**: **Static public IPv4 addresses** designed for dynamic cloud computing. They are associated with your AWS account, not a specific instance, allowing you to quickly remap the address to another instance.
 
-    -   `Provisioned Throughput`: Provisioned throughput is the maximum amount of read and write capacity that can be specified for a DynamoDB table. It determines the number of RCUs and WCUs that are available to the table.
-    -   `Conditional Writes`: Conditional writes are a way to update or delete an item in a DynamoDB table based on a condition. This allows you to ensure that the item being modified meets certain criteria before making the change.
+        ***
 
-    -   `Throttling`: Throttling in DynamoDB refers to the mechanism that limits the number of requests that can be made to the service within a specified period. DynamoDB throttling occurs when a table or partition is receiving more read or write requests than it can handle. DynamoDB limits the number of read and write operations per second for each table partition based on the provisioned throughput capacity. If the provisioned capacity is exceeded, the requests are throttled, and an error response with an HTTP 400 status code is returned to the caller. DynamoDB provides two types of throttling:
+        ## 📈 Scaling and Management Resources
 
-        -   `Provisioned throughput throttling`: This type of throttling occurs when you have set up provisioned throughput capacity on a DynamoDB table, and the request rate exceeds the capacity you have provisioned. In this case, DynamoDB returns a ProvisionedThroughputExceededException error.
-        -   `On-demand capacity throttling`: This type of throttling occurs when you use on-demand capacity mode for your DynamoDB table, and the request rate exceeds the maximum burst capacity. In this case, DynamoDB returns a RequestLimitExceeded error.
-        -   To avoid throttling in DynamoDB, you can monitor the provisioned throughput capacity of your tables and increase it if necessary. You can also use best practices such as partitioning your data to evenly distribute read and write requests across the table partitions. Additionally, you can implement exponential backoff retries in your application code to automatically handle throttling errors and reduce the request rate.
+        These resources help manage and scale your fleet of instances:
 
-    When using Amazon DynamoDB, you can choose between **Provisioned Capacity** and **On-Demand Capacity** modes to manage the read and write throughput of your tables. Here's a detailed comparison:
+        -   **EC2 Auto Scaling**: Automatically adjusts the number of EC2 instances in a group based on demand, using **Launch Configurations** or **Launch Templates**.
+        -   **Elastic Load Balancing (ELB)**: Distributes incoming application traffic across multiple EC2 instances to increase application availability and fault tolerance.
+        -   **Capacity Reservations**: Allows you to reserve compute capacity for your EC2 instances in a specific Availability Zone for any duration.
+        -   **EC2 Fleet/Spot Fleet**: Allows you to request and manage a large number of EC2 instances across different instance types, Availability Zones, and purchasing options.
 
-    -   **Provisioned Capacity Mode**:
+        ***
 
-        -   You predefine the number of **Read Capacity Units (RCUs)** and **Write Capacity Units (WCUs)** for your table.
-        -   The table can handle a fixed number of reads and writes per second based on the allocated capacity.
-        -   `Predictable Workloads`: Ideal for applications with steady or predictable traffic patterns where you can estimate throughput needs.
-        -   `Auto Scaling Option`: You can enable Auto Scaling to adjust capacity automatically in response to traffic changes.
-        -   `Throttling`: If your workload exceeds the provisioned throughput, requests get throttled unless you scale up.
-        -   `Cost`: You pay for the provisioned RCUs and WCUs, regardless of actual usage.
-        -   `Billing:`: Based on the number of provisioned RCUs and WCUs, even if the capacity is underutilized.
+        ## 💵 Purchasing Options (Pricing Models)
 
-    -   **On-Demand Capacity Mode**:
+        The way you pay for the compute capacity is also considered a resource type in managing your EC2 usage:
 
-        -   No need to specify RCUs or WCUs upfront. DynamoDB automatically adjusts the table's capacity to handle any amount of traffic.
-        -   You are billed only for the actual reads and writes performed.
-        -   `Unpredictable Workloads`: Best for applications with spiky or unpredictable traffic patterns.
-        -   `No Throttling`: Automatically scales to meet the workload.
-        -   `Simplicity`: No capacity planning is needed.
-        -   Applications with unknown or fluctuating workloads (e.g., gaming leaderboards, IoT applications, ad-hoc analytics).
+        -   **On-Demand Instances**: Pay for compute capacity by the hour or second, with no long-term commitment.
+        -   **Reserved Instances (RIs)**: Commitment to a specific instance configuration for a 1- or 3-year term in exchange for a significant discount.
+        -   **Spot Instances**: Request spare AWS compute capacity for up to a 90% discount off the On-Demand price. Instances can be interrupted with a two-minute warning.
+        -   **Dedicated Hosts**: Physical servers dedicated for your use, which can help with licensing requirements.
+        -   **Dedicated Instances**: EC2 instances that run on hardware dedicated to a single customer.
 
-    #### DynamoDB Stream
+        An **AWS EC2 Instance Profile** is a container for an **AWS Identity and Access Management (IAM) role** that you can use to pass the role information to an Amazon Elastic Compute Cloud (EC2) instance when the instance starts.
 
-    A DynamoDB Stream is a feature provided by Amazon DynamoDB. A DynamoDB Stream trigger events (INSERTS, UPDATES, DELETES) capturing changes (inserts, updates, deletes) made to items in a DynamoDB table and then provides a time-ordered sequence of these changes. Streams enable real-time processing and analysis of data changes, making them useful for various scenarios such as data replication, maintaining secondary indexes, triggering AWS Lambda functions, and more. Here are the key aspects of DynamoDB Streams:
+        Its core purpose is to allow applications running on your EC2 instance to **securely access other AWS services** (like S3, DynamoDB, or CloudWatch) without needing to store long-term security credentials (like access keys and secret keys) directly on the instance.
 
-    -   `Stream Enabled Table`: To use DynamoDB Streams, you need to enable streams on a DynamoDB table. When streams are enabled, DynamoDB keeps track of changes to the items in that table.
-    -   `Stream Records`: Each change made to a DynamoDB item generates a stream record. A stream record contains information about the change, including the type of operation (insert, modify, delete), the item's data before the change, and the item's data after the change.
-    -   `Time-Ordered Sequence`: The stream records are stored in a time-ordered sequence. This means that changes to the table's items are captured in the order they occur, allowing downstream applications to process the changes in the same order.
-    -   `Consumers`: DynamoDB Streams allow you to set up consumers that read and process the stream records. One common use case is to trigger AWS Lambda functions in response to changes in the stream. For example, you can configure a Lambda function to be invoked whenever a new item is inserted into the table.
-    -   `Data Synchronization and Backup`: Streams can be used for data replication and synchronization between DynamoDB tables or other data stores. They can also serve as a backup mechanism by capturing all changes to your data.
-    -   `Real-time Analytics`: Streams enable real-time processing and analysis of data changes. You can use them to generate real-time insights and metrics based on the changes in your DynamoDB data.
-    -   `Cross-Region Replication`: DynamoDB Streams can be used to replicate data changes across different AWS regions, helping you maintain data availability and disaster recovery capabilities.
+        The EC2 instance uses the credentials provided by the instance profile, which are **temporary security credentials** that AWS automatically generates and rotates. The instance retrieves these credentials via the Instance Metadata Service (IMDS).
 
-    #### DynamoDB Transactions
+        ***
 
-    DynamoDB Transactions are a feature introduced by Amazon DynamoDB to provide **atomicity**, **consistency**, **isolation**, and **durability** (ACID) properties for multiple operations within a single transactional context. This ensures that a group of operations either complete successfully or have no effect at all, maintaining data integrity and consistency even in complex scenarios involving multiple items or tables.DynamoDB Transactions are particularly useful in scenarios where data consistency across multiple items or tables is crucial. They are beneficial for applications that require strong guarantees about data integrity, such as financial applications, e-commerce platforms, and more. Here are the key aspects of DynamoDB Transactions:
+        ## 🏗️ How it Works
 
-    -   `Atomicity`: All the operations within a transaction are treated as a single unit of work. If any part of the transaction fails, all changes made by the transaction are rolled back, and the data remains unchanged.
-    -   `Consistency`: DynamoDB Transactions maintain the consistency of the data. This means that the data is transitioned from one valid state to another valid state. All data involved in a transaction adheres to the defined business rules and constraints.
-    -   `Isolation`: Transactions are isolated from each other, meaning that the changes made by one transaction are not visible to other transactions until the transaction is committed. This ensures that concurrent transactions do not interfere with each other's intermediate states.
-    -   `Durability`: Once a transaction is successfully committed, the changes are permanently stored and will not be lost, even in the event of a system failure or restart.
-    -   `Transactional APIs`: DynamoDB provides transactional APIs that allow you to group multiple operations (such as `put`, `update`, `delete`) into a single transaction. You can execute these operations on one or more tables in a consistent and reliable manner.
-    -   `Conditional Expressions`: DynamoDB Transactions can include conditional expressions to ensure that certain conditions are met before the transaction is executed. This adds an additional layer of control over the transactional behavior.
-    -   `Isolation Levels`: DynamoDB supports two isolation levels for transactions: Read Committed and Serializable. Read Committed ensures that the data read in a transaction is the most recent committed data, while Serializable provides a higher level of isolation by preventing other transactions from modifying the data while a transaction is in progress.
+        1.  You create an **IAM Role** with the necessary permissions (e.g., read-only access to an S3 bucket).
+        2.  An **Instance Profile** is created (often automatically by the AWS Console when creating the role for an EC2 service) and associated with that IAM role.
+        3.  You attach the **Instance Profile** to your EC2 instance during launch or modification.
+        4.  Applications/AWS SDKs on the EC2 instance can then query the IMDS for the temporary credentials associated with the attached role, allowing them to make API calls to the permitted AWS services.
 
-    #### FACTS:
+        ***
 
-    -   `Fully Managed`: AWS manages the infrastructure, scaling, and maintenance of DynamoDB, making it a serverless and highly available database service.
-    -   `Key-Value Store`: DynamoDB primarily operates as a key-value store. Each item in DynamoDB is uniquely identified by a primary key, consisting of one or both of the following components:
+        ## 🗺️ Scenarios Where Instance Profiles are Used
 
-        -   `Partition Key`: Used to partition the data for distribution across multiple servers. It determines the physical location of the data.
-        -   `Sort Key (optional)`: Used for range queries and to create a composite primary key.
+        Instance Profiles are considered an AWS security best practice and are primarily used in scenarios where an EC2 instance needs secure, managed access to other AWS resources.
 
-    -   `Document Support`: DynamoDB also supports a document data model, where items can be structured as nested JSON-like documents. This allows for more flexible and complex data structures.
-    -   `Schemaless`: DynamoDB is schemaless, meaning you can add or remove attributes from items without affecting other items in the same table. This flexibility is common in NoSQL databases.
+        | Scenario                       | Use Case                                                                                                                                                                                                                               | Security Benefit                                                                                                                           |
+        | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+        | **Data Access**                | An application on an EC2 instance needs to **read or write data** to an **Amazon S3 bucket** (e.g., storing user uploads, fetching configuration files).                                                                               | The instance only has temporary, limited access based on the IAM role, avoiding hardcoded, permanent S3 keys.                              |
+        | **Logging & Monitoring**       | The EC2 instance needs to **send logs** to **Amazon CloudWatch** or **Amazon Kinesis**.                                                                                                                                                | Ensures the logging agent has _only_ the permission to write logs to the specified resource, adhering to the principle of least privilege. |
+        | **Configuration Management**   | The instance needs to retrieve configuration parameters or secrets from **AWS Systems Manager Parameter Store** or **AWS Secrets Manager**.                                                                                            | Securely fetches sensitive information at runtime without the secrets ever residing on the instance's file system.                         |
+        | **Automation & Orchestration** | An instance is part of an **Auto Scaling Group** or a deployment service like **AWS CodeDeploy/Elastic Beanstalk**, and it needs to make calls to other AWS services (e.g., updating a DynamoDB table, interacting with an SQS queue). | Grants the required service-specific permissions for automated workflows to function correctly.                                            |
+        | **Database Connectivity**      | The EC2 instance needs to retrieve an **IAM authentication token** to connect to an **Amazon RDS** or **Amazon Aurora** database instance that uses IAM database authentication.                                                       | Provides a secure, short-lived token for database access, instead of managing long-lived database passwords.                               |
 
-    -   **High Availability**:
+        The compute resources of an **AWS EC2 instance** are the fundamental components that define its processing power, memory, storage, and networking capacity. These resources are configured in different combinations to create the wide selection of EC2 **Instance Types** (like `t3.micro` or `c5.xlarge`).
 
-        -   DynamoDB is a fully managed NoSQL database service that provides low latency and high scalability for applications that require consistent, single-digit millisecond response times. To ensure high availability, DynamoDB replicates data synchronously across three AZs in a region, ensuring that there is always a copy of the data available even if one or two AZs experience issues.
-        -   If one AZ becomes unavailable, DynamoDB automatically redirects requests to one of the other two AZs where the data is available, providing uninterrupted access to the database. If two AZs become unavailable, DynamoDB continues to operate normally in the remaining AZ, and recovery processes begin to restore access to the affected AZs.
-        -   Additionally, DynamoDB uses automatic scaling to ensure that it can handle varying levels of traffic without downtime. DynamoDB automatically partitions data and traffic across multiple nodes, allowing it to handle high levels of read and write requests while maintaining consistent performance.
-        -   In summary, AWS DynamoDB provides high availability through `multi-AZ deployment`, `synchronous data replication`, and `automatic scaling`. These features ensure that the database remains accessible and performs consistently, even in the event of infrastructure failures or high traffic volumes.
+        The core compute resources are:
 
-    -   **Data Durability**:
+        ***
 
-        -   `Replication`: DynamoDB replicates data across multiple Availability Zones (AZs) within a region, ensuring that if one AZ fails, data is still available from another AZ. This ensures high availability and durability of data.
-        -   `Data Storage`: DynamoDB stores data in solid-state drives (SSDs), which are more reliable and durable than traditional hard disk drives (HDDs). This helps ensure that data is not lost due to hardware failures.
-        -   `Automatic backups and point-in-time recovery`: DynamoDB provides automatic backups and point-in-time recovery features, which help ensure that data is recoverable in case of accidental deletion, application errors, or other types of data loss.
-        -   `Redundancy`: DynamoDB maintains multiple copies of data in different locations, ensuring that data is not lost in case of hardware or network failures.
-        -   `Continuous monitoring and self-healing`: DynamoDB continuously monitors the health of its resources and automatically replaces failed or degraded resources with new ones.
-        -   synchronously replicates data across three facilities in an AWS Region. (99.999% garanteed uptime)
+        ## 💻 1. Central Processing Unit (CPU)
 
-    -   Optimized for performance at scale (scale out horizonlaly by adding more nodes to the cluster)
-    -   runs exclusively on SSDs to provide high I/O performance
-    -   provides provisioned table reads and writes
-    -   automatically partitions, reallocates and re-partitions the data and provisions additional server capacity as data or throughput changes
-    -   provides `Eventually Consistent` (by default) or `Strongly Consistent` option to be specified during an read operation
-    -   creates and maintains indexes for the primary key attributes for efficient access of data in the table
-    -   supports secondary indexes
+        The CPU provides the processing power for the instance.
 
-        -   allows querying attributes other then the primary key attributes without impacting performance.
-        -   are automatically maintained as sparse objects
+        -   **vCPUs (Virtual CPUs):** Each EC2 instance is allocated a specific number of vCPUs. A vCPU is an abstraction of the underlying physical CPU core, usually represented as a thread.
+        -   **Processor Type:** Instances use different processors, including:
+            -   **Intel Xeon** and **AMD EPYC** processors (x86 architecture).
+            -   **AWS Graviton** processors (Arm architecture), which are custom-designed by AWS and often offer better price/performance for certain workloads.
+        -   **CPU Credit System (Burstable Instances):** Burstable performance instances (like the **T-family**) use a CPU credit mechanism. They provide a **baseline CPU performance** with the ability to **burst** to higher CPU usage when needed, using accumulated credits.
 
-    -   supports cross region replication using DynamoDB streams which leverages Kinesis and provides time-ordered sequence of item-level changes and can help for lower RPO, lower RTO disaster recovery
-    -   Data Pipeline jobs with EMR can be used for disaster recovery with higher RPO, lower RTO requirements
-    -   supports triggers to allow execution of custom actions or notifications based on item-level updates
+        ***
 
-    </details>
+        ## 🧠 2. Memory (RAM)
 
----
+        This is the volatile, high-speed working memory available to the instance's operating system and applications.
 
--   <details><summary style="font-size:25px;color:Orange">RDS</summary>
+        -   **RAM Capacity:** Instances are provisioned with a fixed amount of GiB (Gigabytes) of RAM, which is one of the primary differentiators between instance types (e.g., Memory Optimized instances have a very high RAM-to-vCPU ratio).
 
-    Amazon Relational Database Service (RDS) is a managed service that makes it easy to set up, operate, and scale a relational database in the AWS Cloud. It removes the "undifferentiated heavy lifting" of database management, such as hardware provisioning, patching, and backups.
+        ***
 
-    1. **Core Components**: These are the fundamental building blocks of any RDS setup.
+        ## 💾 3. Storage
 
-        *   **DB Instance:** An isolated database environment in the cloud. It is the basic building block of RDS. You select the CPU, memory, and storage capacity based on your needs.
-        *   **DB Engine:** The specific relational database software running on the instance. RDS currently supports:
-            *   **Amazon Aurora** (AWS-native, MySQL/PostgreSQL compatible)
-            *   **PostgreSQL**
-            *   **MySQL**
-            *   **MariaDB**
-            *   **Oracle**
-            *   **Microsoft SQL Server**
-        *   **DB Instance Class:** Determines the computation and memory capacity of the instance (e.g., `db.t3.micro`, `db.m5.large`).
+        EC2 instances use two main types of storage resources.
 
-    2. **High Availability & Scalability**: AWS uses specific architectures to ensure your database stays online and can handle growth.
+        -   **Amazon Elastic Block Store (EBS):** This is **persistent** block storage that you attach to the instance. The EBS volume exists independently of the instance's lifecycle (data remains even if the instance is stopped). EBS performance is measured in IOPS (Input/Output Operations Per Second) and throughput.
+        -   **Instance Store (Ephemeral Storage):** This provides **temporary** block storage from disks physically attached to the host machine. Data in the Instance Store is **lost** when the instance is stopped, terminated, or fails. It's ideal for temporary scratch space, buffer/cache, or data replicated across a cluster.
 
-        *   **Multi-AZ Deployment:** RDS automatically provisions and maintains a synchronous "standby" replica in a different Availability Zone. If the primary instance fails, RDS automatically fails over to the standby.
-        *   **Read Replicas:** These are "read-only" copies of your database. They are used to offload read traffic from the primary instance, increasing the application's overall performance. Unlike Multi-AZ, these use *asynchronous* replication.
-        *   **Storage Autoscaling:** When enabled, RDS automatically increases storage capacity when it detects you are running out of space, preventing downtime.
+        ***
 
-    3. **Storage Types**: The performance of your database is heavily tied to the underlying storage volume.
+        ## 🌐 4. Networking
 
-        *   **General Purpose SSD (gp2/gp3):** Cost-effective storage suitable for a broad range of workloads.
-        *   **Provisioned IOPS SSD (io1):** Designed for I/O-intensive workloads (like large production databases) that require low latency and consistent throughput.
-        *   **Magnetic:** A legacy option for small, infrequent-access workloads.
+        This resource determines the instance's connectivity and bandwidth capabilities.
 
-    4. **Connectivity & Security**: RDS is designed to be secure by default, living inside your Virtual Private Cloud (VPC).
+        -   **Network Performance:** Instances are classified by their network performance, ranging from "Low" (e.g., older T2 instances) to dedicated bandwidth tiers (e.g., 25, 50, or 100 Gbps for high-end instances).
+        -   **Elastic Network Adapter (ENA):** ENA is a network interface that supports high-performance networking capabilities, offering high throughput and low-latency networking.
+        -   **Elastic Fabric Adapter (EFA):** A network device that you can attach to an EC2 instance to accelerate High-Performance Computing (HPC) and machine learning applications.
 
-        *   **DB Subnet Group:** A collection of subnets (usually private) that you designate for your clusters in a VPC.
-        *   **Security Groups:** Act as a virtual firewall, controlling which IP addresses or EC2 instances are allowed to connect to the database port (e.g., 3306 for MySQL or 5432 for PostgreSQL).
-        *   **KMS Encryption:** RDS can encrypt your databases "at rest" using keys managed through the AWS Key Management Service (KMS).
-        *   **IAM Database Authentication:** Instead of using a password, you can authenticate to your DB instance using AWS IAM users or roles.
+        ***
 
-    5. **Maintenance & Backup**: One of the primary benefits of a managed service is automated data protection.
+        The way these resources are packaged and prioritized leads to the different **Instance Families**:
 
-        *   **Automated Backups:** RDS takes a daily full snapshot of your data and captures transaction logs. This allows for **Point-in-Time Recovery (PITR)** to any second within your retention period (up to 35 days).
-        *   **DB Snapshots:** These are user-initiated backups. Unlike automated backups, snapshots are kept until you explicitly delete them.
-        *   **Maintenance Window:** A weekly time block during which AWS performs system changes, such as OS patching or DB engine upgrades.
+        | Instance Family                     | Resource Focus                              | Example Use Cases                                                                 |
+        | :---------------------------------- | :------------------------------------------ | :-------------------------------------------------------------------------------- |
+        | **General Purpose (M, T)**          | Balance of all resources                    | Web servers, small/medium databases, development/test environments.               |
+        | **Compute Optimized (C)**           | High-performance CPU                        | Batch processing, media transcoding, scientific modeling, dedicated game servers. |
+        | **Memory Optimized (R, X)**         | High RAM capacity                           | High-performance databases (in-memory), distributed web-scale caches.             |
+        | **Storage Optimized (I, D)**        | High sequential I/O and large local storage | Data warehousing, transactional databases, big data processing.                   |
+        | **Accelerated Computing (P, G, F)** | Hardware accelerators (GPUs/FPGAs)          | Machine learning training/inference, graphics-intensive applications.             |
 
-    6. **Option Groups:** Used to enable extra features provided by the specific DB engine, allowing you to add functionality like caching, auditing, or encryption without modifying the core database software. Option groups are associated with DB instances and can be shared across multiple instances. Key aspects include:
-        - **Engine-Specific Options:** Examples include Memcached for MySQL (query caching), Oracle Application Express (APEX), Transparent Data Encryption (TDE) for Oracle and SQL Server, and SQL Server Reporting Services (SSRS).
-        - **Persistence:** Options persist across DB instance restarts and are applied when the instance is launched or modified.
-        - **Licensing:** Some options require additional licensing fees or specific DB engine versions.
-        - **Compatibility:** Option groups are engine-specific (e.g., MySQL options can't be used with PostgreSQL).
-        - **Management:** Can be created, modified, and associated with DB instances via the AWS Management Console, CLI, or API.
-        - **Backup and Restore:** Options are included in DB snapshots and restored with the instance
-        - **Limitations:** Not all options are available for all DB engines or instance classes; some may require specific configurations.
+        The **Virtual CPU (vCPU)** is the fundamental unit of compute power provisioned to an AWS EC2 instance. It represents a share of the underlying physical CPU resources on the host server.
 
-    7. **Parameter Groups:** Act as a "container" for engine configuration values, allowing you to customize database behavior without directly editing configuration files like `my.cnf` or `postgresql.conf`. Instead, you modify parameters in the Parameter Group, which are then applied to the DB instance. Key details include:
-        - **Types:** Default parameter groups are provided by AWS, but you can create custom parameter groups for fine-tuning.
-        - **Dynamic vs. Static Parameters:** Dynamic parameters can be changed without restarting the DB instance, while static parameters require a restart.
-        - **Scope:** Can be applied at the DB instance level or cluster level (for Aurora).
-        - **Common Parameters:** Include settings like `max_connections`, `innodb_buffer_pool_size`, `shared_buffers` (PostgreSQL), and `query_cache_size` (MySQL).
-        - **Validation:** AWS validates parameter values to ensure they are within acceptable ranges and compatible with the DB engine version.
-        - **Inheritance:** Custom parameter groups inherit default values and allow overrides.
-        - **Backup and Restore:** Parameter settings are preserved in DB snapshots.
-        - **Best Practices:** Test parameter changes in a staging environment before applying to production, as incorrect values can impact performance or stability.
+        Understanding vCPUs requires knowing its components, its relationship to physical hardware, and how it is managed by AWS.
 
-    8. **Amazon RDS Proxy**: It is a highly available, fully managed database proxy that sits between your application and your RDS (or Aurora) database. Its primary job is to handle **connection pooling**, making your application more scalable, resilient to database failures, and secure.
+        ***
 
-       -    **The Problem** (Connection Exhaustion): Relational databases like MySQL and PostgreSQL have a limited number of connections they can handle at once. Every time a connection is opened, it consumes memory and CPU on the database server.
+        ## ⚙️ Core Components and Architecture
 
-           *   **Serverless/Lambda Issues:** In modern architectures (like AWS Lambda), hundreds or thousands of "short-lived" functions might spin up simultaneously. Each one tries to open its own database connection, which can quickly overwhelm the database and cause it to crash or reject new requests.
-           *   **The "Zombie" Connection:** Applications often keep connections open even when they aren't actively sending queries, wasting valuable database resources.
+        The vCPU is not a one-to-one mapping with a physical core but is an abstraction managed by AWS's virtualization technology.
 
-       -    **How RDS Proxy Solves It**: Instead of your application connecting directly to the database, it connects to the **Proxy**.
+        ### 1. The Physical Processor (Host CPU)
 
-           *   **Connection Pooling:** The Proxy maintains a "pool" of established connections to the database. When your application needs to run a query, the Proxy assigns it an existing connection from the pool and then takes it back immediately after the query is finished. 
-           *   **Multiplexing:** This allows many application connections to share a much smaller number of database connections, significantly reducing the load on the DB instance.
+        -   **Physical Cores:** The underlying host server is equipped with high-core-count physical CPUs (like Intel Xeon, AMD EPYC, or AWS Graviton).
+        -   **Threads (Hyper-Threading/SMT):** Modern Intel/AMD x86 processors often use Simultaneous Multi-Threading (SMT), known by Intel as Hyper-Threading. This technology allows a single physical core to execute **two threads** concurrently, improving overall throughput.
+        -   **AWS Graviton Difference:** AWS Graviton processors (based on Arm architecture) are typically designed to be single-threaded per core. For these instances, **1 vCPU maps to 1 physical core**.
 
-       -    **Key Benefits**
+        ### 2. The vCPU Definition (Abstraction Layer)
 
-           -   **Improved Failover Times**: If your database has a failure (especially in a Multi-AZ setup), the RDS Proxy can automatically connect to the new standby instance without dropping the connection from your application. 
-               *   **Result:** Failover times can be reduced by up to **66%**, and your application doesn't need complex "retry" logic because it stays connected to the Proxy the whole time.
+        -   **x86 Architecture (Intel/AMD):** For most instances using Intel or AMD processors, **1 vCPU is defined as one thread** of an x86-based processor core.
+            -   This means an instance with **2 vCPUs** generally corresponds to **1 physical core** with SMT/Hyper-Threading enabled.
+        -   **Arm Architecture (Graviton):** For instances using AWS Graviton processors, **1 vCPU is defined as one physical core**. This means an instance with **2 vCPUs** corresponds to **2 physical cores**.
 
-           -   **Enhanced Security**:
-               *   **IAM Authentication:** You can enforce IAM authentication for the application-to-Proxy connection, even if the underlying database uses traditional passwords.
-               *   **Secrets Manager Integration:** The Proxy retrieves database credentials from **AWS Secrets Manager**, meaning you don't have to hardcode passwords in your application code or environment variables.
+        ### 3. The AWS Nitro System
 
-           -   **Zero Application Management**: Because it is a managed service, you don't have to provision servers, patch software, or worry about the Proxy's own availability—AWS handles that across multiple Availability Zones automatically.
+        The **AWS Nitro System** is the dedicated hardware and software that powers the virtualization of modern EC2 instances. It is a critical component for managing vCPUs and their resources:
 
-       -    **When to Use It**:
+        -   **Hypervisor:** The Nitro Hypervisor is lightweight and isolates the guest OS (your EC2 instance) from the host hardware, allocating CPU, memory, and networking resources efficiently and securely.
+        -   **Resource Allocation:** By offloading many virtualization functions to dedicated hardware, the Nitro system ensures that nearly **all the host's compute and memory resources** are available to the customer's instance.
 
-           | Use Case                | Why Use RDS Proxy?                                                     |
-           | :---------------------- | :--------------------------------------------------------------------- |
-           | **AWS Lambda**          | To prevent thousands of concurrent functions from overwhelming the DB. |
-           | **SaaS Applications**   | To manage unpredictable bursts of user traffic.                        |
-           | **High Availability**   | To minimize downtime during database maintenance or failover.          |
-           | **Security Compliance** | To centralize credential management via Secrets Manager and IAM.       |
+        ***
 
-       -    **Implementation Detail**: The Endpoint
+        ## 📊 Resources and Configuration Options
 
-            -   When you create an RDS Proxy, it provides you with a **new hostname (Endpoint)**. You simply update your application's database connection string to point to the Proxy endpoint instead of the original RDS instance endpoint.
+        The resources associated with vCPUs are defined by the EC2 instance type and can sometimes be customized.
 
-       > **Technical Note:** RDS Proxy is "engine-aware." It understands the specific database protocol (MySQL or PostgreSQL) to efficiently manage the transaction state and ensure that sessions are handled correctly during multiplexing.
+        ### 1. Dedicated vs. Shared vCPUs
 
+        -   **Dedicated (Most Instance Types):** For most instance families (C, R, M, P, etc.), the vCPUs you select are **dedicated** to your instance on the host machine. You get the guaranteed performance of that vCPU allocation.
+        -   **Shared/Burstable (T-Family):** For **T-family (Burstable)** instances, vCPUs are shared among multiple tenants on the host. These instances have a **baseline level of CPU performance** and use a **CPU Credit** system.
+            -   They **accrue credits** when under the baseline usage.
+            -   They **spend credits** to **burst** to a higher vCPU utilization when needed.
 
+        ### 2. Customizing CPU Options
 
+        For newer EC2 instance types, you can customize the vCPU allocation to manage software licensing costs or optimize performance for specific workloads:
 
-    </details>
-
----
-
--   <details><summary style="font-size:25px;color:Orange">Amazon Aurora</summary>
-
-
-    # Amazon Aurora — Complete Deep-Dive
-
-    ![Image](https://images.openai.com/static-rsc-4/XUL0dxmZYy4SVmd8GGyD-z2VG8jcX07to1TDEgkobH2UGHNuIxl_8ly2Fy9qIQeOd3RsX2T1vANsxp49gyEqC_iWM9esZFfRbOqEm9pd5DshJ59c0q-C6WXUhBJpw7X0WW_WM7veRuyEAUPxUhCtDS8pPEK8Avv0RHPbCnu6HlmUpP0tooAb_9fwsrqfc-lE?purpose=fullsize)
-
-    ![Image](https://images.openai.com/static-rsc-4/5YLpLTW2UzSfGwZ7SWKrFZbKR_FnqvgEX7lm1nBbuKYZe_LO_TMaP4bCvAbqXNEFO-a5PCSCHEsdf4ViOlgOvaS3OLwD8GzVvG0aR1qHZMZfmcOipAPUicRCB1Kc9PUWQAlMI0L3HtJEVL7xK6LwVuBEQNRzqE_pWGCh6_cBpg9_nQcaC4DZ3wp0cL_6UWOQ?purpose=fullsize)
-
-    ![Image](https://images.openai.com/static-rsc-4/bQGM_IDLI_PKNxKSgXHctFqOBbnexUDvmwrXmzxOEsoYUY7gKmfn_G58Ilv8crY67itziNItyyVJBZH-FbJiMM9Yq_dXKd0-eBvgh2AEyKcC-miP29WvotsYyuLJe2bIJGq-5pWWynycLdkm-iU5gaiHzK8MhBOC_M7XD4i7tjj28aHH0GOaCFCGrHJe5Zbg?purpose=fullsize)
-
-    ![Image](https://images.openai.com/static-rsc-4/CmjzlHeGWe68mNe-hYuM3a6_K_QlBmfaREhdqHA-hYQ-UdKew-PX0k_9wUtMIF68FihDN11mw0pQqanUsqB1FlyfJHif18-LBQNWpXPgJdTU23MmL4no7GQHjA8qEibGaWTt2SGebgO_kPe3pxBFsX7Z-OQHtppOyDnylRcUSGzC46HvmG0smYw5XInHDDAU?purpose=fullsize)
-
-    ![Image](https://images.openai.com/static-rsc-4/k2Bm6DutklFriR_PhGcFZQzdaGThm3XpuO8tAx_w0e9AyOFRtWHlcACJ6wZqOiqoXXMisCnoYXjcm7fzsNwqtq2Hn9q2tA4JwDj7YEHQGo04gnVq28v21sTJMd2-9h6kNYpNYMNxb_p19KdcrokO1WiGl6Whe61mXS7j5nEeRBNcejktBXNjDyT1rNDLsGAN?purpose=fullsize)
-
-    ---
-
-    # 1. What Is Amazon Aurora?
-
-    **Amazon Aurora** is a fully managed, cloud-native relational database engine provided by AWS.
-
-    It is compatible with: **MySQL**, **PostgreSQL**
-
-    > **A relational database engine with a purpose-built distributed storage architecture designed for high availability, durability, performance, and scalability.**
-
-    Aurora provides many capabilities you expect from a traditional relational database: SQL, ACID transactions, Joins, Indexes, Foreign keys, Stored procedures, Transactions, Relational data modeling
-
-    But its underlying architecture is optimized for the AWS cloud. The two main Aurora-compatible database engines are:
-
-    ```text
-    Amazon Aurora
-    │
-    ├── Aurora MySQL-Compatible Edition
-    │
-    └── Aurora PostgreSQL-Compatible Edition
-    ```
-
-    ---
-
-    # 2. Aurora vs Traditional RDS
-
-    One of the most important concepts is understanding how Aurora differs from a standard Amazon RDS database.
-
-    Consider a traditional RDS MySQL deployment:
-
-    ```text
-                        RDS MySQL
-                        |
-                    DB Instance
-                        |
-                    EBS Storage
-    ```
-
-    The database instance and storage are closely coupled.
-
-    Aurora separates the **compute layer** from the **storage layer**.
-
-    ```text
-                    Aurora Cluster
-                        |
-        +---------------+---------------+
-        |               |               |
-        Writer          Reader 1        Reader 2
-        |               |               |
-        +---------------+---------------+
-                        |
-                Distributed Storage
-                        |
-        +---------------+---------------+
-        |               |               |
-        AZ-1            AZ-2            AZ-3
-    ```
-
-    This separation is one of the fundamental reasons Aurora can provide:
-
-    * Fast failover
-    * Multiple read replicas
-    * Distributed storage
-    * Automatic storage expansion
-    * High durability
-    * Independent compute scaling
-
-    ---
-
-    # 3. Aurora Cluster Architecture
-
-    An Aurora cluster consists primarily of:
-
-    1. **Writer DB instance**
-    2. **Zero or more Reader DB instances**
-    3. **Shared Aurora cluster storage**
-    4. **Cluster endpoints**
-
-    For example:
-
-    ```text
-                            Application
-                                |
-                        +---------+---------+
-                        |                   |
-                    Writes               Reads
-                        |                   |
-                        v                   v
-                Writer Endpoint       Reader Endpoint
-                        |                   |
-                        v                   v
-                +---------+       +------+------+------+
-                | Writer  |       | Reader | Reader | Reader |
-                | Instance|       |   1    |   2    |   3    |
-                +----+----+       +---+----+---+----+---+----+
-                        |                |        |        |
-                        +----------------+--------+--------+
-                                        |
-                                        v
-                            Aurora Shared Storage
-                                        |
-                        +----------------+----------------+
-                        |                |                |
-                    AZ-1             AZ-2             AZ-3
-    ```
-
-    The important architectural concept is:
-
-    > **The database instances are compute nodes, while the data is stored in Aurora's distributed storage layer.**
-
-    This is different from the traditional model where each DB instance has its own independent storage volume.
-
-    ---
-
-    # 4. Writer Node
-
-    -   The **Writer** is the primary database instance.
-    -   It handles: **INSERT**, **UPDATE**, **DELETE**, **CREATE**, **ALTER**, **DROP**, **Transactions**.
-    -   So the Writer is not strictly "write-only". It can also process **SELECT**.
-    -   However, you generally want to route read-heavy workloads to Aurora Readers to reduce load on the Writer.
-    -   An Aurora cluster normally has: `1 Writer + 0 or more Readers`
-
-    # 5. Reader Nodes
-
-    -   Aurora Readers are Aurora Replicas.
-    -   They are primarily used for: **Read scaling**, **Reporting**, **Analytics**, **Read-heavy applications**, **Failover targets**
-    -   Aurora Readers use the same underlying cluster storage architecture.
-    -   This is a major advantage compared with traditional database replication architectures.
-
-    ```text
-                        Application
-                            |
-                        Reader Endpoint
-                            |
-                +-----------+-----------+
-                |           |           |
-                v           v           v
-            Reader 1    Reader 2    Reader 3
-    ```
-
-    # 6. Aurora Shared Storage
-
-    -   This is arguably the most important Aurora concept.
-    -   In traditional database architecture:
-
-        ```text
-        DB Instance 1 ---> Storage 1
-        DB Instance 2 ---> Storage 2
-        DB Instance 3 ---> Storage 3
-        ```
-
-    -   Data replication is often performed between the database instances. Aurora instead has:
-
-        ```text
-                    Writer
-                        |
-                    Readers
-                        |
-                        v
-                Aurora Distributed
-                    Storage
-        ```
-
-    -   The storage layer is distributed across multiple Availability Zones. Conceptually:
-
-        ```text
-                        Aurora Storage
-                            |
-            +--------------+--------------+
-            |              |              |
-            AZ-1           AZ-2           AZ-3
-            |              |              |
-            Storage         Storage        Storage
-            copies          copies         copies
-        ```
-
-    -   Aurora automatically manages replication of storage data across multiple AZs.
-    -   Aurora replicates storage at the storage layer rather than relying solely on traditional database-level replica storage.
-    -   This improves: **Durability**, **Failover**, **Availability**, **Recovery**
-
-    ---
-
-    # 7. Aurora Storage Durability
-
-    -   Aurora's storage architecture is designed to maintain multiple copies of data across Availability Zones.
-    -   The storage subsystem is distributed across multiple AZs, with Aurora maintaining multiple copies of data blocks.
-    -   This means a failure of a single: Disk, Storage node, Availability Zone does not necessarily mean the database loses access to its data.
-    -   This is one reason Aurora is commonly selected for mission-critical workloads.
-
-    ---
-
-    # 8. Aurora Endpoints
-
-    -   Aurora endpoints are extremely important.
-    -   You should understand these for both architecture and interviews.
-    -   The major endpoint types are:
-        1. Cluster/Writer Endpoint
-        2. Reader Endpoint
-        3. Custom Endpoint
-        4. Instance Endpoint
-
-    ---
-
-    ## 8.1 Cluster Endpoint
-
-    -   Also called the **Writer Endpoint** (`mydb.cluster-xxxx.us-east-1.rds.amazonaws.com`)
-    -   It points to the current Write: `Application --> Cluster Endpoint --> Current Writer` 
-    -   Use this for: INSERT, UPDATE, DELETE, DDL, Transactions requiring Writer
-    -   The critical advantage is that the endpoint doesn't need to change when failover occurs.
-    -   Before Failover: `Cluster Endpoint --> Writer A`
-    -   After Failover: `Cluster Endpoint --> Writer B`
-    -   Your application continues using the same endpoint.
-
-    # 9. Reader Endpoint
-
-    The Reader Endpoint is used for read workloads.
-
-    Conceptually:
-
-    ```text
-    Application
-        |
-        v
-    Reader Endpoint
-        |
-        +---- Reader 1
-        +---- Reader 2
-        +---- Reader 3
-    ```
-
-    The Reader Endpoint can route connections across available Aurora Replicas.
-
-    This allows you to scale read workloads horizontally.
-
-
-    # 10. Custom Endpoints
-
-    Custom endpoints allow you to group specific Aurora instances.
-
-    Imagine:
-
-    ```text
-    Aurora Cluster
-
-    Writer
-    Reader 1 - General Application
-    Reader 2 - General Application
-    Reader 3 - Analytics
-    Reader 4 - Reporting
-    ```
-
-    You could create custom endpoints for specific workloads.
-
-    ```text
-    Application
-        |
-        +---- General Read Endpoint
-        |          |
-        |       Reader 1
-        |       Reader 2
-        |
-        +---- Reporting Endpoint
-                |
-            Reader 3
-            Reader 4
-    ```
-
-    This is useful when you want to separate workloads.
-
-    For example:
-
-    ```text
-    Production application traffic
-                |
-                v
-    General Reader Endpoint
-
-    Business intelligence/reporting
-                |
-                v
-    Custom Reporting Endpoint
-    ```
-
-    This prevents heavy reporting workloads from competing with application reads.
-
-    ---
-
-    # 11. Instance Endpoint
-
-    Every Aurora DB instance has its own endpoint.
-
-    For example:
-
-    ```text
-    Writer Instance Endpoint
-    Reader 1 Instance Endpoint
-    Reader 2 Instance Endpoint
-    ```
-
-    You typically don't want application code to hard-code individual instance endpoints because the role of an instance can change during failover.
-
-    Instead, applications should generally use:
-
-    ```text
-    Writer Endpoint
-    ```
-
-    or:
-
-    ```text
-    Reader Endpoint
-    ```
-
-    depending on the workload.
-
-    ---
-
-    # 12. Aurora Failover
-
-    Aurora is designed for high availability.
-
-    Suppose we have:
-
-    ```text
-                Writer
-                    |
-            +-----+-----+
-            |           |
-        Reader 1    Reader 2
-    ```
-
-    Writer fails.
-
-    Aurora can promote a Reader.
-
-    Before:
-
-    ```text
-    Writer
-    |
-    +-- Reader 1
-    |
-    +-- Reader 2
-    ```
-
-    After:
-
-    ```text
-    Reader 1 ---> New Writer
-    |
-    +-- Reader 2
-    ```
-
-    The application continues connecting to:
-
-    ```text
-    Cluster Endpoint
-    ```
-
-    The endpoint now resolves to the new Writer.
-
-    ---
-
-    # 13. Failover Priority
-
-    Aurora can use failover priorities to determine which Aurora Replica should be promoted.
-
-    Conceptually:
-
-    ```text
-    Writer
-    |
-    +--- Reader 1
-    |       Priority 1
-    |
-    +--- Reader 2
-    |       Priority 2
-    |
-    +--- Reader 3
-            Priority 3
-    ```
-
-    If the Writer fails:
-
-    ```text
-    Reader 1
-        |
-        v
-    Promoted to Writer
-    ```
-
-    You should design your Aurora cluster so that the most suitable Reader is the preferred failover target.
-
-    Consider:
-
-    * Instance class
-    * Capacity
-    * Workload
-    * AZ placement
-    * Promotion tier
-
-    ---
-
-    # 14. Aurora Replication
-
-    Aurora Readers are replicas of the Writer.
-
-    Conceptually:
-
-    ```text
-                    Writer
-                    |
-                    |
-                Aurora Replication
-                    |
-            +--------+--------+
-            |        |        |
-            v        v        v
-        Reader 1 Reader 2 Reader 3
-    ```
-
-    Aurora replication is designed to be highly efficient because the storage architecture is shared.
-
-    However, you should still understand **replica lag**.
-
-    A Reader may temporarily be behind the Writer.
-
-    For example:
-
-    ```text
-    Writer:
-
-    Transaction ID = 100
-
-    Reader:
-
-    Transaction ID = 98
-    ```
-
-    If your application writes data and immediately sends a read request to a Reader, it may not always see the latest data.
-
-    This is called a **read-after-write consistency** concern.
-
-    For applications that require immediately consistent reads after writes, you may need to read from the Writer.
-
-    ---
-
-    # 15. Aurora Read Scaling
-
-    Suppose your application has:
-
-    ```text
-    10% Writes
-    90% Reads
-    ```
-
-    You can use:
-
-    ```text
-    1 Writer
-    +
-    multiple Readers
-    ```
-
-    Architecture:
-
-    ```text
-                    Application
-                        |
-                +--------+--------+
-                |                 |
-                Writes            Reads
-                |                 |
-                v                 v
-            Writer         Reader Endpoint
-                                    |
-                        +----------+----------+
-                        |          |          |
-                        v          v          v
-                    Reader 1   Reader 2   Reader 3
-    ```
-
-    This provides horizontal read scaling.
-
-    However:
-
-    > Adding Readers does not automatically make your application read-scalable.
-
-    Your application must actually route read traffic to the Reader Endpoint or another appropriate endpoint.
-
-    ---
-
-    # 16. Aurora Auto Scaling
-
-    Aurora supports different approaches to scaling.
-
-    ## Compute Scaling
-
-    You can change the DB instance class.
-
-    For example:
-
-    ```text
-    db.r6g.large
-        |
-        v
-    db.r6g.xlarge
-        |
-        v
-    db.r6g.2xlarge
-    ```
-
-    This increases compute and memory capacity.
-
-    ---
-
-    ## Read Replica Auto Scaling
-
-    Aurora can automatically add or remove Aurora Replicas based on configured metrics and policies.
-
-    Conceptually:
-
-    ```text
-    High Read Load
-        |
-        v
-    Add Reader
-        |
-        v
-    More Read Capacity
-    ```
-
-    When demand decreases:
-
-    ```text
-    Low Read Load
-        |
-        v
-    Remove Reader
-    ```
-
-    This is useful for applications with variable read traffic.
-
-    ---
-
-    # 17. Aurora Serverless
-
-    Aurora also provides **Aurora Serverless**, designed for workloads where database capacity needs to scale dynamically.
-
-    Traditional Aurora:
-
-    ```text
-    You provision DB instances
-        |
-        v
-    Capacity remains provisioned
-    ```
-
-    Serverless:
-
-    ```text
-    Application Load
-        |
-        +---- Low ----> Lower Capacity
-        |
-        +---- High ---> Higher Capacity
-    ```
-
-    Aurora Serverless is particularly useful for workloads with:
-
-    * Variable demand
-    * Unpredictable traffic
-    * Intermittent workloads
-    * Development environments
-    * Applications that don't need continuously provisioned capacity
-
-    Aurora Serverless has evolved across versions, and **Aurora Serverless v2** provides more granular and faster scaling than the original v1 model.
-
-    ---
-
-    # 18. Aurora Global Database
-
-    If you need disaster recovery or globally distributed read workloads, Aurora Global Database is important.
-
-    Architecture:
-
-    ```text
-                        Global Application
-                            |
-                    +----------+----------+
-                    |                     |
-                    v                     v
-            Primary Region        Secondary Region
-                    |                     |
-                Writer                Readers
-                    |                     |
-                    +---------+-----------+
-                            |
-                    Global Replication
-    ```
-
-    For example:
-
-    ```text
-    Primary Region
-    us-east-1
-        |
-        | Global Database Replication
-        |
-        +--------------------------+
-                                |
-                                v
-                            us-west-2
-                            eu-west-1
-                            ap-southeast-1
-    ```
-
-    You can use secondary regions for:
-
-    * Disaster recovery
-    * Business continuity
-    * Global read workloads
-
-    Aurora Global Database is different from simply having multiple Aurora Replicas in one region.
-
-    ---
-
-    # 19. Aurora Backups
-
-    Aurora provides automated backups.
-
-    The architecture is roughly:
-
-    ```text
-    Aurora Cluster
-        |
-        v
-    Continuous Backup
-        |
-        v
-    Point-in-Time Recovery
-    ```
-
-    You can restore an Aurora cluster to a specific point in time within the configured backup retention period.
-
-    For example:
-
-    ```text
-    10:00 AM
-    |
-    v
-    10:15 AM
-    |
-    v
-    10:30 AM
-    |
-    v
-    10:45 AM
-    ```
-
-    If something goes wrong at 10:45, you can restore to an earlier point within the available retention window.
-
-    ---
-
-    # 20. Aurora Snapshots
-
-    You can also create manual snapshots.
-
-    Example:
-
-    ```text
-    Aurora Cluster
-        |
-        v
-    Manual Snapshot
-        |
-        v
-    Stored Backup
-    ```
-
-    Snapshots are useful before:
-
-    * Major database changes
-    * Schema migrations
-    * Application releases
-    * Database upgrades
-    * Destructive operations
-
-    You can also copy snapshots across AWS Regions depending on your disaster recovery requirements.
-
-    ---
-
-    # 21. Aurora Database Cloning
-
-    Aurora supports fast database cloning capabilities.
-
-    Conceptually:
-
-    ```text
-    Production Aurora
-        |
-        | Clone
-        v
-    Development Aurora
-    ```
-
-    This can be useful for:
-
-    * Development
-    * Testing
-    * QA
-    * Troubleshooting
-    * Analytics
-
-    Instead of creating a completely independent full copy immediately, Aurora can use its storage architecture to make cloning much faster and more storage-efficient.
-
-    ---
-
-    # 22. Aurora Networking
-
-    Aurora DB instances are deployed inside an Amazon VPC.
-
-    A typical architecture is:
-
-    ```text
-                            Internet
-                                |
-                                X
-                        No Direct Access
-                                |
-                                v
-                        Private Application
-                            Subnets
-                                |
-                                v
-                        Aurora Cluster
-                        Private DB Subnets
-    ```
-
-    Typically:
-
-    ```text
-    VPC
-    │
-    ├── Public Subnet
-    │
-    ├── Private Application Subnet
-    │
-    └── Private Database Subnet
-        │
-        ├── Aurora Writer
-        ├── Aurora Reader 1
-        └── Aurora Reader 2
-    ```
-
-    Aurora generally should not be publicly accessible for production workloads.
-
-    Your application might run on: EC2, ECS, EKS, Lambda, App Runner, Other AWS compute services and communicate with Aurora through the VPC network.
-
-    ---
-
-    # 23. Aurora DB Subnet Group
-
-    Aurora requires a DB subnet group.
-
-    For example:
-
-    ```text
-    DB Subnet Group
-        |
-        +---- Private Subnet AZ-1
-        |
-        +---- Private Subnet AZ-2
-        |
-        +---- Private Subnet AZ-3
-    ```
-
-    The subnet group should span multiple Availability Zones.
-
-    This allows Aurora to place database infrastructure across multiple AZs.
-
-    ---
-
-    # 24. Security Groups
-
-    Aurora uses VPC security groups.
-
-    Example:
-
-    ```text
-    Application Security Group
-            |
-            | TCP 3306
-            | or PostgreSQL port
-            v
-    Aurora Security Group
-    ```
-
-    For Aurora MySQL:
-
-    ```text
-    TCP 3306
-    ```
-
-    For Aurora PostgreSQL:
-
-    ```text
-    TCP 5432
-    ```
-
-    A recommended pattern is:
-
-    ```text
-    SG-App
-    |
-    | Inbound to DB SG
-    |
-    v
-    SG-Aurora
-    ```
-
-    Instead of:
-
-    ```text
-    0.0.0.0/0
-    ```
-
-    you should restrict access to known application security groups whenever possible.
-
-    ---
-
-    # 25. Aurora Security
-
-    Aurora integrates with multiple AWS security services.
-
-    ### Encryption at Rest
-
-    Aurora supports encryption using AWS KMS.
-
-    Conceptually:
-
-    ```text
-    Aurora Data
-        |
-        v
-    KMS Encryption
-        |
-        v
-    Encrypted Storage
-    ```
-
-    Encryption can protect: Database storag ,Automated backup ,Snapshot ,Replicas
-
-    ### Encryption in Transit
-
-    You can use TLS/SSL connections.
-
-    ```text
-    Application
-        |
-        | TLS
-        v
-    Aurora
-    ```
-
-    This protects database traffic while traveling over the network.
-
-    ### IAM Database Authentication
-
-    Aurora supports IAM database authentication for supported configurations.
-
-    Conceptually:
-
-    ```text
-    Application
-        |
-        v
-    IAM Authentication
-        |
-        v
-    Temporary Authentication Token
-        |
-        v
-    Aurora
-    ```
-
-    This can reduce reliance on long-lived database passwords.
-
-    ### Secrets Manager
-
-    For applications that use traditional username/password authentication, AWS Secrets Manager is commonly used.
-
-    ```text
-    Application
-        |
-        v
-    AWS Secrets Manager
-        |
-        v
-    DB Credentials
-        |
-        v
-    Aurora
-    ```
-
-    The application retrieves credentials securely rather than hard-coding them.
-
-    ---
-
-    # 26. Aurora Monitoring
-
-    Aurora integrates with: Amazon CloudWatch, Enhanced Monitoring, Performance Insights, CloudTrail, Database logs
-    You can monitor metrics such as: CPUUtilization, DatabaseConnections, FreeableMemory, ReadIOPS, WriteIOPS, ReadLatency, WriteLatency, ReplicaLag
-
-    For performance troubleshooting:
-
-    ```text
-    Application
-        |
-        v
-    High DB Latency
-        |
-        +--> CPU?
-        |
-        +--> Memory?
-        |
-        +--> Connections?
-        |
-        +--> Lock contention?
-        |
-        +--> Slow SQL?
-        |
-        +--> I/O?
-        |
-        +--> Replica lag?
-    ```
-
-    Performance Insights is especially useful for identifying database load and SQL-level bottlenecks.
-
-    ---
-
-    # 27. Aurora Logs
-
-    Aurora can provide database logs that can be integrated with CloudWatch Logs.
-
-    For example:
-
-    ```text
-    Aurora
-    |
-    v
-    Database Logs
-    |
-    v
-    CloudWatch Logs
-    ```
-
-    You can monitor:
-
-    * Error logs
-    * General logs
-    * Slow query logs
-    * Audit logs, depending on engine/configuration
-
-    This is useful for operational troubleshooting and security monitoring.
-
-    ---
-
-    # 28. CloudTrail
-
-    AWS CloudTrail records AWS API activity.
-
-    For example:
-
-    ```text
-    User / IAM Role
-        |
-        v
-    ModifyDBCluster
-        |
-        v
-    CloudTrail
-    ```
-
-    This allows you to audit activities such as:
-
-    * Who modified the Aurora cluster
-    * Who changed security settings
-    * Who created snapshots
-    * Who changed configuration
-
-    CloudTrail is not the same as database query logging.
-
-    Think:
-
-    ```text
-    CloudTrail
-        =
-    AWS API activity
-    ```
-
-    Whereas:
-
-    ```text
-    Database logs
-        =
-    Database-level activity
-    ```
-
-    ---
-
-    # 29. Aurora Maintenance
-
-    Aurora requires maintenance operations such as:
-
-    * Minor engine upgrades
-    * Major engine upgrades
-    * OS maintenance
-    * Security patches
-
-    You should carefully plan maintenance windows for production workloads.
-
-    Architecture teams should consider:
-
-    ```text
-    Production
-        |
-        v
-    Maintenance Window
-        |
-        v
-    Failover / Availability Impact
-    ```
-
-    Testing upgrades in a lower environment before production is recommended.
-
-    ---
-
-    # 30. Aurora Multi-AZ vs Read Replicas
-
-    This is a common interview topic.
-
-    For traditional RDS, people often say:
-
-    ```text
-    Multi-AZ = High Availability
-    Read Replica = Read Scaling
-    ```
-
-    With Aurora, the architecture is different.
-
-    Aurora's Reader instances can serve two roles:
-
-    ```text
-    Reader Instance
-        |
-        +---- Read Scaling
-        |
-        +---- Failover Target
-    ```
-
-    A Reader can be used to:
-
-    1. Serve read traffic
-    2. Become the Writer during failover
-
-    So you can think of Aurora as:
-
-    ```text
-    Writer
-    |
-    +---- Reader 1
-    |
-    +---- Reader 2
-    |
-    +---- Reader 3
-    ```
-
-    Readers provide both: Read scalability, Failover capacity
-
-    ---
-
-    # 33. Aurora Architecture Example
-
-    Imagine you're designing an online banking application.
-
-    You might build:
-
-    ```text
-                            Internet
-                                |
-                                v
-                        Route 53
-                                |
-                                v
-                        Application LB
-                                |
-                    +---------+---------+
-                    |                   |
-                    v                   v
-                ECS / EC2           Lambda
-                    |                   |
-                    +---------+---------+
-                                |
-                                v
-                    Aurora Cluster
-                                |
-                +-------------+-------------+
-                |                           |
-                v                           v
-            Writer                    Reader Endpoint
-                |                           |
-                |                    +------+------+
-                |                    |      |      |
-                |                    v      v      v
-                |                  R1      R2      R3
-                |                           |
-                +---------------------------+
-                                |
-                                v
-                    Aurora Shared Storage
-    ```
-
-    Application flow:
-
-    ```text
-    User logs in
-        |
-        v
-    Application
-        |
-        v
-    Aurora Writer
-        |
-        v
-    Transaction committed
-    ```
-
-    For account balance queries:
-
-    ```text
-    Application
-        |
-        v
-    Reader Endpoint
-        |
-        v
-    Aurora Reader
-    ```
-
-    But if the application requires immediate read-after-write consistency:
-
-    ```text
-    Write Transaction
-        |
-        v
-    Writer
-        |
-        v
-    Immediately Read
-        |
-        v
-    Writer
-    ```
-
-    This avoids potential replica lag concerns.
-
-    ---
-
-    # 34. Aurora Failure Scenario
-
-    Let's walk through a real-world failure.
-
-    Initial state:
-
-    ```text
-    AZ-1
-    |
-    +-- Writer
-
-    AZ-2
-    |
-    +-- Reader 1
-
-    AZ-3
-    |
-    +-- Reader 2
-    ```
-
-    Application:
-
-    ```text
-    Writes ---> Cluster Endpoint ---> Writer
-    Reads  ---> Reader Endpoint  ---> Readers
-    ```
-
-    Now Writer fails -->> Aurora detects the failure: `Writer X -->> Failure detected`
-
-    Aurora promotes a suitable Reader: `Reader 1 -->> New Writer`
-
-    The Cluster Endpoint now points to: `New Writer`
-
-    The application reconnects.
-
-    This is why applications should avoid hardcoding: `Writer Instance Endpoint`. Instead, use `Cluster Endpoint` for writes.
-
-    ---
-
-    # 35. Aurora Connection Architecture
-
-    A well-designed application might have two database connection pools.
-
-    ```text
-    Application
-        |
-        +----------------------+
-        |                      |
-        v                      v
-    Write Connection Pool   Read Connection Pool
-        |                      |
-        v                      v
-    Cluster Endpoint       Reader Endpoint
-        |                      |
-        v                      v
-    Writer                 Aurora Readers
-    ```
-
-    For example:
-
-    ```python
-    WRITE_DB_HOST = "cluster-endpoint"
-    READ_DB_HOST = "reader-endpoint"
-    ```
-
-    The application can route: `INSERT / UPDATE / DELETE ->> WRITE_DB_HOST` and `SELECT -->> READ_DB_HOST`
-
-    This is a common architecture for read-heavy applications.
-
-
-    # 36. Aurora with Lambda
-
-    -   A common serverless architecture is: `Client -->> API Gateway -->> Lambda -->> Aurora`
-    -   However, there is an important consideration: Lambda functions can create many concurrent database connections. For high-concurrency workloads, this can overwhelm the database.
-    -   A common solution is: `Lambda -->> Amazon RDS Proxy -->> Aurora`
-    -   Architecture: `API Gateway -->> Lambda -->> RDS Proxy -->> Aurora`
-    -   RDS Proxy can help manage database connections and improve connection pooling behavior for serverless applications.
-
-    # 39. Aurora Security Architecture
-
-    A production Aurora deployment might look like this:
-
-    ```text
-                            IAM
-                            |
-                            v
-                        Secrets Manager
-                            |
-                            v
-    Internet --> ALB --> Application --> Aurora
-                |           |             |
-                |           |             |
-                |           v             v
-                |        IAM Role      KMS
-                |                         |
-                |                         v
-                |                    Encryption
-                |
-                v
-            Security Group
-                |
-                v
-            Private Subnets
-    ```
-
-    Security controls include:
-
-    ```text
-    Network Security
-        |
-        +-- VPC
-        +-- Private Subnets
-        +-- Security Groups
-        +-- NACLs
-
-    Identity
-        |
-        +-- IAM
-        +-- IAM DB Authentication
-        +-- Secrets Manager
-
-    Encryption
-        |
-        +-- KMS
-        +-- TLS
-
-    Monitoring
-        |
-        +-- CloudTrail
-        +-- CloudWatch
-        +-- Database Logs
-        +-- Performance Insights
-    ```
-
-    ---
-
-    # 40. Aurora's Biggest Advantages
-
-    The main advantages are:
-
-    1. **High Availability**: `Multiple AZs + Distributed Storage + Reader Failover`
-    2. **High Durability**: Data is replicated across multiple storage locations.
-    3. **Read Scaling**: You can add Aurora Readers.
-    4. **Fast Failover**: Readers can be promoted to Writer.
-    5. **Storage Scaling**: Storage can grow automatically.
-    6. **Managed Service**: AWS manages much of Infrastructure, Storage, Patching, Backups, Replication
-    7. **MySQL/PostgreSQL Compatibility**: Existing applications can often migrate more easily.
-
-    ---
-
-    # 41. Aurora's Limitations / Things to Watch
-
-    Aurora is powerful, but it isn't automatically the right choice for every workload.
-
-    -   **Cost**: Aurora can be more expensive than simpler database options.
-    -   **Connection Management**: Large numbers of application connections can cause problems.
-    -   **Replica Lag**: Readers can have replication lag.
-    -   **Application Design**: Using Reader endpoints requires your application to understand read/write routing.
-    -   **Failover**: Applications must handle: Connection errors, Reconnection, Transaction retry
-    -   **SQL Compatibility**: "MySQL-compatible" or "PostgreSQL-compatible" does not necessarily mean 100% identical behavior to every version of the upstream database.
-
-
-    ---
-
-    # 42. Interview Questions You Should Be Able to Answer
-
-    For AWS interviews, I would make sure you can confidently answer these:
-
-    ### Basic
-
-    8. What is Amazon Aurora?
-    9. What is the difference between Aurora MySQL and Aurora PostgreSQL?
-    10. What is an Aurora Cluster?
-    11. What is a Writer instance?
-    12. What is a Reader instance?
-
-    ### Architecture
-
-    13. How does Aurora storage work?
-    14. How is Aurora different from RDS MySQL?
-    15. What is Aurora shared storage?
-    16. How does Aurora achieve high availability?
-    17. What happens if the Writer fails?
-
-    ### Endpoints
-
-    18. What is the Cluster Endpoint?
-    19. What is the Reader Endpoint?
-    20. What is a Custom Endpoint?
-    21. Why shouldn't applications hardcode a Writer instance endpoint?
-
-    ### Scaling
-
-    22. How do you scale Aurora reads?
-    23. How do you scale Aurora compute?
-    24. What is Aurora Serverless?
-    25. What is Aurora Global Database?
-
-    ### Security
-
-    26. How do you secure Aurora?
-    27. How do Security Groups work with Aurora?
-    28. How do you encrypt Aurora?
-    29. How do you manage Aurora credentials?
-    30. What is IAM database authentication?
-
-    ### Operations
-
-    31. How do Aurora backups work?
-    32. What is Point-in-Time Recovery?
-    33. What are Aurora snapshots?
-    34. How do you monitor Aurora?
-    35. How do you troubleshoot high Aurora CPU?
-    36. How do you troubleshoot high database latency?
-    37. What is Aurora replica lag?
-
-    ### Architecture Scenario
-
-    38. Design a highly available Aurora architecture across three AZs.
-    39. Design Aurora for a read-heavy application.
-    40. Design Aurora for Lambda.
-    41. Design Aurora for a multi-region application.
-    42. Design Aurora for disaster recovery.
-
-
-    </details>
-
----
-
--   <details><summary style="font-size:25px;color:Orange">ACM</summary>
-
-    **AWS Certificate Manager (ACM)** is a **fully managed** service that handles **SSL/TLS certificate provisioning, management, and renewal** for AWS services like **Elastic Load Balancers (ELB), CloudFront, API Gateway, and AWS App Runner**. It allows **automatic renewal** of certificates, eliminating manual management.
-
-    #### Key Components & Terms in ACM
-
-    -   **Public Certificates**: A **public certificate** is an **SSL/TLS certificate issued by a trusted Certificate Authority (CA)** that is recognized globally by web browsers, operating systems, and devices. These certificates **verify the identity of a website or service** and ensure encrypted communication over HTTPS.
-
-        -   **Key Features of Public Certificates**:
-
-            -   Issued by a public CA such as DigiCert, Let's Encrypt, GlobalSign, or Sectigo.
-            -   Globally trusted by browsers and devices (pre-installed CA root certificates).
-            -   Used for public-facing websites, APIs, and web services.
-            -   Requires domain ownership verification before issuance.
-
-        -   **Where Are Public Certificates Used?**:
-
-            -   Public websites (e.g., `https://www.example.com`).
-            -   E-commerce sites, SaaS applications, and public APIs.
-            -   Cloud services like AWS CloudFront, ALB, and API Gateway.
-
-        -   **How to Get a Public Certificate?**:
-
-            -   Buy from a CA (e.g., DigiCert, Sectigo) and then import into ACM
-            -   Use a free CA (e.g., Let's Encrypt) and then import into ACM
-            -   Request an AWS Certificate Manager (ACM) Public Certificate (for AWS services).
-            -   `Example`: Requesting a Public Certificate from AWS ACM
-                ```bash
-                aws acm request-certificate \
-                --domain-name example.com \
-                --validation-method DNS
-                ```
-
-    -   **Private Certificates**: A **private certificate** is an **SSL/TLS certificate issued by a private certificate authority (CA)**, typically within an **organization's internal network**. These certificates **are not publicly trusted** but are used for internal systems, secure communication, and authentication within an organization's infrastructure.
-
-        -   **Key Features of Private Certificates**
-
-            -   Issued by a private CA (e.g., AWS Private CA, Microsoft Active Directory Certificate Services).
-            -   Not publicly trusted (browsers do not recognize them unless manually installed).
-            -   Used for internal services, VPNs, databases, and private applications.
-            -   Provides encryption and authentication without exposing data to the public internet.
-
-        -   **Where Are Private Certificates Used?**
-
-            -   Internal applications (e.g., intranet, internal APIs, databases).
-            -   Private networks, VPNs, and corporate email encryption.
-            -   Mutual TLS (mTLS) authentication between microservices.
-            -   IoT devices, Kubernetes clusters, and internal service communication.
-
-        -   **How to Get a Private Certificate?**
-
-            -   Use AWS Private CA (part of AWS Certificate Manager).
-            -   Set up a self-signed certificate using OpenSSL.
-            -   Use an on-premises CA (e.g., Microsoft Active Directory Certificate Services).
-            -   `Example`: Generating a Private Certificate with OpenSSL
-
-                -   `$ openssl req -x509 -newkey rsa:2048 -keyout private_key.pem -out certificate.pem -days 365`
-
-            -   `Example`: Requesting a Private Certificate from AWS ACM Private CA
-                ```bash
-                aws acm-pca issue-certificate \
-                --certificate-authority-arn <private-ca-arn> \
-                --csr file://csr.pem \
-                --signing-algorithm "SHA256WITHRSA" \
-                --validity Value=365,Type="DAYS"
-                ```
-
-    -   **Certificate Validation Types**: ACM requires domain validation before issuing a certificate. There are two ways:
-
-        -   `DNS Validation (Recommended)`
-
-            -   ACM provides a **CNAME record** to add to your domain's DNS settings.
-            -   Once added, ACM automatically validates and renews the certificate.
-
-        -   `Email Validation`
-
-            -   ACM sends an email to the **domain admin (WHOIS contact)**.
-            -   The recipient must **click a link** to approve the certificate request.
-
-    -   **Certificate Renewal & Expiration**
-
-        -   Public ACM certificates are **auto-renewed** before expiration.
-        -   Private certificates **can be auto-renewed** if configured properly.
-        -   If **DNS validation is used**, renewals are **automatic**.
-        -   If **email validation is used**, renewals **require manual approval**.
-
-    -   **ACM Certificate Deployment**: Once issued, ACM certificates can be **deployed** to AWS services like:
-
-        -   `Elastic Load Balancer (ALB, NLB, CLB)`
-        -   `Amazon CloudFront`
-        -   `Amazon API Gateway`
-        -   `AWS App Runner`
-        -   `AWS Elastic Beanstalk`
-
-    #### Step-by-Step: Requesting an SSL Certificate in ACM
-
-    1. **Request a Certificate**
-
-        - **Using AWS CLI**(alternatively Using AWS Console):
-
-            ```sh
-            aws acm request-certificate \
-            --domain-name example.com \
-            --validation-method DNS \
-            --subject-alternative-names www.example.com
-            ```
-
-    2. **Validate Your Domain**:
-
-        - If using **DNS validation**:
-
-            - Go to **Route 53** (or your DNS provider).
-            - Add the **CNAME record** provided by ACM.
-            - ACM will automatically detect it and issue the certificate.
-
-        - If using **Email validation**:
-            - Check the **WHOIS-registered email inbox**.
-            - Click the validation link.
-
-    3. **Deploy the ACM Certificate**: Once issued, deploy it to supported AWS services.
-
-        - **Attach to an ALB (Application Load Balancer)**:
-
-            ```sh
-            aws elbv2 create-listener \
-            --load-balancer-arn <your-load-balancer-arn> \
-            --protocol HTTPS --port 443 \
-            --certificates CertificateArn=<your-certificate-arn> \
-            --default-actions Type=forward,TargetGroupArn=<your-target-group-arn>
-            ```
-
-        - **Attach to CloudFront**:
-
-            ```sh
-            aws cloudfront update-distribution \
-            --id <your-distribution-id> \
-            --default-root-object index.html \
-            --viewer-certificate CloudFrontDefaultCertificate=false,ACMCertificateArn=<your-certificate-arn>,SSLSupportMethod=sni-only
-            ```
-
-    #### Custom SSL Certificate
-
-    A **Custom SSL Certificate** in the context of AWS refers to an **SSL/TLS certificate that you manually upload and manage** instead of using an AWS-managed certificate from **AWS Certificate Manager (ACM)**. These certificates are often issued by third-party **Certificate Authorities (CAs)** or generated for internal use.
-
-    -   **Custom SSL Certificates Used in AWS**: Custom SSL certificates are typically used in AWS services that require **TLS encryption** for securing connections, such as:
-
-        1. **AWS CloudFront (CDN Service)**: You can upload a custom SSL certificate to **AWS Certificate Manager (ACM) in the US East (N. Virginia) region (`us-east-1`)** and use it for **HTTPS connections** on your CloudFront distribution.
-        2. **AWS Elastic Load Balancer (ELB - ALB, NLB, CLB)**: Custom SSL certificates can be used with **Application Load Balancer (ALB)** and **Network Load Balancer (NLB)** to terminate SSL/TLS traffic before forwarding it to backend instances.
-        3. **AWS API Gateway**: API Gateway allows **custom domain names** with a custom SSL certificate for secure API endpoints.
-        4. **AWS IoT Core & AWS MQTT**: When using AWS IoT services, you may need a **custom SSL certificate** for **device authentication** and secure communication.
-        5. **AWS CloudFormation & Terraform**: Infrastructure as Code (IaC) tools can reference and deploy **custom SSL certificates** stored in ACM.
-        6. **AWS EC2 & Self-Managed Web Servers**: Custom SSL certificates can be installed manually on **Apache, Nginx, or other web servers** running on **Amazon EC2 instances**.
-
-    -   **Key Features of Custom SSL Certificates**
-
-        -   **Manually uploaded** to AWS ACM or IAM.
-        -   **Supports wildcard (`*.example.com`) and multi-domain (`SAN`) certificates**.
-        -   **Full control** over renewal and revocation.
-        -   Can be used with **ALB, NLB, API Gateway, and CloudFront**.
-
-    -   **How to Upload and Use a Custom SSL Certificate in AWS?**
-
-        1. **Obtain an SSL Certificate**
-
-            - Purchase an **SSL/TLS certificate** from a trusted CA (e.g., DigiCert, Let’s Encrypt).
-            - Generate a **private key** and **Certificate Signing Request (CSR)**:
-
-                - `openssl req -new -newkey rsa:2048 -nodes -keyout private_key.pem -out csr.pem`
-
-            - Submit the **CSR** to the CA and obtain the **certificate files (`.crt`, `.pem`, `.key`)**.
-
-        2. **Upload the Certificate to AWS**
-
-            - `Option 1`: Upload to AWS Certificate Manager (ACM)
-
-                - Run the following AWS CLI command:
-                    ```bash
-                    aws acm import-certificate \
-                    --certificate file://certificate.pem \
-                    --private-key file://private_key.pem \
-                    --certificate-chain file://ca_bundle.pem
-                    ```
-
-            - `Option 2`: Upload to AWS IAM (For ELB)
-                - Use AWS CLI to upload a custom SSL certificate to IAM for **Classic Load Balancer (CLB)**:
-                    ```bash
-                    aws iam upload-server-certificate \
-                    --server-certificate-name MyCustomCert \
-                    --certificate-body file://certificate.pem \
-                    --private-key file://private_key.pem \
-                    --certificate-chain file://ca_bundle.pem \
-                    --path /cloudfront/
-                    ```
-
-        3. **Attach the Certificate to an AWS Service**
-
-            - `For AWS CloudFront`: Select the Custom SSL Certificate from ACM when configuring CloudFront’s HTTPS settings.
-
-            - `For AWS Load Balancer`: Use the uploaded certificate in Application Load Balancer (ALB) or Network Load Balancer (NLB):
-
-                ```bash
-                aws elbv2 create-listener \
-                --load-balancer-arn <your-load-balancer-arn> \
-                --protocol HTTPS --port 443 \
-                --certificates CertificateArn=<your-certificate-arn> \
-                --default-actions Type=forward,TargetGroupArn=<your-target-group-arn>
-                ```
-
-            - `For AWS API Gateway`: Assign the custom certificate to a **custom domain name** in API Gateway.
-
-    -   **Custom SSL Certificates vs. AWS-Managed Certificates**
-
-        | Feature                | Custom SSL Certificate                   | AWS-Managed (ACM) Certificate |
-        | ---------------------- | ---------------------------------------- | ----------------------------- |
-        | **Issued by**          | Third-party CA (DigiCert, Sectigo, etc.) | AWS ACM                       |
-        | **Renewal**            | Manual                                   | Automatic                     |
-        | **Supported Services** | CloudFront, ELB, API Gateway, EC2        | CloudFront, ELB, API Gateway  |
-        | **Management**         | Fully controlled by the user             | Managed by AWS                |
-        | **Cost**               | May require CA fees                      | Free via ACM                  |
-
-    #### IAM vs ACM vs Custom SSL Certificates
-
-    | Feature                                   | IAM Certificate                       | ACM Certificate                | Custom SSL Certificate                      |
-    | ----------------------------------------- | ------------------------------------- | ------------------------------ | ------------------------------------------- |
-    | **Where Stored?**                         | AWS IAM                               | AWS Certificate Manager (ACM)  | User-managed, can be imported to ACM or IAM |
-    | **Managed by AWS?**                       | No                                    | Yes                            | No                                          |
-    | **Automatic Renewal?**                    | No                                    | Yes                            | No                                          |
-    | **Supports AWS CloudFront?**              | Legacy support only                   | Yes                            | Yes (when imported to ACM)                  |
-    | **Supports ALB & NLB?**                   | No                                    | Yes                            | Yes (when imported to ACM)                  |
-    | **Supports Classic Load Balancer (CLB)?** | Yes                                   | No                             | Yes (when imported to IAM)                  |
-    | **Can Be Used Outside AWS?**              | No                                    | No                             | Yes                                         |
-    | **Private Key Exportable?**               | Yes                                   | No                             | Yes                                         |
-    | **Supports Self-Signed Certificates?**    | Yes                                   | No                             | Yes                                         |
-    | **Best Use Case?**                        | Legacy AWS services (CLB, CloudFront) | Fully AWS-managed environments | Hybrid AWS & non-AWS environments           |
-
-    #### Trust Store
-
-    A **Trust Store** in AWS is a collection of **trusted Certificate Authorities (CAs)**—specifically, a set of **X.509 certificates** that are used to validate client certificates during **Mutual TLS (mTLS)** authentication. It defines **which certificates your system trusts** when a client tries to establish a secure connection. This concept is foundational for mutual TLS, where **both client and server authenticate each other** using certificates.
-
-    -   **Where Trust Store is Used in AWS**
-
-        1. **Amazon API Gateway (for Mutual TLS)**: When using mTLS with API Gateway, you upload a **Trust Store (a PEM file or an Amazon S3 location of trusted CA certs)**. This Trust Store is used to **validate the client’s certificate**.
-
-        -   The Trust Store must contain the **root CA certificates** that issued the client certs.
-        -   If the client presents a cert signed by a CA not in the trust store, the connection is rejected.
-
-        > Used when you want to **verify client identity** with certificates (e.g., B2B APIs, internal systems).
-
-        1. **AWS Verified Access**: In AWS Verified Access (used to provide secure access to internal apps without VPN), a **Trust Provider** can use a **Trust Store** to validate device or user certificates.
-
-            - This helps ensure that only devices/users with valid certificates from a trusted CA can access resources.
-
-        2. **Custom Applications on EC2, ELB, or NLB**: If you’re running a service on EC2 behind an **Elastic Load Balancer (ELB)** with mTLS enabled, you may need to configure your backend with a **trust store** to validate incoming client certificates.
-
-        3. **Private Certificate Authority (CA)**: While not called a "trust store" directly, AWS Private CA can issue certificates, and the certificates issued by a trusted CA (internal or external) would be included in the **Trust Store** of clients/servers that validate those certs.
-
-    -   **How it Works: Mutual TLS & Trust Store**
-
-        1. **Client sends certificate** during TLS handshake.
-        2. **API Gateway or backend checks client cert**:
-            - Is it signed by a trusted CA from the Trust Store?
-            - Is it expired or revoked?
-        3. **If valid**, the connection proceeds.
-        4. **If not trusted**, the connection is denied (HTTP 403).
-
-    -   **How to Create a Trust Store in AWS**
-
-        -   Upload one or more PEM-encoded X.509 certificates (Root/Intermediate CAs) to **Amazon S3**.
-        -   Reference the Trust Store in services like API Gateway by providing:
-            ```json
-            {
-                "truststoreUri": "s3://your-bucket/path-to-ca.pem"
-            }
-            ```
-        -   Ensure S3 permissions allow the service to access the Trust Store.
-
-    -   **Best Practices**
-
-        -   Keep your Trust Store updated with **valid CA certificates**.
-        -   Revoke or remove compromised CA certs immediately.
-        -   Use **certificate revocation lists (CRLs)** or **OCSP** for more dynamic cert validation (depending on service support).
-        -   Use **least privilege** for access to the Trust Store (e.g., S3 bucket policies).
-
-    -   **Example Use Case (Securing Internal APIs with mTLS)**: You have a service hosted in AWS API Gateway that should only be accessed by clients within your org:
-
-        -   You generate client certs using AWS Private CA.
-        -   You upload the CA certs to S3 to act as a Trust Store.
-        -   You enable mTLS on API Gateway and point it to the Trust Store.
-        -   Now, only clients with valid certs signed by your CA can access the API.
-
-    -   <details><summary style="font-size:20px;color:red">self-signed certificate</summary>
-
-        A **self-signed certificate** is an SSL/TLS certificate that is **signed by the same entity that created it**, instead of being signed by a trusted Certificate Authority (CA).
-
-        -   🔐 What Is a Self-Signed Certificate?
-
-            -   A **Certificate Authority (CA)** like Amazon, Let's Encrypt, or DigiCert **verifies** the identity of the domain owner and then **signs** the certificate.
-            -   This **signature builds trust**, so browsers and clients accept it as valid.
-
-            -   A **self-signed certificate** is **created and signed by the domain owner** without any external validation.
-            -   It is **not trusted** by default in browsers or operating systems.
-
-        -   📍 Why Use Self-Signed Certificates?
-
-            -   **Testing & Development:** Commonly used for local or non-production environments.
-            -   **Internal Services:** For internal APIs, microservices, or lab environments not exposed to the internet.
-            -   **No Cost:** Doesn’t require payment or CA involvement.
-
-        -   ❌ Why Not Use in Production?
-
-            -   **Not trusted by browsers.**
-            -   Browsers show security warnings like _"Your connection is not private."_
-            -   Clients may reject connections unless explicitly configured to trust the certificate.
-
-        -   ✅ What ACM Supports:
-
-            -   **Public ACM Certificates**: Issued by Amazon’s trusted CA and used with services like: CloudFront, Elastic Load Balancer (ELB), API Gateway
-            -   These certificates are **automatically renewed and trusted**.
-
-        -   🚫 What ACM Does NOT Support:
-
-            -   **You cannot import self-signed certificates into ACM for use with CloudFront or ELB.**
-            -   ACM **only supports imported certificates for certain services (like EC2 Nginx/Apache)** if:
-
-                -   You bring your **own certificate** (including self-signed),
-                -   You **manually import it** into ACM via the console, CLI, or SDK.
-
-            ```bash
-            aws acm import-certificate \
-            --certificate file://cert.pem \
-            --private-key file://privkey.pem \
-            --certificate-chain file://chain.pem
-            ```
-
-            > ⚠️ But such self-signed certs won’t work with CloudFront, ELB, or API Gateway — only with services where you control the TLS termination (like an EC2 instance or private ALB listener).
+        -   **Core Count:** You can specify the total number of **CPU Cores** for your instance.
+        -   **Threads per Core:** You can specify the number of **threads per core** (usually 1 or 2). Setting this to **1** effectively **disables SMT/Hyper-Threading**, which can be necessary for certain security- or performance-critical high-performance computing (HPC) workloads.
 
         </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Auto Scaling Groups</summary>
+
+        -   **Auto Scaling Group**: AWS **Auto Scaling Groups (ASG)** is a key component of AWS Auto Scaling that ensures the right number of Amazon EC2 instances are running to handle application load efficiently. ASG helps maintain availability, improve performance, and optimize costs by automatically scaling instances based on demand.
+
+            -   Manages the group of EC2 instances based on policies.
+            -   Key properties:
+                -   **Minimum Capacity:** Minimum number of instances that must run.
+                -   **Desired Capacity:** The ideal number of instances at a given time.
+                -   **Maximum Capacity:** The upper limit of instances that can be launched.
+
+        #### Components of ASGs
+
+        1. **Launch Template or Launch Configuration**
+
+            - Defines the settings for EC2 instances within the Auto Scaling Group.
+            - Includes:
+                - **AMI (Amazon Machine Image):** The base image for instances.
+                - **Instance Type:** The hardware specifications (CPU, RAM, etc.).
+                - **Key Pair:** SSH key for remote access.
+                - **Security Groups:** Controls inbound/outbound traffic.
+                - **IAM Role:** Grants permissions to instances.
+                - **User Data Script:** Custom startup commands.
+
+        2. **Scaling Policies**
+
+            - Determines when and how ASG should scale in or out.
+            - Types of Auto Scaling Policies:
+                - **Dynamic Scaling**: Adjusts instances based on real-time metrics.
+                    - **Target Tracking Scaling**: Maintains a CloudWatch target metric (e.g., CPU usage at 50%).
+                    - **Step Scaling**: Scales in increments (e.g., add 2 instances if CPU > 70%) and out decrement.
+                    - **Simple Scaling**: Adds/removes a fixed number of instances based on a single alarm.
+                - **Predictive Scaling**: Uses machine learning to anticipate scaling needs.
+                - **Scheduled Scaling**:
+
+        3. **Health Checks**
+
+            - Ensures that unhealthy instances are terminated and replaced.
+            - Types:
+                - **EC2 Health Check:** Checks if instance responds to system status checks.
+                - **ELB Health Check:** Checks if the instance is responsive to an Elastic Load Balancer.
+            - **Health Check Grace Period**:
+
+        4. **Load Balancer Integration**
+
+            - **Elastic Load Balancer (ELB)** ensures traffic is distributed among instances.
+            - Auto Scaling Group automatically registers/deregisters instances.
+
+        5. **Termination Policies**
+
+            - Determines which instance is terminated first during scale-in.
+            - Options include:
+                - **Default (Oldest Launch Template First):** Terminates instances from the oldest launch template.
+                - **Oldest Instance:** Terminates the longest-running instance first.
+                - **Newest Instance:** Terminates the most recently launched instance.
+                - **Closest to Billing Hour:** Optimizes cost by terminating instances nearing their next billing hour.
+            - Termination Protection
+
+        6. **Lifecycle Hooks**
+
+            - Allows custom actions before an instance is launched or terminated.
+            - Common use cases:
+                - Pre-installing software before making the instance active.
+                - Sending logs before terminating an instance.
+
+        7. **Warm Pools**
+
+            - Keeps pre-initialized instances on standby to speed up scaling.
+            - Reduces boot time by allowing instances to be launched partially configured.
+
+        #### Key Concepts of AWS Auto Scaling Groups
+
+        8. **Cooldowns**:
+        9. **Standby State**:
+        10. **Lifecycle Hooks**:
+
+        11. **Elasticity**
+
+            - Automatically adjusts capacity to meet traffic demands.
+            - Ensures availability during peak times and cost savings during low traffic.
+
+        12. **High Availability**
+
+            - Auto Scaling Group distributes instances across multiple **Availability Zones (AZs)**.
+            - Prevents application downtime due to hardware failure.
+
+        13. **Cost Optimization**
+
+            - Ensures that only the necessary number of instances are running.
+            - Uses **Spot Instances** for cost savings when appropriate.
+
+        14. **Fault Tolerance**
+
+            - Automatically replaces failed instances to maintain application health.
+
+        15. **Region and Availability Zone Awareness**
+
+            - ASG can span multiple **Availability Zones (AZs)** but remains within a single **AWS Region**.
+
+            - **Web Applications:** Scale based on incoming HTTP traffic.
+            - **Batch Processing:** Scale based on queued jobs.
+            - **Big Data Analytics:** Scale based on compute needs.
+            - **Microservices:** Adjusts instances for each service independently.
+
+        Auto Scaling in the context of AWS EC2 is a robust, fully managed service that automatically adjusts the number of Amazon EC2 instances in your application to meet demand fluctuations, ensuring optimal performance, availability, and cost efficiency. It primarily performs **horizontal scaling** (adding or removing instances).
+
+        Here is a vivid and detailed explanation of how it works and its core components:
+
+        ***
+
+        ### The Core Components
+
+        EC2 Auto Scaling is centered around three primary components working in tandem:
+
+        #### 1. Auto Scaling Group (ASG)
+
+        The ASG is the **logical grouping** of EC2 instances that are treated as a single unit for scaling and management. It is the central configuration for your fleet of servers.
+
+        -   **Min/Max/Desired Capacity:**
+
+            -   **Minimum Capacity:** The lowest number of instances the group will _ever_ scale down to. This maintains essential application availability.
+            -   **Maximum Capacity:** The highest number of instances the group will _ever_ scale out to. This acts as a protective cap against runaway costs or resource limits.
+            -   **Desired Capacity:** The number of instances the ASG attempts to maintain under normal conditions.
+
+        -   **Health Checks and Maintenance:** The ASG continuously monitors the health of its instances using EC2 status checks or Elastic Load Balancer (ELB) health checks. If an instance fails a health check, the ASG automatically **terminates the unhealthy instance** and launches a replacement to maintain the **Desired Capacity**. This provides self-healing and fault tolerance.
+
+        #### 2. Launch Template (or Launch Configuration)
+
+        This component acts as the **blueprint** for creating new EC2 instances. When the ASG needs to launch a new instance (a "scale-out" event), it uses this template.
+
+        The Launch Template defines:
+
+        -   **AMI (Amazon Machine Image):** The operating system and pre-installed software for the instance.
+        -   **Instance Type:** The hardware configuration (e.g., $t2.micro$, $m5.large$).
+        -   **Key Pair:** For secure login.
+        -   **Security Groups:** Firewall rules controlling access.
+        -   **User Data:** A script to run upon launch for bootstrapping the application (e.g., installing software, pulling code).
+
+        #### 3. Scaling Policies
+
+        These are the **rules** that dictate _when_ and _how_ the ASG should increase or decrease the number of instances. They translate application demand into capacity adjustments. Scaling policies rely on **Amazon CloudWatch alarms** to monitor metrics (like CPU utilization, network traffic, or custom metrics).
+
+        ***
+
+        ### Types of Scaling Policies
+
+        AWS EC2 Auto Scaling offers several sophisticated methods to handle different demand patterns:
+
+        #### A. Dynamic Scaling (Reactive)
+
+        This is the most common type, reacting to real-time changes in load.
+
+        1.  **Target Tracking Scaling:**
+
+            -   **How it works:** You define a target value for a specific metric (e.g., "Maintain average CPU utilization at 50%").
+            -   **Analogy:** Like a home thermostat. The policy calculates the necessary capacity change to keep the metric as close to the target value as possible. This is the simplest and often most effective method.
+
+        2.  **Step Scaling:**
+
+            -   **How it works:** You define a series of scaling adjustments (steps) that are triggered when a metric crosses various thresholds.
+            -   **Example:**
+                -   If CPU $> 70\%$: Add 1 instance.
+                -   If CPU $> 90\%$: Add 3 instances.
+            -   This provides a nuanced, graduated response to rapidly increasing or decreasing load.
+
+        3.  **Simple Scaling (Legacy):**
+            -   **How it works:** Similar to Step Scaling but with a single, fixed scaling adjustment for a single threshold breach. It is generally recommended to use Target Tracking or Step Scaling instead.
+
+        #### B. Scheduled Scaling (Predictive)
+
+        This is ideal for **predictable load changes** (e.g., a massive traffic spike every Monday at 9 AM).
+
+        -   **How it works:** You define a date, time, and new Min/Max/Desired capacity for the group. The scaling action executes at the scheduled time.
+        -   **Benefit:** Allows the application to scale **proactively** before the spike hits, avoiding performance degradation that reactive dynamic scaling might experience while new instances boot up.
+
+        #### C. Predictive Scaling (Advanced)
+
+        This uses machine learning to **forecast future load** based on up to two weeks of historical metrics.
+
+        -   **How it works:** It generates a forecast of future demand and schedules scaling actions in advance to ensure capacity is available _before_ the traffic arrives.
+        -   **Benefit:** Combines the proactive scaling of Scheduled Scaling with the precision of Dynamic Scaling, great for applications with recurring but complex traffic patterns.
+
+        ***
+
+        ### The Auto Scaling Process in Action
+
+        1.  **Initial Launch:** The ASG launches the **Desired Capacity** of instances using the **Launch Template**.
+        2.  **Load Increase (Scale-Out):**
+            -   Application load increases (e.g., web traffic spikes).
+            -   **CloudWatch** detects the defined metric (e.g., CPU utilization) has breached the threshold specified in a **Scaling Policy** (e.g., Target Tracking).
+            -   The Scaling Policy instructs the **ASG** to increase the **Desired Capacity** by a calculated amount (but not above **Maximum Capacity**).
+            -   The ASG uses the **Launch Template** to provision and launch new EC2 instances.
+        3.  **Load Decrease (Scale-In):**
+            -   Application load drops (e.g., the workday ends).
+            -   CloudWatch detects the metric has dropped below the lower threshold (e.g., CPU $< 30\%$).
+            -   The Scaling Policy instructs the ASG to decrease the **Desired Capacity** (but not below **Minimum Capacity**).
+            -   The ASG terminates one or more instances, preferentially choosing the ones with the least connections or based on a defined **Termination Policy**.
+
+        AWS EC2 Auto Scaling uses **Cooldowns**, the **Standby State**, and **Lifecycle Hooks** to provide control and stability over the automatic scaling of your EC2 instances.
+
+        ***
+
+        ## Cooldowns
+
+        A **Cooldown** is a configurable waiting period after a scaling activity (either launching or terminating instances) completes, during which the Auto Scaling group suspends any subsequent scaling activities that are triggered by **simple scaling policies** or **manual scaling**.
+
+        -   **Purpose:** To prevent rapid, unnecessary, or runaway scaling actions that could result in over- or under-provisioning. It gives the newly launched instances time to warm up, complete essential configuration tasks, start processing traffic, and for the related CloudWatch metrics to stabilize and reflect the current load.
+        -   **Mechanism:** Once a scaling action finishes, the Auto Scaling group enters the cooldown period. During this time, it ignores other scaling triggers from simple scaling policies.
+        -   **Note:** Cooldowns primarily apply to **simple scaling policies**. **Target tracking** and **step scaling policies** use a similar concept called **Instance Warmup** to manage scaling frequency based on when new instances are ready to handle traffic.
+
+        ***
+
+        ## Standby State
+
+        The **Standby State** is a feature that allows you to temporarily remove an instance from the active service set of your Auto Scaling group for maintenance or troubleshooting, without the Auto Scaling group terminating the instance or attempting to replace it.
+
+        -   **Purpose:** To allow a user to perform updates, patching, or debugging on an instance while keeping it within the Auto Scaling group's management, but preventing it from being served traffic (if integrated with a Load Balancer) or being terminated during a scale-in event.
+        -   **Mechanism:**
+            1.  You move a running instance from the **`InService`** state to the **`Standby`** state.
+            2.  If the Auto Scaling group is attached to a load balancer, the instance is **deregistered** and stops receiving traffic.
+            3.  You can choose to **decrement the desired capacity** of the group (no replacement instance is launched) or **not to decrement it** (a replacement instance is launched to maintain the original capacity).
+            4.  The instance is still counted against the group's `MinSize` and `MaxSize` limits.
+            5.  When finished, you manually move the instance back to the **`InService`** state, and it is re-registered with any attached load balancers.
+
+        ***
+
+        ## Lifecycle Hooks
+
+        **Lifecycle Hooks** give you the ability to pause an instance as it launches or terminates, allowing you to perform custom actions before the instance is fully put into service or completely terminated.
+
+        -   **Purpose:** To inject custom logic into the instance lifecycle, ensuring your instances are fully configured before handling traffic (on launch) or that all necessary cleanup is performed (on termination).
+        -   **Mechanism:**
+            -   **Instance Launching:** A new instance launches and enters a **`Pending:Wait`** state instead of going straight to `InService`. This pause allows a custom script, AWS Lambda function, or other process (often triggered by an Amazon Simple Notification Service (SNS) or Amazon EventBridge event) to perform final configuration like software installation, data synchronization, or registration with third-party services. Once the action is complete, the process sends a signal (`CompleteLifecycleAction`) to the Auto Scaling group to move the instance to `InService`.
+            -   **Instance Terminating:** An instance targeted for termination enters a **`Terminating:Wait`** state. This pause allows for actions like draining connections, saving application logs, or deregistering from a custom service discovery system. A signal is then sent to complete the termination.
+        -   **Configuration:** You define a heartbeat timeout (up to 7200 seconds or 2 hours) which specifies how long the instance can remain in the `*Wait` state. If the custom action does not send a `CompleteLifecycleAction` signal before the timeout, the Auto Scaling group proceeds based on a configured `DefaultResult` (either `CONTINUE` or `ABANDON`).
+
+        </details>
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">ECS</summary>
+
+    > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Launch Types or Capacity Providers</summary>
+
+        > Amazon Elastic Container Service (ECS) offers two primary **Compute Options** (often referred to as **Launch Types** or **Capacity Providers**) for running your containerized workloads: **AWS Fargate** (Serverless) and **Amazon EC2** (Customer-Managed). The choice depends heavily on your team's operational model, control requirements, and cost optimization strategy.
+
+        1. **AWS Fargate (Serverless Launch Type)**: **AWS Fargate** is a **serverless compute engine** for containers that removes the need for you to provision, configure, or manage the underlying virtual machines (EC2 instances). You simply define the CPU and memory requirements for your containerized application, and AWS handles the rest.
+
+            - **Key Characteristics**:
+
+                - **Infrastructure Management:** **Fully managed by AWS**. You focus only on the container tasks; AWS manages the instance fleet, scaling, patching, and security hardening of the container hosts.
+                - **Resource Allocation:** **Per-Task Granularity**. You specify the exact vCPU and memory (e.g., 0.5 vCPU and 4 GB memory) your **Task** needs, rather than selecting a fixed instance type. This leads to better resource utilization and less over-provisioning.
+                - **Pricing:** **Pay-per-use**. You are billed for the requested vCPU and memory resources for the duration your tasks are running (billed per second). There is no cost for idle EC2 instances.
+                - **Scalability:** **Automatic**. Fargate automatically provisions and scales the compute resources to meet the demand of your running tasks, making it ideal for variable, spiky, or unpredictable workloads.
+                - **Control/Customization:** **Low**. You have no access to the host operating system (OS), which simplifies security but restricts the use of host-level features (like DaemonSets or specific kernel configurations).
+
+            - **When to Choose Fargate**:
+                - When **operational simplicity** and speed of deployment are the top priorities.
+                - For **bursty, unpredictable workloads** or short-lived jobs (like batch processing), where paying per-second for only what you use provides cost efficiency.
+                - For **microservices** where tasks are independent and can be scaled quickly.
+                - When your team has **limited operational expertise** in managing EC2 clusters and Auto Scaling Groups.
+
+        2. **Amazon EC2 (Customer-Managed Launch Type)**: The **Amazon EC2 Launch Type** requires you to manage a cluster of EC2 instances that host your containers. ECS uses these instances to place and run your container tasks.
+
+            - **Key Characteristics**:
+
+                - **Infrastructure Management:** **Customer-Managed**. You are responsible for provisioning, configuring, scaling (via Auto Scaling Groups), patching the OS, and security hardening the EC2 instances that form the cluster.
+                - **Resource Allocation:** **Instance-Level**. You choose a fixed EC2 instance type (e.g., `c5.large`, `t3.medium`) and utilize the aggregate resources of the entire instance fleet. ECS then "bin-packs" container tasks onto the available instances.
+                - **Pricing:** **Pay-per-instance**. You pay for the EC2 instance capacity and associated EBS storage regardless of how much of that capacity is actually utilized by your containers. Cost optimization requires careful capacity planning (using Reserved Instances or Savings Plans).
+                - **Scalability:** **Manual/Configured**. Scaling is managed through **Auto Scaling Groups (ASG)** which use CloudWatch metrics to add or remove instances based on demand. Requires careful setup and maintenance.
+                - **Control/Customization:** **High**. You have full control over the EC2 instance type (allowing for GPU, high I/O, or custom network configuration), the OS, and can install custom software or agents directly on the host.
+
+            - **When to Choose EC2**:
+                - When **cost optimization** is paramount for **long-running, predictable, high-utilization workloads** (where Reserved Instances provide significant savings).
+                - When your workload requires **specific instance types** (e.g., GPU acceleration, specialized hardware).
+                - When you need **OS-level access** or advanced networking and security configurations not exposed by Fargate.
+                - When you need to run **DaemonSet-like agents** or security software directly on the container host.
+
+        -   **Capacity Providers**: AWS recommends using **Capacity Providers** as the modern way to manage compute in an ECS cluster, allowing you to define the infrastructure capacity in a flexible way and use both Fargate and EC2 capacity within the same cluster.
+
+            -   Capacity Providers enable **automatic managed scaling** for EC2, and allow ECS to use a **capacity provider strategy** to determine which capacity type (Fargate or EC2) to use when placing a new task.
+            -   **Fargate Capacity Provider:** Points to the AWS Fargate infrastructure.
+            -   **EC2 Capacity Provider:** Points to an Auto Scaling Group (ASG) of EC2 instances that you manage. ECS automatically manages the scaling of the ASG and the registration of instances into the cluster.
+
+            | Feature               | AWS Fargate                                  | Amazon EC2                                              |
+            | :-------------------- | :------------------------------------------- | :------------------------------------------------------ |
+            | **Operational Model** | **Serverless**                               | **Customer-Managed VM**                                 |
+            | **Infrastructure**    | Managed by AWS                               | Managed by Customer/ASG                                 |
+            | **Resource Billing**  | Per-Task (vCPU/Memory per second)            | Per-Instance (Fixed hourly rate)                        |
+            | **Cost Efficiency**   | Better for **spiky/low-utilization**         | Better for **high/steady-state utilization**            |
+            | **Control**           | Low (No host access)                         | High (Full OS/Instance control)                         |
+            | **Scaling**           | Automatic and seamless                       | Configured via Auto Scaling Group                       |
+            | **Ideal For**         | Microservices, batch jobs, dynamic workloads | Predictable long-running services, specialized hardware |
+
+        -   **External Launch Type (ECS Anywhere):** This allows you to register external instances (like on-premises servers or VMs) with your ECS clusters. This provides a consistent way to manage container workloads across hybrid environments.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Launch Types vs Capacity Providers</summary>
+
+        The relationship between **Launch Types** and **Capacity Providers** in AWS ECS is one of an older, foundational concept (**Launch Types**) being largely superseded and enhanced by a newer, more flexible, and automated concept (**Capacity Providers**).
+
+        In short, **Launch Types define _what kind of_ infrastructure your tasks run on**, while **Capacity Providers define _how that_ infrastructure is managed, scaled, and distributed**.
+
+        1. **Launch Types (The "What" and "Where")**: A **Launch Type** is the fundamental designation for the compute environment that runs your ECS Tasks. It is a binary choice defined at the time of service or task creation (though its use is discouraged in modern deployments in favor of Capacity Providers).
+
+            - **EC2 Launch Type (Customer-Managed):**
+                - **What:** Specifies that tasks run on **Amazon EC2 instances** that you provision and manage (or use an Auto Scaling Group).
+                - **Management:** You are responsible for scaling, patching, and maintaining the underlying virtual machines.
+                - **Pre-Capacity Providers:** This was the only way to run containers on your own VMs in ECS, requiring separate, manual Auto Scaling Group setup.
+            - **Fargate Launch Type (AWS-Managed/Serverless):**
+                - **What:** Specifies that tasks run on **AWS Fargate** (serverless compute).
+                - **Management:** AWS automatically provisions, manages, and scales the underlying compute environment.
+                - **Current State:** For pure Fargate, using the Fargate Launch Type is functionally equivalent to using the Fargate Capacity Provider, but using the Capacity Provider is the **recommended best practice** as it enables strategies.
+
+        2. **Capacity Providers (The "How" and "Strategy")**: **Capacity Providers** were introduced to decouple the task placement logic from the capacity management logic. They are attached to an ECS Cluster and represent the available infrastructure pools.
+
+            - **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling**. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** (i.e., when a task is pending but there is no room) and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
+            - **Capacity Provider Strategies:** This is the most powerful feature. It allows you to define **how ECS should spread tasks** across multiple, heterogeneous capacity pools.
+                - You can assign **weights** (to determine the ratio of tasks) and **base** (to define the minimum tasks) to different providers.
+                - **Example:** A strategy might be: "Run 5 minimum tasks on `FARGATE` (base), and then distribute all remaining tasks 80% to `EC2_Spot` and 20% to `EC2_OnDemand` (weights)."
+            - **Fargate and Fargate Spot:** Dedicated capacity providers exist for Fargate and Fargate Spot, enabling the use of strategies to easily mix and match these options.
+
+        -   **Relationship and Modern Best Practice**: The modern best practice is to **always use Capacity Providers** instead of explicitly setting a Launch Type on a service or task.
+
+            | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
+            | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+            | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
+            | **Configuration** | Set directly on the service or task (old way).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
+            | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
+            | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
+            | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
+
+            If you use a **Capacity Provider Strategy** when creating an ECS service, you do not specify a Launch Type; the Capacity Provider effectively handles that designation as part of its definition.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Networking Mode</summary>
+
+        AWS ECS offers several **network modes** that determine how your containerized tasks receive IP addresses, communicate with other resources, and are accessed externally. The choice of network mode is a critical design decision, especially when using the **EC2 launch type**.
+
+        1. **`awsvpc` Network Mode (Recommended)**: `awsvpc` is the most flexible and recommended mode, and the **only option for AWS Fargate** tasks. It provides a level of network isolation comparable to running separate EC2 instances.
+
+            | Aspect           | Details                                                                                                                                                                                                |
+            | :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **Networking**   | ECS creates and manages a dedicated **Elastic Network Interface (ENI)** for **each task**.                                                                                                             |
+            | **IP Address**   | Each task receives its **own private IP address** directly from your **VPC subnet**.                                                                                                                   |
+            | **Security**     | Each task can be assigned its **own security group**, offering **granular, task-level security** rules.                                                                                                |
+            | **Port Mapping** | Containers within the same task share the ENI and IP. You only specify the **container port** (no need for host port mapping), and you won't face port conflicts for different tasks on the same host. |
+            | **Use Case**     | **Microservices, Load Balancing, and Fargate.** Ideal for applications requiring robust network isolation, simplified networking, and where every task needs a unique, identifiable IP within the VPC. |
+            | **Limitation**   | For EC2-backed clusters, the number of tasks on a single instance is limited by the maximum number of ENIs (and secondary IPs) the EC2 instance type supports.                                         |
+
+            - `awsvpc` mode + `ip` target type allows the ECS Service to automatically handle load balancing without tying the target group to the underlying EC2 instance ASG.
+            - Your `aws_ecs_service` contains a `network_configuration` block, which is designed to assign Task-level security groups and subnets, which only works with awsvpc network mode.
+
+        2. **`bridge` Network Mode (EC2 Launch Type Only)**: The `bridge` mode uses the Docker daemon's built-in virtual network to facilitate communication.
+
+            | Aspect           | Details                                                                                                                                                                                                                                                                                                                                    |
+            | :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **Networking**   | The task uses the Docker **`docker0` bridge** on the host. Containers get a private, internal IP address on the virtual bridge network, separate from the EC2 instance's IP.                                                                                                                                                               |
+            | **IP Address**   | Containers have an internal-only IP (e.g., from the `172.17.0.0/16` range by default) and **share the EC2 host's ENI**.                                                                                                                                                                                                                    |
+            | **Port Mapping** | Requires explicit **Port Mapping** defined in the Task Definition, where a container port is mapped to a **Host Port** on the EC2 instance (e.g., `containerPort:8080` maps to `hostPort:49153`). You can use **Dynamic Port Mapping** (`hostPort: 0`) to let the ECS agent automatically assign an available, ephemeral port on the host. |
+            | **Security**     | All tasks on the EC2 instance share the EC2 host's **single security group**. Security rules are applied at the EC2 instance level, not the task level.                                                                                                                                                                                    |
+            | **Use Case**     | Traditional Docker deployments, high container density (not limited by ENI count), and situations where the infrastructure layer (EC2) manages security.                                                                                                                                                                                   |
+            | **Limitation**   | Only one task on the same host can use the same static host port, and security control is less granular.                                                                                                                                                                                                                                   |
+
+            - When using bridge mode, the task's networking is handled entirely by the host's EC2 instance and Docker, so you cannot specify task-level subnets or security groups in the service definition.
+
+        3. **`host` Network Mode (EC2 Launch Type Only)**: The `host` mode provides the least isolation and gives the container direct access to the host's networking stack.
+
+            | Aspect           | Details                                                                                                                                                                                                                                  |
+            | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **Networking**   | The container **bypasses the Docker network stack** and shares the host machine's network namespace directly.                                                                                                                            |
+            | **IP Address**   | The container uses the **IP address of the EC2 host itself**.                                                                                                                                                                            |
+            | **Port Mapping** | No port mapping is used. The container binds directly to the ports on the host. If the container listens on port 80, it is accessible via the host's IP address on port 80.                                                              |
+            | **Use Case**     | **High-performance/low-latency** applications where the minimal network overhead is critical, or for tasks that need to inspect or control the host's network.                                                                           |
+            | **Limitation**   | **Severe port conflicts** (only one task can run on a host using a given port) and **low task density**. It also has security risks, as the container has heightened access to the host network. **Not recommended** for most use cases. |
+
+        4. **`none` Network Mode (EC2 Launch Type Only)**: The `none` network mode provides complete network isolation.
+
+            | Aspect           | Details                                                                                                                                                |
+            | :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **Networking**   | The container is attached to an internal loopback interface only.                                                                                      |
+            | **Connectivity** | The task has **no external network connectivity** (ingress or egress).                                                                                 |
+            | **Use Case**     | Tasks that process pre-downloaded data and save the output to a mounted volume, or security-sensitive containers that should never access the network. |
+            | **Limitation**   | Requires an external mechanism (like shared storage) for data transfer.                                                                                |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Dynamic Port Mapping</summary>
+
+        **Dynamic Port Mapping** in AWS Elastic Container Service (ECS) is a feature that drastically improves resource utilization and simplifies container deployment by eliminating port conflicts on the underlying host.
+
+        It allows **multiple tasks** (containers from the same service or different services) that expose the **same container port** to run on the **same EC2 instance** within your ECS cluster.
+
+        The core of dynamic port mapping is the clever use of ephemeral ports on the host and integration with a modern AWS Load Balancer:
+
+        1. **The Task Definition Setup**
+
+            - In your **ECS Task Definition**, when defining the **Port Mappings** for your container, you specify the **Container Port** (the port your application inside the container listens on, e.g., `8080`).
+            - Crucially, for the **Host Port** (the port on the EC2 instance the container port maps to), you set it to **`0`**. This value signals to the ECS container agent to dynamically select an **available, unused ephemeral port** on the host when the task is launched.
+
+        2. **Task Launch and Port Assignment**
+
+            - When the ECS service scheduler launches a new task on an EC2 instance, the ECS container agent checks for available ports in the ephemeral port range (typically 32768–65535 on Linux).
+            - It then **dynamically assigns a unique, random host port** from this range (e.g., `49153`) to the container's fixed port (e.g., `8080`).
+                - **Mapping Example:** `Host:49153` $\to$ `Container:8080`
+
+        3. **Load Balancer Integration (The Key)**
+
+            - Dynamic port mapping is almost always used in conjunction with an **Application Load Balancer (ALB)** or **Network Load Balancer (NLB)**:
+
+                - When you create the ECS Service, you associate it with the load balancer and specify a **Target Group**.
+                - The load balancer's Target Group is configured to perform health checks and forward traffic to the dynamic port assigned to the running task.
+                - The ECS service automatically registers the new task's target (the EC2 instance IP + the dynamically assigned host port) with the load balancer's Target Group. This creates a complete routing path:
+                - $$\text{Internet} \to \text{Load Balancer (Port 80/443)} \to \text{EC2 Instance IP}:\mathbf{\text{Dynamic Port}} \to \text{Container}:\text{Container Port}$$
+
+            - Because each task gets a **unique host port**, multiple tasks from the same service (all listening on `8080` internally) can coexist on the same EC2 instance without port conflict.
+
+        -   **Launch Type Considerations**:
+
+            | Launch Type | Network Mode Support                                        | Dynamic Port Mapping Support                                                                                                                                                                                                                    |
+            | :---------- | :---------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **EC2**     | **Bridge** or **User-Defined** networks (use `hostPort: 0`) | **Fully Supported**. Essential for high EC2 density.                                                                                                                                                                                            |
+            | **Fargate** | **`awsvpc`** mode **only**                                  | **Not Applicable/Necessary**. Each task gets its own Elastic Network Interface (ENI) with a unique IP address. Since each task has its own network stack and IP, they don't share ports on the same host, so dynamic port mapping isn't needed. |
+
+        -   **Benefits**:
+
+            -   **Increased Density and Utilization:** The primary advantage is being able to run multiple instances of the same service on a single EC2 container instance. This maximizes the utilization of your computing resources and reduces costs.
+            -   **Simplified Scaling:** You can scale your service up or down without worrying about which EC2 instances have available, unused, static ports. ECS simply finds an available ephemeral port.
+            -   **Zero Downtime Deployment:** Dynamic port mapping, combined with an ALB, facilitates rolling updates and blue/green deployments by allowing new tasks to launch on the same instance as old tasks (on a new dynamic port) before the old ones are terminated.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Definition (The Blueprint)</summary>
+
+        > The **Task Definition** acts as a blueprint or template for your application. It is a JSON file that specifies all the necessary configurations for one or more containers that should run together as a single application unit.
+
+        -   The **Docker images** to use for each container.
+        -   **CPU and memory** allocation for the entire task and for individual containers.
+        -   **Networking** configuration (like port mappings).
+        -   **IAM roles** for the task to access other AWS services.
+        -   **Logging** configuration, environment variables, and data volume mounts.
+        -   **Revisioning:** Task Definitions are versioned (or "revisioned"). When you change a definition, ECS creates a new revision, allowing for rollbacks.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task (The Running Instance)</summary>
+
+        A **Task** is an _instantiation_ (a running instance) of a **Task Definition**. It represents one or more running containers that are configured and launched based on the blueprint provided by the Task Definition.
+
+        -   **Lifecycle:**
+            -   A Task is created when you run a Task Definition directly (a _standalone task_) or when a **Service** launches it.
+            -   **Standalone Tasks** are typically used for one-off jobs, batch processing, or scheduled tasks (like cron jobs). Once the containers in a standalone task finish their work or stop, they are not automatically replaced.
+        -   **Analogy:** If the Task Definition is the _recipe_, the Task is the _cooked meal_ following that recipe.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Service (The Manager) </summary>
+
+        > An **ECS Service** is a mechanism used to manage **long-running, highly available** applications. It ensures that a specified number of Tasks (instances of a Task Definition) are always running in the cluster.
+
+        -   **Core Responsibilities:**
+            -   **Maintenance and Self-Healing:** The Service acts as a scheduler and manager. If a Task fails, stops, or becomes unhealthy for any reason, the Service automatically replaces it to maintain the **Desired Count** of running Tasks.
+            -   **Load Balancing:** Services can integrate with Elastic Load Balancing (ELB) to distribute incoming application traffic across the running Tasks. Tasks launched directly (standalone tasks) cannot use a load balancer.
+            -   **Scaling:** Services manage scaling—either manually or automatically via Auto Scaling policies—to increase or decrease the number of running Tasks based on demand.
+            -   **Deployment:** Services handle rolling updates when you deploy a new Task Definition revision, replacing old Tasks with new ones in a controlled manner.
+
+        | Feature                   | Task Definition                          | Task                                     | Service                                                |
+        | :------------------------ | :--------------------------------------- | :--------------------------------------- | :----------------------------------------------------- |
+        | **Purpose**               | Blueprint/Template                       | Single running instance of the blueprint | Manager for long-running Tasks                         |
+        | **Output**                | A JSON configuration file                | A running set of container(s)            | Continuous operation and scaling of Tasks              |
+        | **Typical Use**           | Defining an application's resource needs | One-off jobs, batch scripts              | Web servers, microservices, highly available apps      |
+        | **High Availability**     | No                                       | No (single run/unmanaged)                | Yes (maintains desired count)                          |
+        | **Load Balancer Support** | Defines ports for mapping                | No                                       | Yes (manages LB registration for all associated Tasks) |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Cluster</summary>
+
+        > A **Cluster** is a logical grouping of the resources that run your containerized applications. It acts as the organizational boundary for your ECS components.
+
+        -   **Logical Grouping:** It groups the compute capacity (either Amazon EC2 instances or AWS Fargate) on which your tasks and services run.
+        -   **Availability:** Clusters are region-specific, but they facilitate high availability by allowing tasks to be spread across multiple **Availability Zones** within that region.
+        -   **Analogy:** Think of the Cluster as the **datacenter** or the overall collection of compute resources dedicated to your applications.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Container Instance</summary>
+
+        A **Container Instance** is a single **Amazon EC2 instance** that is registered to an ECS Cluster. This is the host machine that provides the computing power (CPU, memory, storage) for your containers.
+
+        -   **ECS Agent:** Each Container Instance must run the **ECS Container Agent** software. This agent is the crucial piece of middleware that communicates with the ECS control plane. It is responsible for:
+            -   Registering the EC2 instance with the cluster.
+            -   Reporting the instance's current resource utilization.
+            -   Starting and stopping containers (Tasks) as instructed by the ECS scheduler.
+        -   **Note:** If you use the **AWS Fargate** launch type, you don't manage Container Instances, as Fargate is a serverless compute engine that abstracts away the underlying infrastructure.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints</summary>
+
+        > **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement.
+
+        | Constraint             | Description                                                                        | Use Case                                                                                   |
+        | :--------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+        | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
+        | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Strategies</summary>
+
+        > **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
+
+        | Strategy      | Goal                                                                                                             | Use Case                                                                                                   |
+        | :------------ | :--------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+        | **`binpack`** | Maximize resource utilization by placing tasks on the instance with the least available memory or CPU.           | Cost optimization: Consolidate tasks to minimize the number of running instances.                          |
+        | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
+        | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">Capacity Providers</summary>
+
+        > **Capacity Providers** simplify the management and scaling of the compute capacity that your ECS tasks use. They automate the process of provisioning and scaling the underlying infrastructure (EC2 instances or Fargate).
+
+        -   **Launch Type Abstraction:** They standardize how ECS interacts with the two main compute options:
+            1.  **EC2 Auto Scaling Group:** Manages scaling for EC2 capacity. The Capacity Provider ensures the Auto Scaling Group scales _in_ and _out_ based on task demand.
+            2.  **AWS Fargate:** Uses **Fargate** and **Fargate Spot** capacity, abstracting infrastructure management entirely.
+
+        -   **Capacity Provider Strategy:** This is a key feature that allows you to define how tasks are distributed across **multiple Capacity Providers** (e.g., 80% on Fargate, 20% on Fargate Spot). This distribution is controlled by two parameters:
+            -   **Base:** The minimum number of tasks to run on a specific capacity provider.
+            -   **Weight:** The relative portion of the _remaining_ desired task count that should be placed on a capacity provider.
+
+        > Capacity Providers shift the focus from managing the compute layer to simply defining the **desired capacity ratio** for your application.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">ECS Container Agent</summary>
+
+        The **ECS Container Agent** is software that runs on every EC2 instance registered to an ECS cluster (the **Container Instance**). It acts as the intermediary, communicating between the **ECS control plane** (the management service in AWS) and the local Docker daemon on the host.
+
+        -   **Core Responsibilities:**
+            -   **Registration:** Registers the EC2 instance with the ECS cluster, making it available to run tasks.
+            -   **Status Reporting:** Reports the instance's available resources (CPU, memory) and the state/health of running tasks back to the ECS control plane for scheduling decisions.
+            -   **Task Management:** Polls the ECS API for new **Task Definitions** and translates those instructions into local Docker commands (create, start, stop, delete containers).
+            -   **Resource Management:** Manages networking configurations and, in the case of the `awsvpc` network mode, handles the assignment and attachment of Elastic Network Interfaces (ENIs) to the task.
+
+        </details>
+
+    -   <details><summary style="font-size: 25px;color:#C71585">IAM Roles in AWS ECS</summary>
+
+        AWS ECS uses a strict separation of duties, enforced through three primary IAM roles, each granting permissions for different entities:
+
+        | IAM Role Name                      | Entity Assuming the Role                                  | Purpose / Scope of Permissions                                                                                                                                                                                                                                   | Launch Type   |
+        | :--------------------------------- | :-------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------ |
+        | **1. Task IAM Role**               | **The Application Code** inside the container.            | Allows the application code to access other AWS services (e.g., read/write to S3, query DynamoDB, publish to SQS). This grants **application-level** permissions.                                                                                                | EC2 & Fargate |
+        | **2. Task Execution IAM Role**     | **The ECS Agent** or the **ECS Service**.                 | Grants the permissions necessary for the ECS service to perform its own tasks, such as: **Pulling Docker images** from Amazon ECR, **Pushing container logs** to Amazon CloudWatch Logs, and **Retrieving secrets** from AWS Secrets Manager or Parameter Store. | EC2 & Fargate |
+        | **3. Container Instance IAM Role** | **The EC2 Host/ECS Agent** (via an EC2 Instance Profile). | Grants the permissions necessary for the host instance and the ECS Agent to communicate with the ECS control plane, specifically for **registering the instance** to the cluster and **reporting health/status**.                                                | **EC2 only**  |
+
+        -   **Key Distinction**: Task Role vs. Task Execution Role
+
+            -   **Task Execution Role:** Used for setting up the container and managing the task's environment. If the task fails to start (e.g., cannot pull the image), the Execution Role is the one lacking permissions.
+            -   **Task IAM Role:** Used after the container is running by the application code itself. If the application runs but can't save a file to S3, the Task IAM Role is the one lacking permissions.
+
+        </details>
+
+    #### Features of AWS ECS
+
+    ECS offers a rich set of features for container orchestration:
+
+    -   **Fully Managed Service:** AWS handles the control plane, scaling, and availability of the ECS service itself.
+    -   **Choice of Compute Options:** Flexibility to choose between EC2 (more control) and Fargate (serverless).
+    -   **Docker Compatibility:** Natively supports Docker containers.
+    -   **Scalability:** Easily scale the number of tasks up or down based on demand. ECS integrates with Auto Scaling for both the underlying infrastructure (for EC2) and the number of tasks in a service.
+    -   **Load Balancing:** Seamless integration with Elastic Load Balancing (Application Load Balancer, Network Load Balancer, and Classic Load Balancer) to distribute traffic across container instances.
+    -   **Service Discovery:** Integrates with AWS Cloud Map (Service Discovery) to allow containers to discover and communicate with each other using DNS names. Also offers ECS Service Connect for simplified service-to-service communication.
+    -   **Security:**
+        -   **IAM Roles for Tasks:** Allows you to grant specific AWS permissions to containers.
+        -   **Task Execution IAM Role:** Grants ECS permissions to pull container images and manage resources on your behalf.
+        -   **VPC Integration:** Launch tasks directly into your VPC for network isolation.
+        -   **Security Groups:** Control inbound and outbound traffic at the task level (with `awsVpc` networking mode).
+        -   **AWS Secrets Manager and Parameter Store Integration:** Securely manage sensitive data and configuration.
+    -   **Monitoring and Logging:** Integration with Amazon CloudWatch for metrics and logs.
+    -   **Deployment Options:** Supports various deployment strategies like rolling updates and blue/green deployments for zero-downtime updates.
+    -   **Task Networking:** Offers different networking modes to suit various application requirements.
+    -   **Hybrid Deployments (ECS Anywhere):** Extend ECS to manage containers on your own infrastructure.
+    -   **Integration with AWS Ecosystem:** Deep integration with other AWS services like IAM, VPC, CloudWatch, Auto Scaling, ECR, Cloud Map, and more.
+    -   **Container Auto-Recovery:** ECS automatically restarts unhealthy containers to maintain the desired count.
+
+    #### Configurations in AWS ECS
+
+    Configuring ECS involves defining various aspects of your containerized applications and the environment they run in:
+
+    1.  **Cluster Configuration:**
+
+        -   Choosing a network configuration for the cluster's VPC.
+        -   Enabling Container Insights for monitoring.
+        -   Configuring Service Connect defaults.
+        -   Associating Capacity Providers (for EC2 launch type).
+
+    2.  **Task Definition Configuration:**
+
+        -   Specifying container images and their settings (CPU, memory, ports, environment variables, etc.).
+        -   Defining networking mode.
+        -   Setting up volume mounts.
+        -   Configuring health checks.
+        -   Assigning IAM roles.
+        -   Defining resource requirements (GPUs, etc.).
+        -   Specifying logging drivers (e.g., `awslogs` for CloudWatch Logs).
+
+    3.  **Service Configuration:**
+
+        -   Choosing the task definition to run.
+        -   Specifying the desired number of tasks.
+        -   Selecting a task placement strategy and constraints.
+        -   Configuring load balancing integration (target groups, listener ports).
+        -   Setting up service auto scaling policies (based on CPU utilization, memory utilization, custom metrics, etc.).
+        -   Defining deployment configurations (rolling update, blue/green).
+        -   Configuring service discovery integration.
+        -   Enabling task scale-in protection.
+
+    4.  **Capacity Provider Configuration (for EC2):**
+
+        -   Associating an Auto Scaling Group with the capacity provider.
+        -   Defining managed scaling settings (target capacity, minimum/maximum scaling steps).
+        -   Configuring managed termination protection.
+
+    5.  **Networking Configuration:**
+
+        -   Choosing the VPC and subnets for your ECS tasks (especially important for `awsVpc` networking mode).
+        -   Configuring security groups to control access to your containers.
+        -   Setting up network load balancers or application load balancers to expose your services.
+        -   Configuring DNS settings for service discovery.
+
+    6.  **Scaling Configuration:**
+
+        -   Setting up Auto Scaling policies for ECS services based on various metrics.
+        -   Configuring scaling based on custom metrics.
+        -   Using predictive scaling.
+
+    7.  **Security Configuration:**
+        -   Defining IAM roles for tasks and task execution.
+        -   Managing sensitive data using AWS Secrets Manager or Parameter Store.
+        -   Applying the principle of least privilege to container permissions.
+
+    #### Use Cases for AWS ECS
+
+    > ECS is a versatile service suitable for a wide range of applications:
+
+    -   **Microservices Architectures:** Easily deploy and manage distributed microservices with service discovery and load balancing.
+    -   **Web Applications:** Host scalable and highly available web applications.
+    -   **Batch Processing:** Run and manage batch jobs efficiently.
+    -   **Machine Learning Inference:** Deploy and scale containerized machine learning models for real-time inference.
+    -   **Hybrid Environments:** Manage container workloads consistently across the cloud and on-premises with ECS Anywhere.
+    -   **Modernizing Legacy Applications:** Containerize and migrate existing applications to a more scalable and manageable platform.
 
     </details>
 
@@ -4565,6 +3261,809 @@
             | `TargetTLSNegotiationErrorCount` | Errors during TLS negotiation with targets     | Count    |
 
             > 🔹 **Performance Impact:** TLS negotiation issues delay or fail request handling.
+
+        </details>
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">API Gateways</summary>
+
+    ![API Gateway](../assets/aws/APIGateway.png)
+
+    AWS API Gateway is a fully managed service that makes it easy for developers to create, publish, and manage APIs at any scale. It provides a way to create **RESTful APIs**, **WebSocket APIs**, and **HTTP APIs** that can be used to interact with back-end services, such as AWS Lambda, Amazon EC2, and other AWS services, as well as with third-party services.
+    AWS API Gateway is a fully managed service that enables developers to create, publish, and manage **RESTful APIs**, **WebSocket APIs**, and **HTTP APIs** at any scale. It serves as a front-door to various backend services like AWS Lambda, EC2, or any web application. Here are the crucial concepts and components of **AWS REST API Gateway**:
+    These components and concepts make API Gateway a robust and scalable solution for creating and managing REST APIs, with seamless integration into the AWS ecosystem. API Gateway allows you to build secure, flexible, and scalable APIs that can interact with a variety of backends, including serverless services like AWS Lambda.
+    The **REST API** in API Gateway allows developers to create RESTful web services that can interact with a wide range of backend services. API Gateway acts as an intermediary between the client and the backend.
+
+    -   **Components**:
+
+        -   **Stages**: Different deployment environments (e.g., dev, test, prod) with unique URLs.
+        -   **Resources**: Logical endpoints in your API that represent entities or operations.
+        -   **Methods**: HTTP methods (e.g., GET, POST, PUT, DELETE) applied to resources.
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Terms and Concepts</summary>
+
+        ##### Stages:
+
+        A **stage** in API Gateway is a logical separation of your API for different environments such as development, testing, or production.
+
+        -   **Features**:
+
+            -   **Stage Variables**: Similar to environment variables, used to define values specific to the stage (e.g., `api_key`, backend endpoint).
+            -   **Stage URLs**: Each stage has a unique URL, for example, `https://api-id.execute-api.aws-region.amazonaws.com/prod/`.
+
+        ##### Resources:
+
+        **Resources** represent individual endpoints in your API, which map to a particular functionality or entity in your application.
+        A resource is an object that represents an entity, such as a customer, order, or product, in the context of an API. Each resource is associated with one or more methods, such as GET, POST, PUT, DELETE, that can be used to access or manipulate the resource's data.
+
+        -   **Path Parameters**: Resources can include path parameters (e.g., `/users/{user_id}`) to pass variables within the URL.
+        -   **Nested Resources**: You can create hierarchical resource paths (e.g., `/users/{user_id}/orders`) to organize related API endpoints.
+
+        ##### Methods:
+
+        Each resource in a REST API can have one or more **HTTP methods** associated with it, defining how the resource can be interacted with (e.g., GET, POST, PUT, DELETE).
+        A method is an action that can be performed on a resource, such as retrieving, updating, or deleting data. Each method is associated with an HTTP verb, such as GET, POST, PUT, or DELETE, that indicates the type of action that is being performed.
+
+        -   **Integration with Backends**: Methods define how the API Gateway interacts with backend services, such as AWS Lambda functions, Amazon EC2, or HTTP endpoints.
+        -   **Input/Output Mapping**: Request and response payloads can be transformed or mapped to fit the backend’s format using **mapping templates**.
+
+        ##### Integration Types:
+
+        API Gateway allows you to integrate the frontend API with various backend services via different integration types:
+
+        -   **Lambda Integration**: Direct integration with AWS Lambda functions, allowing you to run serverless functions as API endpoints.
+        -   **HTTP/HTTP_PROXY Integration**: API Gateway can route requests to HTTP-based backends such as web servers or third-party APIs.
+        -   **AWS Service Integration**: Integrate with other AWS services like DynamoDB, SNS, or SQS directly, without requiring Lambda.
+
+        ##### Proxy Integration
+
+        In AWS API Gateway, **Proxy Integration** is a feature that allows the API to pass through all HTTP requests directly to an AWS Lambda function or another HTTP endpoint without configuring each method, parameter, or mapping. It creates a streamlined and flexible setup, especially useful for microservices architectures. Followings are the key points of proxy integration with aws lambda
+
+        1. **Direct Pass-through of Requests**: API Gateway passes the entire request payload to the Lambda function, including the request's headers, query parameters, HTTP method, and body as a JSON object. Lambda receives it in a standard format, making it versatile for different types of requests.
+        2. **Single Lambda Handler for All Requests**: With Proxy Integration, a single Lambda function can handle all endpoints and HTTP methods in the API. This reduces the need for defining individual integrations and mappings for each API resource.
+        3. **Simplified Deployment**: It streamlines the process of setting up APIs because there’s no need to configure API Gateway resources like request/response templates or parameter mappings. This is especially beneficial for quickly deploying microservices.
+        4. **Flexible Response**: The Lambda function returns a response with headers, status codes, and body, which API Gateway then relays back to the client.
+        5. **Reduced Configuration**: Since Proxy Integration requires fewer manual configurations, it’s less prone to configuration errors and is generally easier to manage.
+
+        In contrast, **Non-Proxy Integration** involves more detailed configurations for each endpoint and allows for customized mapping and transformations. However, Proxy Integration is typically preferred for simpler, JSON-based APIs that don’t need intricate transformations.
+
+        ##### Endpoints and Custom Domain Names:
+
+        API Gateway provides default **API endpoints** but also allows you to associate your API with a **custom domain name**.
+
+        -   **Features**:
+            -   **Regional Endpoints**: Serve requests from specific AWS regions.
+            -   **Edge-Optimized Endpoints**: Uses CloudFront to serve requests to globally distributed users.
+            -   **Custom Domain**: Map your custom domain name (e.g., `api.yourdomain.com`) to your API Gateway endpoint.
+
+        ##### Authorization:
+
+        API Gateway supports several types of authorization to secure access to your APIs:
+
+        -   **IAM Roles**: Use AWS IAM roles to authorize access to your API based on user identity and policies.
+        -   **Cognito User Pools**: Use Amazon Cognito to control access via OAuth2 or JWT-based token authentication.
+        -   **Lambda Authorizer**: Use a custom Lambda function to authenticate and authorize requests based on custom logic (e.g., checking API keys, tokens).
+        -   **API Keys**: Restrict access to your API using **API keys**, which are passed in the request headers.
+
+        ##### Caching:
+
+        API Gateway provides **caching** at the **stage level** to reduce the latency of your API and improve performance.
+
+        -   **Features**:
+            -   Store responses from your backend services in an API Gateway cache.
+            -   Specify TTL (Time to Live) for cache data.
+            -   Cache data per method and per request, based on query strings or headers.
+
+        ##### Monitoring and Metrics:
+
+        API Gateway integrates with **Amazon CloudWatch** for monitoring, logging, and alerting, giving insights into API performance and usage.
+
+        -   **CloudWatch Metrics**: API Gateway automatically publishes metrics such as **latency**, **error rates**, **cache hits/misses**, and **throttling** counts to CloudWatch.
+        -   **CloudWatch Logs**: API Gateway can be configured to log request/response data and error details for debugging.
+
+        ##### Throttling and Rate Limiting:
+
+        API Gateway allows you to control the rate of incoming requests to prevent overloading your backend services.
+
+        -   **Default Throttling**: Set default limits for request rates and burst limits for your API.
+        -   **Usage Plans**: Use API keys with usage plans to apply throttling rules and quota limits to individual users or applications.
+
+        ##### API Gateway VPC Link:
+
+        **VPC Link** allows API Gateway to integrate with private resources inside a **VPC**, such as internal web services or databases.
+
+        -   **Features**:
+            -   **Private Integration**: Allows API Gateway to access services running in a private VPC without exposing them to the public internet.
+            -   Ideal for accessing backend services like EC2, ECS, or load balancers that are hosted in a private subnet.
+
+        ##### Mock Integration:
+
+        **Mock Integration** is used to return static responses without sending requests to any backend. It’s useful for testing and prototyping.
+
+        -   **Features**:
+            -   Simulate API responses.
+            -   Set up static responses based on incoming requests.
+            -   No backend services involved.
+
+        ##### Deployment:
+
+        API Gateway provides the ability to **deploy** APIs to various stages (e.g., dev, test, prod) and manage different versions of your APIs.
+
+        -   **Features**:
+            -   **Deployment** creates a snapshot of your API configuration and methods at a specific point in time.
+            -   You can **roll back** to previous versions of the API if needed.
+            -   Each stage has a unique URL for accessing the deployed API.
+
+        ##### Cross-Origin Resource Sharing (CORS):
+
+        **CORS** is a security feature implemented by browsers to restrict web applications from making requests to a domain different from the one that served the web page.
+
+        -   **Features**:
+            -   API Gateway supports **CORS** to allow restricted resources to be accessed on a domain different from the origin.
+            -   You can configure **CORS** settings to control which origins and methods are allowed for your API.
+
+        ##### OpenAPI (Swagger) Support:
+
+        API Gateway supports the **OpenAPI Specification (formerly known as Swagger)** for defining your API structure.
+
+        -   **Features**:
+            -   Import and export your API definitions using OpenAPI/Swagger files.
+            -   Simplifies API development by providing a standard, machine-readable format.
+            -   Use OpenAPI definitions for documentation or collaboration purposes.
+
+        ##### API Gateway Policies:
+
+        API Gateway supports **resource policies** that allow you to control access to your API at the **resource level**.
+
+        -   **Features**:
+            -   You can restrict access to specific IP ranges, VPCs, or AWS accounts.
+            -   Resource policies are useful for implementing fine-grained access control to APIs.
+
+        ##### SDK Generation:
+
+        API Gateway can automatically generate **SDKs (Software Development Kits)** for various programming languages (e.g., JavaScript, iOS, Android) based on your API definitions.
+
+        -   **Features**:
+            -   Simplifies the integration of APIs into client applications.
+            -   Generates client-side code that can handle API calls, including authentication and request/response handling.
+
+        ##### Error Handling:
+
+        API Gateway allows you to define custom error responses, enabling better error handling in your API.
+
+        -   **Features**:
+            -   You can set up custom response templates to format error messages.
+            -   Define specific HTTP status codes based on the response from the backend (e.g., 4xx for client errors, 5xx for server errors).
+
+        ##### Access Logs:
+
+        API Gateway provides **detailed access logs** to monitor API usage and analyze performance.
+
+        -   **Features**:
+
+            -   Logs include detailed information such as request timestamps, IP addresses, request/response payloads, and latency.
+            -   Access logs can be stored in CloudWatch Logs for long-term analysis.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Features of AWS APIGateway</summary>
+
+        Amazon API Gateway is a fully managed service that acts as a **"front door"** for applications to access data, business logic, or functionality from your backend services. It handles all the tasks involved in accepting and processing up to hundreds of thousands of concurrent API calls, offering a comprehensive set of features for API management. Here are the detailed features of AWS API Gateway:
+
+        -   **API Types and Protocols**: API Gateway supports building and deploying three main types of APIs, each optimized for different use cases:
+
+            -   **REST APIs (RESTful):**
+                -   Creates APIs using resources and methods that support standard HTTP methods (GET, POST, PUT, DELETE, etc.).
+                -   Offers a full suite of API management features, including API keys, usage plans, and request/response transformations.
+                -   Provides higher flexibility and more fine-grained control over the API request/response lifecycle.
+            -   **HTTP APIs:**
+                -   A lighter-weight, lower-latency, and more cost-effective option for building RESTful APIs.
+                -   Optimized for serverless workloads (like AWS Lambda) and public HTTP endpoints.
+                -   Best suited for use cases that don't require the full API management features of REST APIs.
+            -   **WebSocket APIs:**
+                -   Enables **stateful, full-duplex communication** between a client and the server using the WebSocket protocol.
+                -   Ideal for real-time, two-way communication applications like chat apps, streaming dashboards, and real-time gaming.
+
+        -   **Security and Access Control**: API Gateway provides robust security features to protect your APIs from unauthorized access and attacks:
+
+            -   **Authentication and Authorization:**
+                -   **AWS IAM:** Uses IAM roles and policies to control who can create, deploy, and invoke your APIs.
+                -   **Lambda Authorizers (Custom Authorizers):** You can write a custom AWS Lambda function to authorize API requests using bearer tokens (like JWT) or other custom schemes.
+                -   **Amazon Cognito User Pools:** Allows using Amazon Cognito as an identity provider to manage user sign-up and sign-in, and secure access to your REST APIs.
+                -   **JWT Authorizers:** Natively supports authorization using JSON Web Tokens (JWTs) for HTTP APIs via OpenID Connect (OIDC) and OAuth 2.0.
+            -   **Resource Policies:** Uses JSON policies attached to the API to control access based on source IP address ranges (CIDR blocks) or specified AWS accounts/principals.
+            -   **AWS WAF Integration:** Seamlessly integrates with **AWS Web Application Firewall (WAF)** to protect your APIs from common web exploits (like SQL injection and cross-site scripting) that could affect availability, compromise security, or consume excessive resources.
+            -   **Mutual TLS (mTLS):** For both REST and HTTP APIs, mTLS ensures that both the client and the API Gateway verify each other's identity using certificates.
+            -   **Private APIs:** Allows you to expose your APIs only to resources within your Amazon Virtual Private Cloud (VPC) using VPC endpoints.
+
+        -   **Traffic Management and Performance**: Features designed to ensure your APIs can handle high load reliably and performantly:
+
+            -   **Scalability:** API Gateway is an **always-on, scalable service** that automatically handles large traffic volumes without requiring you to manage infrastructure.
+            -   **Throttling:** Allows you to define request limits (**rate limits**) and burst capacities at the account, stage, or individual method level to prevent API backend services from being overwhelmed.
+            -   **Caching:** For **REST APIs**, you can enable caching to store responses for a specified time-to-live (TTL), reducing the number of calls to your backend and lowering latency.
+            -   **Edge Optimization (via Amazon CloudFront):** Uses the **Amazon CloudFront** global edge network to cache and accelerate API requests and responses, providing low latency for end users worldwide.
+            -   **Request/Response Transformation:** Supports data mapping and transformation using **Apache Velocity Template Language (VTL)** to convert the request payload before it reaches the backend and the response payload before it's sent back to the client.
+            -   **CORS Support:** Provides built-in support for **Cross-Origin Resource Sharing (CORS)**, allowing web applications loaded in one domain to interact with resources from a different domain.
+
+        -   **Integration and Deployment**: API Gateway simplifies the connection to various backend services:
+
+            -   **Backend Integrations:**
+                -   **AWS Lambda:** Simplifies building **serverless APIs** by directly invoking Lambda functions.
+                -   **HTTP/VPC Link:** Allows integration with any publicly accessible HTTP endpoint or private resources (like an Application Load Balancer or EC2 instance) within a VPC using a VPC Link.
+                -   **Other AWS Services:** Native integration with services like Amazon DynamoDB, Amazon S3, AWS Step Functions, and more.
+                -   **Mock Integrations:** Allows you to test your API methods without calling the backend, returning a mocked response directly from the Gateway.
+            -   **API Management and Lifecycle:**
+                -   **Stages:** Allows you to deploy your API to multiple environments (e.g., `dev`, `test`, `prod`) by creating stages, each with its own configuration.
+                -   **Canary Release Deployments (REST APIs):** Supports canary release deployments to safely roll out changes by splitting traffic between a current stage and a new stage revision.
+                -   **Custom Domain Names:** Enables mapping your custom domain name (e.g., `api.example.com`) to your API endpoint.
+                -   **OpenAPI Support:** Supports importing and exporting APIs using **OpenAPI (formerly Swagger) specification** versions 2 and 3.
+
+        -   **Monitoring and Observability**: API Gateway provides tools to monitor and troubleshoot your APIs:
+
+            -   **Amazon CloudWatch Metrics:** Automatically sends detailed performance metrics (like call counts, latency, and error rates) to CloudWatch, allowing you to monitor API usage and set custom alarms.
+            -   **CloudWatch Logging:** Supports logging of API execution and access logging to CloudWatch Logs, aiding in debugging and auditing.
+            -   **AWS X-Ray Integration:** Integrates with **AWS X-Ray** to provide end-to-end tracing and a visual map of all components involved in an API request, helping to analyze and triage performance issues.
+            -   **Usage Plans (REST APIs):** Allows you to manage client usage by defining **usage plans**, including daily or monthly quotas and throttling limits, tied to unique **API keys** issued to third-party developers.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Request-Response Flow</summary>
+
+        The AWS API Gateway **Request-Response Flow** for REST APIs is structured around four main components: **Method Request**, **Integration Request**, **Integration Response**, and **Method Response**. These components allow you to define the external API contract, transform data, enforce security, and map backend results to client responses.
+
+        This intricate setup, often called a **Custom Integration** or **Non-Proxy Integration**, provides the highest degree of control over the data flow between the client and the backend service.
+
+        1. **Method Request (The Client Contract)**: The **Method Request** defines the public-facing contract of your API method. It specifies what API Gateway expects to receive from the client and what validation and authorization checks to perform before routing the request further.
+
+            - **HTTP Method and Resource Path:** The combination (e.g., `GET /users/{id}`).
+            - **Authorization:** Defines how the client is authenticated and authorized.
+                - **Authorization Type:** Includes AWS_IAM, Cognito User Pools, Lambda Authorizers, or NONE (public access).
+                - **Authorization Scopes:** Used with Cognito User Pools to restrict access based on defined scopes.
+            - **Request Parameters:** Defines which parameters API Gateway should expect from the client. These can be:
+                - **Path Parameters:** (e.g., `{id}` in `/users/{id}`).
+                - **Query String Parameters:** (e.g., `?limit=10`).
+                - **Headers:** (e.g., `Authorization`, `X-Custom-Header`).
+                - **Required Flag:** Specifies whether the parameter is mandatory.
+            - **Request Body:** Defines the expected structure of the request body (e.g., for a POST or PUT method).
+                - **Request Models:** Associates a **JSON Schema Model** (defined in API Gateway) with a specific Content-Type (e.g., `application/json`).
+                - **Request Validation:** Allows you to enable validation of required parameters and/or the request body against the defined models, preventing malformed requests from reaching the backend.
+
+        2. **Integration Request (Request Transformation to Backend)**: The **Integration Request** acts as the crucial translator between the client-facing format (**Method Request**) and the format required by the backend service (the **Integration Endpoint**).
+
+            - **Integration Type:** The service API Gateway will connect to:
+                - **AWS:** Connects to an AWS service (e.g., Lambda, DynamoDB, SQS).
+                - **HTTP:** Connects to an external HTTP/HTTPS endpoint.
+                - **MOCK:** Returns a response directly from API Gateway without hitting a backend.
+                - **VPC LINK:** Connects to a private resource in your VPC (e.g., an ALB/NLB).
+            - **Integration Endpoint URI:** The exact address of the backend service (e.g., a Lambda ARN, an SQS queue URL, or an external URL).
+            - **Credentials/Role:** The **IAM Role** that API Gateway will assume to call the backend service (critical for AWS service integrations like Lambda or DynamoDB).
+            - **Request Mapping Templates (The Core Transformation):**
+                - These are templates written in **Velocity Template Language (VTL)**.
+                - They define how the data collected in the **Method Request** (parameters, headers, body, and **Context variables** like client IP or stage) should be transformed into the payload that the backend expects.
+                - _Example:_ Transforming a simple JSON body from the client into the complex DynamoDB `PutItem` JSON structure.
+            - **Parameter Mapping:** Maps headers, query string parameters, or path variables from the Method Request to the **Integration Request** parameters (headers, query strings, or path variables) before the VTL transformation.
+
+        3. **Integration Response (Response from Backend)**: The **Integration Response** defines how API Gateway handles the raw response, status codes, and body received from the backend service. It is the first step in translating the backend's internal response format back to a client-friendly API response.
+
+            - **HTTP Status Regex:** This is the most important part. It uses a **regular expression** (regex) to match the HTTP status code or an error message pattern from the backend response.
+                - _Example:_ A regex of `2\d{2}` matches any $2\text{xx}$ success code.
+                - **Selection:** Based on the match, API Gateway selects the appropriate **Integration Response** configuration.
+            - **Response Mapping Templates (Backend-to-Client Transformation):**
+                - VTL templates that transform the raw response body received from the backend into the desired client response body format.
+                - _Example:_ A Lambda function might return a JSON object like `{"db_status": "OK", "data": {...}}`. The VTL can extract and reformat this to just `{"result": {...}}` for the client.
+            - **Header Mappings:** Allows you to extract values from the backend response and map them to new, specific **Integration Response Headers**.
+
+        4. **Method Response (The Final Client Response)**: The **Method Response** defines the final structure of the response that is returned to the client and represents the API's documented output contract. It receives the transformed data from the Integration Response and packages it for delivery.
+
+            - **HTTP Status Code:** Defines the status codes the client will receive (e.g., 200, 201, 400, 500). **A Method Response must be defined for every status code the API can return.**
+            - **Response Headers:** Defines which headers will be included in the final response sent to the client. The values for these headers are typically mapped from the **Integration Response** headers.
+            - **Response Models:** Associates a JSON Schema Model with the response body for a given status code and Content-Type. This serves primarily for documentation and validation purposes (though response validation is less common than request validation).
+
+            The process completes when the data and headers from the selected **Integration Response** are mapped to the final headers and body of the corresponding **Method Response** structure, which is then sent back to the original client.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Mapping Templates</summary>
+
+        Mapping Templates in AWS API Gateway are the core mechanism for **data transformation** and **mediation** between the external API client and the internal backend service. They are essential for **non-proxy integrations** where you need precise control over the request and response payloads.
+
+        Mapping templates are written using the **Velocity Template Language (VTL)**, which allows you to use simple scripting logic to modify the JSON, XML, or other text payloads.
+
+        ##### Where Mapping Templates are Used
+
+        Mapping templates are used at two critical points in the request-response cycle:
+
+        1. **Integration Request Mapping Template**: This template transforms the incoming client request (the **Method Request**) into the format required by the backend service (the **Integration Request**).
+
+            - **Role:** Translator from **client API contract** to **backend service format**.
+            - **Input Data:** Accesses the original request body, headers, query parameters, path parameters, and **context variables** (like the caller's IP or authentication details).
+            - **Output Data:** The final payload sent to the backend (e.g., the JSON event for a Lambda function, or the specific JSON structure for a direct DynamoDB API call).
+            - **Primary Use Cases:**
+                - **Lambda Invocation:** Capturing all request details (headers, body, query strings) and packaging them into a single JSON object that is easy for a Lambda function to parse.
+                - **AWS Service Integration:** Transforming a simple HTTP request into the complex JSON required to call an AWS SDK action (e.g., converting a `GET /user/{id}` request into the DynamoDB `GetItem` action format).
+
+        2. **Integration Response Mapping Template**: This template transforms the raw response received from the backend service back into a format suitable for the API client (the **Method Response**).
+
+            - **Role:** Translator from **backend service response** to **client API contract**.
+            - **Input Data:** The raw response body received from the backend service (e.g., the JSON object returned by Lambda).
+            - **Output Data:** The final response body sent to the client.
+            - **Primary Use Cases:**
+                - **Flattening/Simplifying:** Removing unnecessary metadata (like AWS service wrappers, DynamoDB data type descriptors, or Lambda function execution context) from the backend's response before sending it to the client.
+                - **Error Transformation:** Changing the error body from a backend service into a clean, standardized error message the client understands.
+                - **Response Code Override:** Using VTL logic to inspect the backend response body and dynamically override the HTTP status code that API Gateway returns to the client (e.g., inspecting a Lambda response for an "Error" field and changing the status code from 200 to 400).
+
+        -   **Content-Type Handling**:
+
+            -   Mapping templates are associated with **content types**. You can create different templates based on content types like `application/json` or `application/xml`, allowing you to support multiple client formats.
+            -   API Gateway then selects the appropriate mapping template based on the content type specified in the client’s request.
+
+        ##### Velocity Template Language (VTL)
+
+        VTL is a simple templating engine that powers the mapping templates. It provides the syntax to access data and apply basic logic.
+
+        -   **VTL Syntax Fundamentals**
+
+            | Syntax   | Description                                            | Example                       |
+            | :------- | :----------------------------------------------------- | :---------------------------- |
+            | **`#`**  | Used for directives (logic, loops, setting variables). | `#set`, `#if`, `#foreach`     |
+            | **`$`**  | Used for variables and references.                     | `$input`, `$context`, `$util` |
+            | **`##`** | Used for single-line comments.                         | `## This line is a comment`   |
+
+        -   **Key VTL Variables Available**: You access data within the VTL templates using three main object references:
+
+            | Variable       | Description                                                                                      | Example Usage                                                 |
+            | :------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+            | **`$input`**   | Provides methods to access the **request body and parameters**.                                  | `$input.json('$.user.name')` (selects a field using JSONPath) |
+            | **`$context`** | Provides information about the **API execution context**.                                        | `$context.identity.sourceIp` (gets the client IP)             |
+            | **`$util`**    | Provides **utility functions** for tasks like JSON parsing, base64 encoding, and error handling. | `$util.base64Encode($input.body)`                             |
+
+        -   **Common VTL Examples**
+
+            1. **Extracting/Selecting Data**: The most common use is to extract specific parts of the request payload using the `$input.path()` or `$input.json()` methods:
+
+            ```vtl
+            ## Integration Request to Lambda
+            #set($body = $input.json('$'))
+            {
+            "userId": "$input.params('id')",
+            "requestBody": $body,
+            "callerIp": "$context.identity.sourceIp"
+            }
+            ```
+
+            2. **Conditional Logic**: VTL allows for simple conditional checks, useful for handling missing optional fields or dynamic status codes:
+
+            ```vtl
+            ## Conditional check for a required header
+            #if($input.params('X-Customer-ID') == '')
+            #set($context.responseOverride.status = 400)
+            #end
+            ```
+
+            3. **Looping**: You can iterate over arrays in the payload, which is useful for transforming `application/x-www-form-urlencoded` data or reformatting data structures.
+
+            ```vtl
+            ## Used to process an array of items in the request body
+            #foreach($item in $input.path('$.items'))
+            {
+            "itemName": "$item.name"
+            }
+            #if($foreach.hasNext),#end
+            #end
+            ```
+
+        Using VTL mapping templates is crucial for achieving **loose coupling** in your architecture, as it allows the external client-facing API and the internal backend service implementation to evolve independently.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">JSON Schema (APIGateway Model)</summary>
+
+        JSON Schemas, referred to as **Models** in AWS API Gateway, are reusable, powerful JSON documents that define the **structure, format, and constraints** of the request and response payloads for your API methods. They are defined once per API and can be referenced by multiple methods, serving a dual purpose: **request body validation** and **code generation/documentation**.
+
+        API Gateway Models use the **JSON Schema Draft 4** syntax.
+
+        ##### Primary Functions of API Gateway Models
+
+        1. **Request Body Validation (The Main Use Case)**: This is the most critical function. By associating a Model with a **Method Request** and enabling a **Request Validator**, API Gateway performs schema validation _before_ forwarding the request to your backend service (like a Lambda function).
+
+            - **How it Works:** When a client sends a request with a body, API Gateway checks if the payload adheres to the rules defined in the associated JSON Schema Model (for the specified Content-Type, e.g., `application/json`).
+            - **Benefits:**
+                - **Offloads Validation:** Moves basic structural validation (type checking, required fields, constraints) from your backend code (e.g., Lambda) to the API Gateway layer. This saves execution time and costs for invalid requests.
+                - **Immediate Feedback:** If the request body fails validation, API Gateway immediately returns a $\mathbf{400}$ **Bad Request** error to the client without ever invoking the backend integration.
+                - **Security:** Enforces strict data types and prevents unexpected payload structures that could potentially lead to injection or unexpected runtime errors in the backend.
+
+        2. **Payload Transformation Guidance**: When defining a **Mapping Template** (using VTL), you can ask API Gateway to generate a _starter template_ based on the defined Model. This gives you a pre-filled VTL template with all the fields and paths defined in the schema, simplifying the process of writing complex transformation logic.
+
+        3. **Documentation and SDK Generation**: Models serve as essential input for API Gateway's documentation and SDK generation features:
+
+            - They provide a formalized, machine-readable contract for your API's input and output data structures.
+            - When you use API Gateway to generate client SDKs (for languages like JavaScript, Android, or iOS), the Models are used to create the corresponding data structures in the target programming language.
+
+        ##### JSON Schema Fundamentals
+
+        API Gateway Models are implemented as JSON objects adhering to the JSON Schema Draft 4 specification. Key keywords define the rules:
+
+        | Keyword                     | Purpose                                                                                                                                                                                                           | Example                                                |
+        | :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------- |
+        | **`type`**                  | Defines the data type of the value (e.g., `object`, `array`, `string`, `number`, `integer`, `boolean`).                                                                                                           | `"type": "object"`                                     |
+        | **`properties`**            | Used for `type: object`. Defines the fields the object is expected to have.                                                                                                                                       | `"properties": {"name": {"type": "string"}}`           |
+        | **`required`**              | An array of property names that **must** be present in the request body.                                                                                                                                          | `"required": ["name", "email"]`                        |
+        | **`pattern`**               | A regular expression constraint used for string validation.                                                                                                                                                       | `"pattern": "^[a-zA-Z]+$"` (must contain only letters) |
+        | **`minimum`/`maximum`**     | Numeric constraints for `type: number` or `type: integer`.                                                                                                                                                        | `"minimum": 18`                                        |
+        | **`maxLength`/`minLength`** | Length constraints for `type: string` or `type: array`.                                                                                                                                                           | `"maxLength": 50`                                      |
+        | **`additionalProperties`**  | A boolean (default `true`). Setting this to **`false`** ensures the client cannot include any properties in the payload that are _not_ defined in the `properties` list. This is highly recommended for security. | `"additionalProperties": false`                        |
+        | **`$ref`**                  | Used to reference another defined model within the same API, enabling the creation of complex or nested data structures.                                                                                          | `"items": {"$ref": "https://.../models/ItemModel"}`    |
+
+        -   **Example Model (JSON Schema)**: This schema validates a request body for creating a user:
+
+            ```json
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "title": "NewUserRequest",
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 30
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "minimum": 18
+                    }
+                },
+                "required": ["username", "email"],
+                "additionalProperties": false
+            }
+            ```
+
+        ##### Model Integration Steps
+
+        1.  **Create the Model:** Define the JSON Schema in the API Gateway **Models** section.
+        2.  **Create a Request Validator:** In the API Gateway console, you create a Request Validator and specify whether it should validate the request body, query parameters, or both.
+        3.  **Apply to Method:** In the **Method Request** settings for a specific resource and HTTP verb (e.g., `POST /users`):
+            -   Set the **Request Validator** to the one created in step 2.
+            -   Under **Request Body**, associate the Model with a **Content-Type** (e.g., map the `NewUserRequest` Model to the content type `application/json`).
+
+        Once these steps are complete, API Gateway will automatically check all incoming `POST /users` requests against the defined schema and reject invalid requests with a $\mathbf{400}$ error before execution even begins.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Usage Plans</summary>
+
+        Usage Plans in AWS API Gateway are a powerful mechanism to control access to your APIs, manage request traffic, and often serve as the foundation for **API monetization and tiered access** for different customers. They bundle together **API Stages**, **Throttling limits**, and **Quotas**, and link them to individual **API Keys**.
+
+        A Usage Plan governs how a client is permitted to interact with your deployed APIs. It is defined by three main components:
+
+        -   **API Stages**: The usage plan defines exactly which deployed API stages it applies to. A single Usage Plan can grant access to **one or more API stages** across one or more REST APIs.
+
+            -   **Example:** A "Premium" usage plan might grant access to the `v2/prod` stage of the `DataAPI` and the `beta` stage of the `AnalyticsAPI`.
+
+        -   **Throttling (Rate Limiting)**: Throttling controls the rate at which clients can submit requests to prevent your backend systems from being overwhelmed by traffic spikes or misuse.
+
+            -   **Rate:** The steady-state average rate, defined as the number of requests per second (RPS) that API Gateway allows.
+            -   **Burst:** The maximum number of concurrent requests that API Gateway will service before returning an HTTP **429 Too Many Requests** error. This is based on the **Token Bucket Algorithm**, allowing a client to temporarily exceed the stable rate for short bursts of activity.
+            -   **Granularity:** Throttling can be applied at the **API Stage level** and, more importantly, at the **Per-Client/Per-Key level** within the Usage Plan, allowing you to set different throttle limits for different customer tiers (e.g., 10 RPS for Basic, 100 RPS for Gold).
+
+        -   **Quota**: The quota defines the **total number of requests** that an individual client (identified by an API Key) can make within a specified time period.
+
+            -   **Requests:** The total request count limit (e.g., 10,000 requests).
+            -   **Period:** The time interval over which the request count is tracked (e.g., day, week, or month).
+            -   **Enforcement:** Once a client's request count exceeds the quota for the period, API Gateway will reject subsequent requests with an HTTP **403 Forbidden** error until the next period begins. You can also grant an **extension** to the quota for a specific API Key if needed.
+
+        -   **The Role of API Keys**: Usage Plans are enforced on a per-client basis through **API Keys**.
+
+            -   **API Key Creation:** You create a unique API Key (an alphanumeric string) for each client or customer.
+            -   **Association:** Each API Key is explicitly associated with a Usage Plan.
+            -   **Client Usage:** When a client makes a request, they must include their API Key in a designated header (usually `x-api-key`).
+            -   **Method Requirement:** To enable Usage Plan enforcement, you must explicitly configure individual API methods (or the entire API Stage) to require an API Key. If a method does not require an API Key, it will bypass the usage plan's throttling and quota limits.
+
+            | Plan        | Throttling (RPS)     | Quota (Requests/Month) | Associated API Keys |
+            | :---------- | :------------------- | :--------------------- | :------------------ |
+            | **Basic**   | Rate: 10, Burst: 5   | 100,000                | Client A, Client B  |
+            | **Premium** | Rate: 100, Burst: 50 | 10,000,000             | Client C, Client D  |
+
+        -   **Important Implementation Details and Limitations**:
+
+            -   **Not for Authentication/Authorization:** API Keys should **not** be used for general authentication or authorization (i.e., verifying _who_ a user is or _what_ resources they can access). For that, use mechanisms like **IAM**, **Lambda Authorizers**, or **Cognito User Pools**. API Keys are purely for **usage metering, throttling, and quota enforcement**.
+            -   **Best-Effort Enforcement:** Usage plan quotas and throttling are applied on a **best-effort basis**. They are not hard, guaranteed limits, especially under extremely high load. AWS recommends using services like **AWS WAF** for strict request blocking and **AWS Budgets** to monitor costs.
+            -   **Viewing Usage:** API Gateway provides a console view to track the usage data for each API Key linked to a Usage Plan, helping you monitor customer consumption.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">API KEY</summary>
+
+        API Keys in AWS API Gateway are long, uniquely generated strings used primarily for **tracking, metering, and controlling access rates** to your REST and WebSocket APIs. They act as a token required to identify the calling client and associate that client with a **Usage Plan**.
+
+        **Crucially, AWS strongly recommends against using API Keys alone for authentication or fine-grained authorization.** They are best used as a mechanism for **monetization** and **traffic management**.
+
+        ##### Purpose and Mechanism
+
+        The core function of an API Key is to link an API client to a **Usage Plan**, which dictates how much traffic that client is allowed to send to the API.
+
+        1. **Usage Plans**: An API Key must be associated with a **Usage Plan**. The Usage Plan is where the actual controls are defined:
+
+            - **Throttling:** Sets the steady-state **rate limit** (requests per second) and the maximum **burst limit** (maximum concurrent requests allowed in a short period).
+            - **Quota:** Sets the total number of requests a client can make within a specific time period (e.g., 10,000 requests per month).
+
+        2. **The Flow**
+            1. **Client Request:** A client sends a request to an API Gateway method that is configured to require an API key, including the key in a specified header (usually `x-api-key`).
+            2. **Key Check:** API Gateway checks the provided key against its database of valid keys.
+            3. **Usage Plan Association:** If the key is valid, API Gateway identifies the associated **Usage Plan** and **API Stage**.
+            4. **Enforcement:** API Gateway checks the client's current usage against the plan's defined **throttling** and **quota** limits.
+            5. **Execution/Rejection:**
+                - If the limits are exceeded, the request is immediately rejected with a $\mathbf{429}$ **Too Many Requests** status code.
+                - If the limits are honored, the request is passed to the backend integration, and the request count for that key is logged.
+
+        ##### Configuration Steps
+
+        To use an API key, you must configure three components:
+
+        3. **Create the API Key**: You generate a unique API key directly within the API Gateway console or via API/CLI. This key is then distributed to the API consumers.
+
+        4. **Configure the API Method**: For each method (`GET`, `POST`, etc.) on a resource that you want to protect, you must explicitly set the **API Key Required** setting to **`true`** in the **Method Request** configuration.
+
+        5. **Create and Associate the Usage Plan**:
+
+            - **Create Usage Plan:** Define the desired Rate, Burst, and Quota.
+            - **Associate Stage:** Link the Usage Plan to the specific **API Stage** (e.g., `prod`, `dev`) that contains your API methods.
+            - **Associate API Key:** Add the newly created API Key to the Usage Plan. A single API key can grant access to multiple API stages/APIs if they are all included in the same Usage Plan.
+
+        -   **API Key Source**: You can configure where API Gateway looks for the key in the request:
+            -   **`HEADER` (Default):** The key is expected in the standard `X-API-KEY` header of the request.
+            -   **`AUTHORIZER`:** The key is returned by an identity source (like a Lambda Authorizer) and can be checked against a usage plan.
+
+        ##### API Keys vs. Authorization
+
+        It is crucial to understand the difference between API Keys and true authorization mechanisms:
+
+        | Feature           | API Key                                                                   | IAM or Lambda Authorizer                                                                   |
+        | :---------------- | :------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------- |
+        | **Primary Goal**  | **Metering and Throttling** (traffic management).                         | **Authentication and Authorization** (identity and permission).                            |
+        | **Identity**      | Identifies the **consumer account** or **application**.                   | Identifies the **individual user** (e.g., Jane Doe).                                       |
+        | **Granularity**   | Coarse-grained. Checks if the key is **valid** for _any_ API in the plan. | Fine-grained. Checks if the user has permission to access _this specific_ resource/method. |
+        | **Best Practice** | Use for **SaaS APIs, Billing, and Rate Limiting**.                        | Use for **User Logon, Role-Based Access Control (RBAC)**, and sensitive data protection.   |
+
+        **API Keys are not sufficient for security.** If a malicious user steals a key, they gain access to all APIs associated with that key's Usage Plan. For security, you should use **IAM Roles**, **Lambda Authorizers**, or **Cognito User Pools** for authentication and authorization, often **in conjunction with** an API Key for metering.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">RESTful APIs:</summary>
+
+        RESTful APIs in AWS API Gateway allow you to build, deploy, and manage RESTful APIs at scale. They adhere to the principles of REST (Representational State Transfer) architecture.
+
+        AWS API Gateway is a fully managed service that allows developers to **create, publish, maintain, monitor, and secure REST, HTTP, and WebSocket APIs at any scale**. A RESTful API in API Gateway acts as the "front door" for client applications to access backend services like AWS Lambda, EC2, or other public web services.
+
+        The REST API type in API Gateway is the feature-rich, low-latency option that provides granular control over the API lifecycle.
+
+        -   **Core Concepts and Components**:A REST API in API Gateway is fundamentally structured as a collection of **Resources** and **Methods**.
+
+            1. **API (The Container)**: The top-level entity that contains all the resources and methods for your web service. It is deployed to a specific **Stage** and uses an **Endpoint Type**.
+
+            2. **Resource**: A **Resource** is a logical entity that is accessible via a path and typically maps to a data model (e.g., `/users`, `/products/{id}`).
+
+                - **Resource Path:** The URI component used to access the resource (e.g., `/products`).
+                - **Path Parameters:** Variables embedded in the resource path (e.g., `{id}` in `/products/{id}`). These are extracted by API Gateway and passed to the backend.
+
+            3. **Method**: A **Method** is a request handler attached to a **Resource** that corresponds to a standard HTTP verb (**GET, POST, PUT, DELETE, PATCH**). It defines the entry point for a client request and the contract for the response.
+
+            4. **Integration (The Communication Layer)**: The most critical part of the Method, the **Integration** defines how API Gateway communicates with the backend service. It is composed of two main phases:
+
+                | Component                | Description                                                                                                                                                                                                        |
+                | :----------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+                | **Method Request**       | The **client-facing interface**. Defines the data expected from the client (path params, query strings, headers, body) and includes **Authorization** and **Request Validation** settings.                         |
+                | **Integration Request**  | The **backend-facing configuration**. This is the request API Gateway sends to the backend. It includes data **transformation** using VTL (Velocity Template Language) and specifies the backend endpoint.         |
+                | **Integration Response** | The **backend response configuration**. Defines how the response from the backend is handled, including mapping backend status codes to API Gateway status codes and performing **response transformation** (VTL). |
+                | **Method Response**      | The **client-facing response**. Defines the expected HTTP status codes, headers, and body models returned to the client.                                                                                           |
+
+        -   **Integration Types**:API Gateway offers several ways to integrate with a backend, giving you flexibility over control and development speed.
+
+            | Integration Type  | Description                                                                                                                                                                                                       | Granular Control? | Use Case                                                                                      |
+            | :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------- | :-------------------------------------------------------------------------------------------- |
+            | **Lambda Proxy**  | A simplified, recommended approach for AWS Lambda. API Gateway sends the entire client request as a single JSON object to Lambda and expects a specific JSON structure in return.                                 | No (Simplified)   | Standard serverless applications (e.g., reading from DynamoDB).                               |
+            | **Lambda Custom** | Gives you **full control** over the request and response mapping using **VTL**. API Gateway transforms the request before invoking Lambda and transforms the response before sending it back to the client.       | Yes (Granular)    | Advanced scenarios where you need to integrate with legacy systems or non-standard protocols. |
+            | **HTTP Proxy**    | API Gateway acts as a simple pass-through proxy to any **HTTP endpoint** (e.g., a server on EC2, an external third-party API). The client request is forwarded as-is, and the backend response is returned as-is. | No (Pass-Through) | Integrating with existing web services or microservices.                                      |
+            | **AWS Service**   | Allows API Gateway to directly call an AWS service action (e.g., DynamoDB's `PutItem`, SQS's `SendMessage`) without needing an intermediary Lambda function. Requires VTL mapping.                                | Yes (Granular)    | Directly interacting with AWS infrastructure to optimize latency and remove Lambda overhead.  |
+            | **Mock**          | API Gateway responds immediately without forwarding the request to any backend.                                                                                                                                   | N/A               | Testing, returning static data, or implementing temporary error responses.                    |
+            | **Private**       | Used with a **VPC Link** to securely integrate with resources in your Amazon VPC, such as Application Load Balancers (ALBs) or Network Load Balancers (NLBs).                                                     | Yes/No            | Internal APIs for corporate or private applications.                                          |
+
+        -   **Key Features and Advanced Concepts**:
+
+            1. **Deployment and Stages**: An API must be **deployed** to a **Stage** before it can be invoked.
+
+                - **Stage:** A logical reference to a lifecycle state of your API (e.g., `prod`, `dev`, `beta`).
+                - **Stage Variables:** Key-value pairs defined in a Stage that can be referenced in the Integration configuration (e.g., to point a `dev` stage to a `DevLambda` function and a `prod` stage to a `ProdLambda` function).
+
+            2. **Authorization and Authentication**: API Gateway offers robust security mechanisms:
+
+                - **IAM Authorization:** Uses AWS Identity and Access Management (IAM) permissions for authenticated calls, typically for clients within the AWS ecosystem.
+                - **Lambda Authorizers (Custom Authorizers):** A Lambda function you write to execute authorization logic (e.g., validating custom tokens or session IDs) and return an IAM policy to API Gateway.
+                - **Cognito User Pool Authorizer:** Integrates directly with an Amazon Cognito User Pool to manage authentication (signing in users) and authorize API access using tokens (ID and Access Tokens).
+                - **API Keys & Usage Plans:** Used for metering, throttling, and controlling access to your APIs.
+
+            3. **Traffic Management**
+
+                - **Throttling:** Limits the number of requests per second for the entire API or for individual methods to protect the backend service from being overwhelmed.
+                - **Caching:** Enables caching of API responses to improve latency and reduce the load on your backend. You configure the Time-To-Live (TTL) for cached responses.
+
+            4. **Transformation and Validation**
+
+                - **Mapping Templates (VTL):** Used in the Integration Request and Integration Response to transform the request body/parameters between the client's format and the backend's required format. This is where you can manually map, extract, or compute data.
+                - **Request Validation:** Allows you to define JSON Schemas (**Models**) for the request body and validate incoming client requests before they hit the backend. This offloads input validation from your backend service.
+
+            5. **Endpoint Types**: Defines the client-facing public address of your API:
+                - **Edge-Optimized (Default):** The API requests are routed through the **Amazon CloudFront** content delivery network (CDN) to minimize latency for geographically dispersed clients.
+                - **Regional:** The API is deployed only in the current AWS region. Best for clients primarily in the same region, or when you use your own CDN.
+                - **Private:** The API is accessible only from within your Amazon VPC using an **Interface VPC Endpoint**. Best for internal-only applications.
+
+        ##### Terms & Concepts:
+
+        -   `Resource-Based Architecture`: RESTful APIs in AWS API Gateway follow a resource-based architecture where resources (e.g., objects, data) are exposed as endpoints (e.g., URLs) and support standard CRUD operations (Create, Read, Update, Delete) on these resources.
+        -   `HTTP Methods`: You can define HTTP methods (e.g., GET, POST, PUT, DELETE) for each resource, allowing clients to interact with the API through these methods.
+        -   `Integration`: RESTful APIs can integrate with backend services such as AWS Lambda functions, AWS Elastic Beanstalk applications, or HTTP endpoints. Integration options include Lambda functions, HTTP endpoints, AWS services, and AWS Lambda Proxy integration.
+        -   `Security`: API Gateway provides features like AWS IAM authorization, resource policies, and usage plans to secure and control access to your RESTful APIs. You can configure API keys, IAM roles, and resource policies for authentication and authorization.
+        -   `Monitoring and Analytics`: You can monitor API usage, performance metrics, and logs using Amazon CloudWatch and Amazon API Gateway's built-in logging and monitoring features. API Gateway provides detailed metrics, access logs, and execution logs for monitoring and troubleshooting.
+        -   `Use Cases`: RESTful APIs are suitable for building web services, microservices, and mobile backends where resources need to be exposed and accessed via standard HTTP methods. They are ideal for building CRUD-based applications and adhering to REST architectural principles.
+
+        ##### RESTful APIs Features:
+
+        -   `Protocol Support`:
+            -   REST APIs provide comprehensive support for building RESTful APIs according to the principles of Representational State Transfer (REST).
+            -   They support HTTP/1.1 and HTTPS protocols.
+        -   `Custom Domain Names`:
+            -   REST APIs support custom domain names, allowing you to provide a branded API endpoint with your own domain name.
+            -   You can configure custom domain names directly within API Gateway without additional mappings.
+        -   `Resource-Based Routing`:
+            -   REST APIs offer resource-based routing, allowing you to define hierarchical resource structures using paths and HTTP methods (e.g., GET /users, POST /users/{id}).
+            -   They follow RESTful design principles, making it easy to organize and expose your API resources.
+        -   `Integration Types`:
+            -   REST APIs support a variety of integration types, including Lambda functions, HTTP endpoints, AWS services, and AWS Step Functions.
+            -   You can choose the integration type that best fits your use case, allowing you to integrate with various backend systems and services.
+        -   `API Keys and IAM Roles`:
+            -   REST APIs support API keys and AWS Identity and Access Management (IAM) roles for controlling access to your APIs.
+            -   You can use API keys to throttle and monitor API usage, and IAM roles to grant fine-grained access permissions to API resources.
+
+        ##### RESTful APIs Limitations:
+
+        While REST APIs in AWS API Gateway offer a wide range of features for building RESTful APIs, they also have some limitations to consider. Here are some of the key limitations of REST APIs in AWS API Gateway:
+
+        -   `Cold Start Latency`: Like other serverless architectures, REST APIs using Lambda functions may experience cold start latency, where the initial invocation of a function takes longer due to resource provisioning. This latency can impact the responsiveness of the API.
+        -   `Integration Limits`: REST APIs have integration limits, such as a maximum of 30 integration responses per method, a maximum of 10 authorizers per method, and a maximum payload size of 10 MB for request and response bodies. These limits may impact the complexity and scalability of your API design.
+        -   `Rate Limiting Constraints`: While API Gateway supports rate limiting for controlling access to APIs, there are limitations on the granularity of rate limiting configurations. For example, you cannot specify rate limits based on specific API keys or client IPs, and the default rate limit is applied globally to all clients.
+        -   `API Gateway Throttling`: API Gateway imposes throttling limits on API requests to prevent abuse and ensure system stability. While throttling is necessary for protecting backend resources, it can lead to temporary service interruptions if request rates exceed the configured limits.
+        -   `Payload Transformations`: API Gateway supports payload transformations for modifying request and response payloads using mapping templates. However, these transformations are limited in functionality compared to dedicated transformation services, and complex transformations may require additional processing.
+        -   `CORS Configuration`: Cross-Origin Resource Sharing (CORS) configuration in API Gateway has limitations, such as a maximum of 30 CORS configurations per API and restrictions on wildcard (\*) usage. This may impact the flexibility of CORS policies for enabling cross-origin requests.
+        -   `Monitoring and Logging Limits`: While API Gateway provides monitoring and logging capabilities for tracking API usage and performance, there are limits on the volume of logs and metrics that can be stored and retained. This may require additional monitoring solutions for long-term data retention and analysis.
+        -   `Integration Timeout`: API Gateway imposes integration timeouts for API requests to backend services. If the backend service does not respond within the specified timeout period, the request may fail with a timeout error. Configuring appropriate timeout values is important for handling varying backend response times.
+        -   `Integration Response Mapping`: Mapping integration responses to HTTP status codes and headers in API Gateway can be complex, especially for APIs with multiple integration responses. Managing response mappings and error handling logic may require careful configuration and testing.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">HTTP APIs:</summary>
+
+        HTTP APIs in AWS API Gateway offer a more lightweight and cost-effective alternative to traditional RESTful APIs. They are optimized for serverless workloads and provide features tailored to modern web applications.
+
+        -   `Simplified Configuration`: HTTP APIs in AWS API Gateway offer a more lightweight and cost-effective alternative to traditional RESTful APIs. They provide simplified configuration options for defining routes, methods, and integrations, making it easier to build and manage APIs.
+        -   `Built-in CORS Support`: HTTP APIs provide built-in Cross-Origin Resource Sharing (CORS) support, allowing you to define CORS policies to control access from web browsers. CORS settings can be configured at the API level or the route level.
+        -   `JWT Authorizers`: HTTP APIs support JWT (JSON Web Token) authorizers for authentication and authorization. You can use JWT tokens to authenticate and authorize requests, simplifying the implementation of authentication in serverless applications.
+        -   `Payload Validation`: HTTP APIs support payload validation, allowing you to validate request and response payloads against JSON schemas or OpenAPI definitions. You can define request and response models and validate incoming and outgoing payloads against these models.
+        -   `Cost-Effective`: HTTP APIs offer a lower cost structure compared to RESTful APIs, making them suitable for serverless applications with high traffic volume. They provide a cost-effective option for building modern web applications and serverless microservices.
+        -   `Use Cases`: HTTP APIs are well-suited for building modern web applications, single-page applications (SPAs), and serverless microservices where simplicity, scalability, and cost-effectiveness are priorities. They are ideal for scenarios where traditional RESTful APIs may be too complex or costly to manage.
+
+        #### HTTP APIs Features:
+
+        -   `Protocol Support`:
+            -   HTTP APIs are designed to provide a low-latency and low-cost option for building HTTP-based APIs.
+            -   They support HTTP/1.1 and HTTP/2 protocols.
+        -   `API Mapping`:
+            -   HTTP APIs offer simplified API mapping, allowing you to map multiple custom domain names to a single API endpoint.
+            -   They do not support custom domain names directly; instead, you configure API mappings using API Gateway stages.
+        -   `WebSocket Support`:
+            -   HTTP APIs support WebSocket connections, making it easy to build real-time, bidirectional communication applications such as chat apps, gaming platforms, and IoT applications.
+            -   They provide native WebSocket support, allowing you to handle WebSocket connections without the need for additional services.
+        -   `Lambda Proxy Integration`:
+            -   HTTP APIs support Lambda proxy integration, where the integration request and response payloads are passed directly to and from Lambda functions.
+            -   This simplifies the integration setup and enables you to build serverless applications with Lambda functions as the backend.
+        -   `OAuth 2.0 and JWT Authorizers`:
+
+            -   HTTP APIs support OAuth 2.0 and JSON Web Token (JWT) authorizers for authenticating and authorizing API requests.
+            -   You can use OAuth 2.0 or JWT tokens to protect your APIs and control access based on user identities or custom claims.
+
+        #### HTTP APIs Limitations:
+
+        -   `Limited Protocol Support`: HTTP APIs support HTTP/1.1 and HTTP/2 protocols but do not support older protocols such as HTTP/1.0. This may limit compatibility with some legacy systems or clients.
+        -   `Limited Integration Options`: HTTP APIs have limited integration options compared to REST APIs. They primarily support Lambda functions and HTTP endpoints as backend integrations. While Lambda proxy integration is convenient for serverless architectures, it may not be suitable for complex integration scenarios.
+        -   `Limited Deployment Options`: HTTP APIs are only available in the API Gateway version 2.0, which means they do not support the previous version 1.0 deployment options. This may impact migration efforts or compatibility with existing API Gateway features.
+        -   `Limited Customization`: HTTP APIs offer fewer customization options compared to REST APIs. For example, they do not support custom domain names directly; instead, you must use API mappings to map custom domain names to API endpoints.
+        -   `No Stage Variables`: HTTP APIs do not support stage variables, which are commonly used in REST APIs to define environment-specific configuration values. This may require alternative approaches for managing environment-specific settings.
+        -   `No Resource Policies`: HTTP APIs do not support resource policies, which are used in REST APIs to control access to API resources based on IP address or VPC endpoint. This may limit security controls for certain use cases.
+        -   `Limited Monitoring and Logging`: HTTP APIs offer basic monitoring and logging capabilities compared to REST APIs. While you can enable logging and monitoring for HTTP APIs, the available metrics and logs may be limited compared to REST APIs.
+        -   `Limited API Gateway Features`: Some advanced API Gateway features, such as AWS WAF integration, caching, and request/response transformations, are not fully supported or may have limitations when using HTTP APIs.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">WebSocket APIs:</summary>
+
+        WebSocket APIs in AWS API Gateway enable real-time, bidirectional communication between clients and servers over a single TCP connection. They provide full-duplex communication channels.
+
+        -   `Real-time Communication`: WebSocket APIs support low-latency, real-time communication between clients and servers, making them ideal for applications requiring real-time updates and notifications.
+        -   `Persistent Connection`: WebSocket APIs establish a persistent connection between clients and servers, allowing both parties to send messages to each other asynchronously.
+        -   `Serverless Integration`: You can integrate WebSocket APIs with AWS Lambda functions to handle WebSocket messages and execute business logic in a serverless environment.
+        -   `Security`: WebSocket APIs support authentication and authorization mechanisms to secure connections and control access to resources.
+        -   `Scalability`: AWS API Gateway automatically scales WebSocket APIs to handle high volumes of concurrent connections and messages.
+        -   `Use Cases`: WebSocket APIs are commonly used in applications such as chat applications, multiplayer games, real-time collaboration tools, and financial trading platforms.
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Use Cases of API Gateway</summary>
+
+        AWS API Gateway has several practical use cases in data engineering, especially in creating and managing APIs that interface with various data pipelines and processes. Here are some common use cases:
+
+        1. **Exposing Data Processing Pipelines as APIs**
+
+            - **Use Case**: Create APIs for external or internal users to submit data for processing.
+            - **Example**: An API that receives data from clients and triggers an AWS Lambda function, which preprocesses and loads the data into AWS S3, DynamoDB, or RDS. This can be used in ETL pipelines.
+
+        2. **Real-Time Data Ingestion for Streaming Pipelines**
+
+            - **Use Case**: Provide a scalable, low-latency endpoint for ingesting streaming data.
+            - **Example**: API Gateway can front Amazon Kinesis to ingest real-time event data, such as IoT sensor data, which can then be processed and analyzed in real time.
+
+        3. **Orchestrating Data Jobs via API**
+
+            - **Use Case**: Expose APIs to trigger specific data engineering jobs or workflows.
+            - **Example**: Use API Gateway to trigger AWS Step Functions, which orchestrate complex ETL pipelines involving services like Lambda, Glue, or EMR for data processing and transformations.
+
+        4. **Data Enrichment as a Service**
+
+            - **Use Case**: Provide an API to enhance datasets with additional data from external or internal sources.
+            - **Example**: An API Gateway that fronts a Lambda function to enrich customer records by calling external APIs (e.g., validating address details or credit scores).
+
+        5. **Secure Data Access for Analytics**
+
+            - **Use Case**: Securely expose APIs to provide controlled access to datasets stored in S3, DynamoDB, or RDS.
+            - **Example**: An internal API that returns filtered data from S3 buckets or a database (PostgreSQL/MySQL) based on user roles or other security constraints using AWS Identity and Access Management (IAM) and API Gateway custom authorizers.
+
+        6. **Serverless Microservices for Data Transformation**
+
+            - **Use Case**: Enable microservices architecture for data transformation logic.
+            - **Example**: API Gateway can be used to invoke Lambda functions that handle data transformations (e.g., format conversion, aggregations) before persisting the data into a data lake or a data warehouse.
+
+        7. **REST API for Querying and Fetching Data**
+
+            - **Use Case**: Create APIs for querying datasets for downstream applications.
+            - **Example**: Use API Gateway to expose a REST API for querying a dataset stored in Amazon Redshift or DynamoDB, enabling data retrieval for dashboards or analytics apps.
+
+        8. **Data Validation and Preprocessing Layer**
+
+            - **Use Case**: Validate incoming data before ingestion into the data pipeline.
+            - **Example**: API Gateway can expose an API that receives raw data, performs basic validation (via Lambda), and then forwards the valid data to S3 or a Kinesis stream.
+
+        9. **Monitoring and Logging of Data APIs**
+
+            - **Use Case**: Implement monitoring and logging for data ingestion and processing APIs.
+            - **Example**: API Gateway can be used with AWS CloudWatch to monitor API performance, logging, and error tracking for APIs that ingest and process data in real-time systems.
+
+        10. **API Gateway as Proxy for Third-Party Data Sources**
+
+            - **Use Case**: Use API Gateway as a proxy to fetch or send data to third-party APIs.
+            - **Example**: API Gateway can proxy requests to external services (e.g., payment processors, data providers) and integrate their data into internal pipelines.
+
+        11. **Public Data APIs for External Partners or Customers**
+
+            - **Use Case**: Expose specific datasets or aggregated data as APIs for external customers or partners.
+            - **Example**: A data product that exposes aggregated reports or analytics data via API Gateway to allow external partners to query specific metrics or KPIs.
+
+        12. **Rate Limiting and Throttling for Ingestion APIs**
+
+            - **Use Case**: Control the flow of data ingestion by applying rate limits or throttling.
+            - **Example**: API Gateway allows you to set up throttling policies to control the number of requests per second to prevent overloading downstream services like Kinesis, S3, or RDS.
 
         </details>
 

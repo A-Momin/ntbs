@@ -1,3 +1,5 @@
+-   [Terraform Language](https://developer.hashicorp.com/terraform/language)
+
 -   <details><summary style="font-size:25px;color:Orange">Terraform Components, Terms & Concepts</summary>
 
     -   <details><summary style="font-size:20px;color:Magenta">Terraform Configuration</summary>
@@ -40,11 +42,15 @@
             -   **Usage**: **Terraform Cloud** facilitates remote execution of Terraform runs, workspace management, and collaboration among team members.
 
         -   **Provider**: A plugin that translates Terraform configurations into API calls to interact with specific cloud or infrastructure platforms.
+            -   https://registry.terraform.io/browse/providers
             -   **Tier**: A classification system used by HashiCorp to indicate the level of maintenance and support for a specific provider.
                 -   **Official Provider**: A provider owned and maintained directly by HashiCorp (e.g., AWS, Azure, Google Cloud).
+                    - https://registry.terraform.io/browse/providers?tier=official
                 -   **Partner Provider**: A provider developed and maintained by a third-party company in collaboration with HashiCorp (e.g., MongoDB, Datadog).
                 -   **Community Provider**: A provider created and maintained by individual contributors or open-source organizations rather than a formal partner.
-            -   **Provider Namespace**: The prefix in a provider's source address (e.g., `hashicorp/`) that identifies the organization or individual responsible for publishing it.
+            -   **Provider Namespace**: The prefix in a provider's source address that identifies the organization or individual responsible for publishing it.
+                -   `hashicorp/` in `https://registry.terraform.io/providers/hashicorp/aws/latest` in case **Official Provider**
+                -   `aliyun/` in `https://registry.terraform.io/providers/aliyun/alicloud/latest` in case **Partner Provider**
 
         </details>
 
@@ -73,11 +79,22 @@
 
         1. <details><summary style="font-size:20px;color:#C71585">terraform</summary>
 
+            - Terraform require explicit source information for non-official provider (Provider that are not owned and maintained by Hashicorp)
             - The `terraform` block is used to configure Terraform itself, such as backend settings (where the state files are stored) and version constraints.
             - This is usually found at the top of the configuration file.
 
             ```ini
             terraform {
+                required_version =">=1.6.0"
+                required_providers {
+                    atlas = {
+                        source = "jpmchase.net/terraform/atlas-aws"
+                    }
+                    atlasutils = {
+                        source = "jpmchase.net/terraform/atlatutils"
+                    }
+                }
+
                 backend "s3" {
                     bucket = "my-terraform-state"
                     key    = "state/terraform.tfstate"
@@ -95,10 +112,18 @@
 
             - Providers are responsible for interacting with APIs and exposing resources for a specific infrastructure platform (e.g., AWS, Azure, Google Cloud).
             - Providers are declared in the configuration file to specify the target platform and set configuration details.
+            - The source information of AWS provider is not added into `terraform {}` because aws provider is an **Official Provider** (maintained by Hashicorp)
 
             ```ini
             provider "aws" {
-                region = "us-west-2"
+                access_key = var.aws_access_key_id
+                secret_key = var.aws_secret_access_key
+                token = var.aws_session_token
+                region = "us-west-1"
+                sts_region = var.aws_sts_region
+                assume_role {
+                    role_arn = "arn:aws:iam:${var.role_region}:role/tfe-module-pave-apply"
+                }
             }
             ```
             </details>
@@ -2032,3 +2057,13 @@
 
 ---
 
+### Improt and Remove
+
+```ini
+import{
+    to = aws_security_group.mysg
+    id = "111122223333"
+}
+```
+
+-   `$ terraform plan -generate-config-out=newsg.tf` 
