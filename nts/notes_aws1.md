@@ -2339,17 +2339,17 @@
 
         -   <details><summary style="font-size: 18px;color:#C71585">Launch Type Abstraction</summary>
 
-            > **Launch Type Abstraction** standardize how ECS interacts with the two main compute options:
+            > **Launch Type** define the compute model used to run ECS Tasks.
 
 
             1. **AWS Fargate (Serverless Launch Type)**: **AWS Fargate** is a **serverless compute engine** for containers that removes the need for you to provision, configure, or manage the underlying virtual machines (EC2 instances). You simply define the CPU and memory requirements for your containerized application, and AWS handles the rest.
-                > **AWS Fargate:** Uses **Fargate** and **Fargate Spot** capacity, abstracting infrastructure management entirely.
 
-                - **Infrastructure Management:** **Fully managed by AWS**. You focus only on the container tasks; AWS manages the instance fleet, scaling, patching, and security hardening of the container hosts.
-                - **Resource Allocation:** **Per-Task Granularity**. You specify the exact vCPU and memory (e.g., 0.5 vCPU and 4 GB memory) your **Task** needs, rather than selecting a fixed instance type. This leads to better resource utilization and less over-provisioning.
+                - **Infrastructure Management**: Fully managed by AWS - AWS manages the instance fleet, scaling, patching, and security hardening of the container hosts. You focus only on the container tasks
+                - **Resource Allocation**: Per-task CPU and memory allocation - You specify the exact vCPU and memory (e.g., 0.5 vCPU and 4 GB memory) for your **Task**, rather than selecting a fixed instance type.
                 - **Scalability:** **Automatic**. Fargate automatically provisions and scales the compute resources to meet the demand of your running tasks, making it ideal for variable, spiky, or unpredictable workloads.
                 - **Current State:** For pure Fargate, using the Fargate Launch Type is functionally equivalent to using the **Fargate Capacity Provider**, but using the Capacity Provider is the **recommended best practice** as it enables strategies.
                 - **Control/Customization:** **Low**. You have no access to the host operating system (OS), which simplifies security but restricts the use of host-level features (like DaemonSets or specific kernel configurations).
+                - **Capacity Options**: **FARGATE** and **FARGATE_SPOT** via capacity provider Strategy.
                 - **Pricing:** **Pay-per-use**. You are billed for the requested vCPU and memory resources for the duration your tasks are running (billed per second). There is no cost for idle EC2 instances.
 
                 - **When to Choose Fargate**:
@@ -2755,6 +2755,18 @@
             - Your Internet Service Provider’s (ISP) DNS resolver
             - Public DNS resolvers like Google DNS (8.8.8.8), Cloudflare DNS (1.1.1.1), OpenDNS
 
+        - **`Recursive` in Recursive DNS Server means**: the server takes responsibilities for completing the entire name-resolution process on the client's behalf and returns a final answer (or a final failure) rather than just pointing yo to next place to ask.
+            - To produce the final answer, the resolver may have to query multiple DNS servers in a chain:
+                1. **Resolver** -> **Root Server**: "Who handles `example.com`?"; Returns TLD Server responsible for `.com` (Top Level Domain Name)
+                2. **Resolver** -> **TLD Server**: "Who handles `example.com`?"; Returns Authoritative DNS Server responsible for `example.com`.
+                3. **Resolver** -> **Authoritative Server**:  "Who handles `example.com`?"; Return IP Address.
+
+        -   **Recursive** vs **Iterative**: The resolver is called "recursive" because it offers recursion to clients, even though it usually performs iterative lookups upstream.
+            -   **Client** -> **Recursive Resolver** is recursive query (client expect a final answer)
+            -   **Recursive** -> **Root/TLD/Authoritative Server** are typically iterative queries (those servers replies with referral, not final answers)
+
+        -   **Caching**: Once it resolves `www.example.com` it caches results for the TTL (Time to Live), so future clients get answer quickly without repeating the full chain
+
     2. **Root DNS Server**
 
         - The Root Server is the top-level DNS server in the hierarchy.
@@ -2768,7 +2780,7 @@
         - Example: The `.com` TLD name server manages domains like `amazon.com`, `google.com`.
 
     4. **Authoritative DNS Server**
-
+        - An Authoritative Server answer only for zones it hosts (e.g., it can authoritatively answer for `example.com` if it's configured to do so)
         - It responds with the final IP address for the requested domain.
         - This server holds the official DNS records for a domain (like `example.com`).
         - If a website uses a DNS hosting service, its authoritative DNS is managed by providers like:
@@ -4063,6 +4075,720 @@
             - **Example**: API Gateway allows you to set up throttling policies to control the number of requests per second to prevent overloading downstream services like Kinesis, S3, or RDS.
 
         </details>
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">Step Function</summary>
+
+    -   **NOTES**:
+        -   Each state can store up to 256 KiB of data
+
+    AWS Step Functions is a serverless orchestration service that lets you coordinate multiple AWS services into automated workflows. It helps break complex processes into a series of steps that can run in sequence or parallel. You define each step in the process using a state machine, and Step Functions automatically triggers each step, handles failures, and retries if needed, all while visualizing the flow for easier monitoring and debugging.. Below are the key terms and concepts of AWS Step Functions explained in detail:
+
+    AWS Step Functions is a **serverless orchestration service** that lets you create robust, multi-step application workflows as visual diagrams called **State Machines**. It manages the sequencing, logging, error handling, and state management between the components (microservices, Lambda functions, etc.) of your application.
+
+    -   <details><summary style="font-size:20px;color:Magenta">Core Concepts and Components</summary>
+
+        1. **State Machine (Workflow)**: A State Machine is the central component of Step Functions. It's the definition of your entire workflow, expressed in the **Amazon States Language (ASL)**, a structured JSON-based language.
+
+            - **Definition:** The ASL defines the sequence of steps (called **States**), the rules for transitioning between them, and the error handling logic.
+            - **Visual Editor:** Step Functions provides **Workflow Studio**, a graphical console that allows you to design, arrange, and visualize the workflow without manually writing ASL.
+
+        2. **State**: A **State** is a single element in your workflow—a step that performs a unit of work, makes a decision, or controls the flow. Every step in the workflow is a state.
+
+        3. **Execution**: An **Execution** is a running instance of a State Machine. When you start a State Machine, a unique execution is created, and Step Functions automatically tracks its progress, managing the transitions from one state to the next.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Workflow Types</summary>
+
+        Step Functions offers two distinct workflow types, catering to different performance and duration needs:
+
+        | Feature                 | Standard Workflows                                                            | Express Workflows                                                                         |
+        | :---------------------- | :---------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+        | **Duration**            | Up to **one year**                                                            | Up to **five minutes**                                                                    |
+        | **Execution Semantics** | **Exactly-once** (each step executes precisely once)                          | **At-least-once** (a step may execute more than once)                                     |
+        | **Use Case**            | Long-running processes, auditing, human-in-the-loop, payment processing.      | High-volume, short-duration, event-rate workloads, IoT data ingestion, stream processing. |
+        | **Pricing**             | Based on the number of **State Transitions**.                                 | Based on the number of requests, duration, and memory used.                               |
+        | **History**             | Detailed, durable execution history is logged and viewable for up to 90 days. | History is logged to CloudWatch Logs (less detailed, but higher throughput).              |
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">State Types (Building Blocks)</summary>
+
+        States are categorized into two main groups: **Task States** (work performing) and **Flow States** (flow control).
+
+        1. **Task States**: These perform the actual work by integrating with other services.
+
+            - **Task State (`Task`):** Executes a unit of work. This is the most common state, used to call AWS services like **AWS Lambda** functions.
+                - Optimized integrations with over 220 AWS services (DynamoDB, ECS, SNS, SQS, SageMaker, etc.)
+                - External HTTPS endpoints (**HTTP Task**).
+                - **Activities:** A mechanism for external applications (Activity Workers) to poll Step Functions for work, perform it, and send the result back.
+
+        2. **Flow States**: These control the structure and flow of the execution.
+
+            - **Choice State (`Choice`):** Adds **conditional branching** to the workflow (like an `if/else` statement) based on the input data.
+            - **Parallel State (`Parallel`):** Executes multiple branches of states **concurrently** and waits for all of them to complete before moving to the next state.
+            - **Map State (`Map`):** Used for **dynamic parallelism**. It executes a set of steps for _each item_ in an input array.
+                - **Inline Map:** Executes concurrently within the main workflow execution (limited to 40 concurrent iterations).
+                - **Distributed Map:** Launches thousands of independent child workflows (executions) for massive parallel processing, ideal for large data sets (e.g., millions of S3 objects).
+            - **Wait State (`Wait`):** Pauses the execution for a specified amount of time or until a specific date/time.
+            - **Pass State (`Pass`):** Simply passes its input to its output, performing no work. Useful for data manipulation or debugging.
+            - **Succeed State (`Succeed`):** Stops an execution successfully, trimming the execution path.
+            - **Fail State (`Fail`):** Stops an execution and marks it as a failure.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Service Integration Patterns</summary>
+
+        -   **Request Response (Default):** Step Functions calls the service and immediately moves to the next state upon receiving an HTTP response. The workflow does **not** wait for the job to complete.
+        -   **Run a Job (`.sync`):** Step Functions starts a long-running job (e.g., AWS Batch, ECS Task, SageMaker Training Job) and **pauses** until the job is complete. This is supported only by **Standard Workflows**.
+        -   **Wait for Callback (`.waitForTaskToken`):** Step Functions sends a unique **Task Token** to the integrated service (like SQS or SNS) and **pauses** indefinitely until an external process returns the token with a result. This is used for "human-in-the-loop" or integration with external systems. Supported only by **Standard Workflows**.
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Data Flow and Transformation</summary>
+
+        **Data Flow and Transformation**: Data between states is passed as a **JSON payload**.
+
+        The **Data Flow and Transformation** capabilities within AWS Step Functions are essential for managing and manipulating the JSON data (the **payload**) that moves between the individual steps (States) of your workflow. The primary tool for this is **JSONPath**.
+
+        JSONPath allows you to select, filter, and extract specific elements from the input or output JSON payload, ensuring that each state only receives the necessary information and passes on only the relevant results.
+
+        -   **The Data Flow Cycle**: In a Step Functions execution, data flows through each state in a predictable cycle using four key properties, all of which leverage JSONPath expressions (paths starting with `$`):
+
+            1. **State Input**: When a state begins, it receives its **Input Payload**, which is usually the **Output** of the previous state.
+
+            2. **InputPath (Input Filtering)**: The first operation is to filter the incoming payload using the `InputPath` property.
+
+                - **Purpose:** To select a specific subset of the State Input to be used as the **Effective Input** for the state's task logic. This prevents the state from dealing with irrelevant data.
+                - **Default:** If `InputPath` is omitted, the entire input payload (`$`) is passed to the state.
+                - **Example:** If the input is `{"user_id": 123, "order_details": {...}}`, and you only need the order details, you set `"InputPath": "$.order_details"`. The state's task (e.g., a Lambda function) only sees the order details.
+
+            3. **Parameters (Input Transformation)**: After filtering, the `Parameters` property (if present) allows you to perform **structural and value transformations** on the Effective Input before the task is executed.
+
+                - **Purpose:** To create a new, well-formed JSON object that the integrated service (like a Lambda function or a DynamoDB API call) expects.
+                - **Mechanism:** You define a JSON object where keys are the expected parameters, and values can be static text or dynamically sourced using JSONPath from the Effective Input.
+                - **Example:** To rename a field for a Lambda function:
+                    ```json
+                    "Parameters": {
+                    "customer_id.$": "$.user_id",
+                    "timestamp": "2025-01-01T00:00:00Z"
+                    }
+                    ```
+                    (Note the `.$` suffix, which tells Step Functions to evaluate the value as a JSONPath.)
+
+            4. **ResultPath (Output Integration)**: Once the state's task (e.g., a Lambda function) completes, it produces a **Result**. The `ResultPath` determines how this result is integrated into the original state input payload.
+
+                - **Purpose:** To combine the new result with the data that was passed into the state, preserving context from earlier steps.
+                - **Mechanism:** You specify a JSONPath where the result should be placed.
+                    - `"ResultPath": "$.new_field"`: The result is inserted into the payload under the key `new_field`.
+                    - `"ResultPath": "$"`: The result completely **replaces** the entire State Input payload.
+                    - Omit or `"ResultPath": null`: The result is **discarded**, and the original State Input becomes the State Output.
+
+            5. **OutputPath (Output Filtering)**: The final step is to filter the data resulting from step 4 (the integrated input and result) using the `OutputPath` property.
+
+                - **Purpose:** To select a subset of the integrated JSON payload to be passed as the **State Output** to the next state in the workflow.
+                - **Default:** If `OutputPath` is omitted, the entire integrated payload (`$`) is passed.
+                - **Example:** If the integrated payload is `{"user_id": 123, "task_result": "Success"}`, and you only want to pass the `task_result` to the next state, you set `"OutputPath": "$.task_result"`.
+
+        -   **JSONPath and JSONata**:
+
+            1. **JSONPath Fundamentals**: JSONPath expressions start with `$` and are used within the State Machine definition to reference data.
+
+                | Expression     | Description                        | Example Input: `{"a": 1, "b": {"c": 2}}` | Result                    |
+                | :------------- | :--------------------------------- | :--------------------------------------- | :------------------------ |
+                | `$`            | The root object/element.           | `$`                                      | `{"a": 1, "b": {"c": 2}}` |
+                | `$.name`       | Selects a child element by name.   | `$.a`                                    | `1`                       |
+                | `$.name.child` | Selects a nested element.          | `$.b.c`                                  | `2`                       |
+                | `$[0]`         | Selects an array element by index. | `$.array[0]` (if `array` is `[10, 20]`)  | `10`                      |
+
+            2. **JSONata for Advanced Transformation (Using `Parameters`)**: While JSONPath is limited to selection, Step Functions leverages **JSONata** for complex transformations within the `Parameters` property. This allows you to perform operations like mapping, filtering, and aggregation.
+
+                - **Example (JSONPath Selection):**
+                    ```json
+                    "Parameters": {
+                        "userId.$": "$.detail.id"
+                    }
+                    ```
+                - **Example (JSONata Transformation):**
+                    ```json
+                    "Parameters": {
+                        "statusMessage.$": "States.Format('Order {} complete for user {}', $.order.id, $.user.id)",
+                        "itemsTotal.$": "$.items[].price | $sum($)"
+                    }
+                    ```
+                    The `States.Format` function is an intrinsic function provided by Step Functions that uses JSONata to build a string dynamically. This ability to perform logic within the data flow greatly enhances the workflow's flexibility.
+
+        -   **Context Object (`$$`)**:Separate from the execution data, the **Context Object** (`$$`) is an internal, read-only JSON structure that Step Functions makes available to every state.
+
+            -   **Purpose:** Provides metadata about the running execution, independent of the input/output data.
+            -   **Contents:** Includes details like the execution ARN, state machine ARN, state name, retry counts, and the **Task Token** (crucial for `.waitForTaskToken` integration).
+            -   **Usage:** You access context data by prefixing the path with `$$` (e.g., `"ARN.$": "$$.Execution.Id"`).
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">Built-in Error Handling</summary>
+
+        Step Functions automatically handles errors using declarative logic defined in ASL:
+
+        -   **Retries (`Retry`):** You can define a policy to automatically retry a failed `Task` state a specified number of times, often using an **exponential backoff** strategy.
+        -   **Catchers (`Catch`):** You can define a fallback state to transition to if a specific error is caught, allowing you to implement graceful degradation or alternative cleanup logic.
+
+        </details>
+
+    #### Terminology, Concepts and Components
+
+    -   **State Machine**:
+
+        -   A state machine is a workflow definition in Step Functions. It represents the various steps of your application as states.
+        -   The state machine specifies how the states interact with each other, the transitions between states, and the inputs/outputs of each state.
+        -   The state machine definition is written in JSON or Amazon States Language (ASL). It defines the states, transitions, input/output, and other configurations.
+
+    -   **States**: States are the individual steps in a state machine. Step Functions supports several types of states:
+
+        -   [Discovering workflow states to use in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-states.html)
+        -   `Task State`: Executes an AWS Lambda function or integrates with other AWS services like SNS, SQS, DynamoDB, etc.
+        -   `Choice State`: Adds branching logic to your state machine based on certain conditions.
+        -   `Parallel State`: Executes multiple branches of states simultaneously.
+        -   `Map State`: Iterates over a list of items and executes the same workflow for each item.
+        -   `Wait State`: Introduces a delay for a specified amount of time before moving to the next state.
+        -   `Succeed State`: Indicates that the execution has succeeded.
+        -   `Fail State`: Indicates that the execution has failed and provides error information.
+        -   `Pass State`: Passes its input to its output, performing no work.
+
+    #### Amazon State Language
+
+    -   The QueryLanguage field can be set to "JSONPath" or "JSONata". If the top-level QueryLanguage field is omitted, it defaults to "JSONPath". If a state contains a state-level QueryLanguage field, Step Functions will use the specified query language for that state. If the state does not contain a QueryLanguage field, then it will use the query language specified in the top-level QueryLanguage field.
+
+    -   **[Amazon States Language (ASL)](https://states-language.net/)**: ASL is the JSON-based and structured language used to define state machines. It includes the syntax for defining states, transitions, and error handling. Detailed Explanation of Common Fields:
+
+        -   `Type`: Defines the type of state (`Task`, `Choice`, `Succeed`, `Fail`, etc.).
+        -   `Resource`: Specifies the ARN of the resource to be executed (e.g., Lambda function ARN).
+        -   `Next`: Specifies the next state to transition to after the current state completes.
+        -   `End`: If set to true, designates the state as the final state.
+        -   `InputPath`: JSONPath that selects part of the state input to be passed to the resource.
+        -   `OutputPath`: JSONPath that selects part of the state output to be passed to the next state.
+        -   `Parameters`: Passes specific JSON as input to the resource.
+        -   `ResultPath`: Specifies where to place the result of the resource's execution in the state’s input.
+        -   `ResultSelector`: Manipulates the raw result from the resource before it’s passed to the ResultPath.
+        -   `Retry`: Array of retry policy objects that define retry logic for a state.
+        -   `Catch`: Array of catcher objects that define what to do if an error is encountered.
+
+    -   **Execution**: An execution is an instance of your state machine in action. Each execution is unique and can be tracked separately.
+    -   **Context Object**: The context object contains metadata about the execution, such as execution ID, name, and start time. It can be accessed within the state machine. You can access context with `$$.` as in `$$.Execution.Id` in JSONPath expressions.
+    -   **Event**: Events are the inputs, outputs, and error messages generated by each state during execution.
+
+    -   **Error Handling**: AWS Step Functions support robust error handling with `Retry` and `Catch` fields.
+
+        -   `Retry`: Defines retry behavior for states in case of errors. You can specify the number of retry attempts, interval between retries, and backoff rate.
+        -   `Catch`: Defines how to handle errors that occur during state execution. You can specify different catch blocks for different error types.
+
+    -   <details><summary style="font-size:20px;color:#FF1493">Input and Output Processing</summary>
+
+        -   [**Input and Output Processing**](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html): Each state can receive input, process it, and produce output. The output of one state can be the input for the next state.
+        -   [**Example**: Manipulating state data with paths in Step Functions workflows](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html)
+
+        -   AWS Step Functions applies the `InputPath` field first, and then the `Parameters` field. You can first filter your raw input to a selection you want using `InputPath`, and then apply `Parameters` to manipulate that input further, or add new values. You can then use the `ResultSelector` field to manipulate the state's output before `ResultPath` is applied.
+
+        -   <details><summary style="font-size:18px;color:#FF1493">InputPath:</summary>
+
+            -   Extract a part of the JSON object from the original input to pass to the task of that state.
+            -   **Purpose**: Filters the input data before it reaches the state.
+            -   **Function**: Extracts a subset of the original input using a JSONPath expression.
+            -   **Usage**: If you only need a portion of the input, you can define an `InputPath` to pass only that subset to the state.
+            -   **Default Behavior**: If omitted or set to `"$"`, the entire input is passed to the state.
+
+            -   **Example**:  
+                Consider this input JSON:
+                ```json
+                {
+                    "order": {
+                        "id": "1234",
+                        "customer": {
+                            "name": "Alice",
+                            "email": "alice@example.com"
+                        },
+                        "items": ["item1", "item2"]
+                    }
+                }
+                ```
+                If you only need the `customer` object:
+                ```json
+                "InputPath": "$.order.customer"
+                ```
+                The state will receive:
+                ```json
+                {
+                    "name": "Alice",
+                    "email": "alice@example.com"
+                }
+                ```
+
+            </details>
+
+        -   <details><summary style="font-size:18px;color:#FF1493">Parameters:</summary>
+
+            -   Parameters are used to specify which parts of the input are passed to the state’s resource. They allow the customization of input data passed to the resource that performs the task.
+
+            -   **Purpose**: Transforms input data before sending it to a task.
+            -   **Function**: Allows you to customize the request by selecting or renaming fields.
+            -   **Usage**: You can define **key-value pairs** to structure the input.
+
+            -   **Example**: Using the same input JSON:
+
+                ```json
+                "Parameters": {
+                    "customerName.$": "$.order.customer.name",
+                    "customerEmail.$": "$.order.customer.email",
+                    "orderItems.$": "$.order.items"
+                }
+                ```
+
+                This modifies the input to:
+
+                ```json
+                {
+                    "customerName": "Alice",
+                    "customerEmail": "alice@example.com",
+                    "orderItems": ["item1", "item2"]
+                }
+                ```
+
+            </details>
+
+        -   <details><summary style="font-size:18px;color:#FF1493">ResultSelector</summary>
+
+            -   **Purpose**: Extract from the task result of a state and pass it to the `ResultPath`.
+            -   **Function**: Similar to `Parameters`, but it applies to the **result** of a task.
+            -   **Usage**: Extracts or restructures data **after** execution.
+
+            -   **Example**:
+                -   Assume an AWS Lambda task returns this output:
+                    ```json
+                    {
+                        "statusCode": 200,
+                        "body": {
+                            "message": "Order processed successfully",
+                            "orderId": "1234"
+                        }
+                    }
+                    ```
+                -   Applying a `ResultSelector`:
+                    ```json
+                    "ResultSelector": {
+                        "message.$": "$.body.message",
+                        "orderId.$": "$.body.orderId"
+                    }
+                    ```
+                -   The transformed output becomes the following and passed to ResultPath:
+                    ```json
+                    {
+                        "message": "Order processed successfully",
+                        "orderId": "1234"
+                    }
+                    ```
+
+            </details>
+
+        -   <details><summary style="font-size:18px;color:#FF1493">ResultPath</summary>
+
+            -   **ResultPath** is a field that place the results of a task of that state in the original input JSON. This allows the combining of the task of that state outputs with the initial input.
+            -   **Purpose**: Controls where the **output of a state** is merged with its input.
+            -   **Function**: Defines whether the result **replaces, merges, or is discarded**.
+            -   **Usage**:
+                -   If omitted, the result replaces the entire input.
+                -   If set to a JSON path (like `$.result`), the result is merged into the input at that location.
+                -   If set to `null`, the result is discarded and the state will pass the original input to the output
+            -   If you use **Result** and **ResultPath** together to inject static data into the input:
+
+                ```json
+                // State Definition
+                {
+                    "Type": "Pass",
+                    "Result": {
+                        "orderStatus": "Confirmed"
+                    },
+                    "ResultPath": "$.status",
+                    "Next": "NextState"
+                }
+                ```
+
+                -   The output of the state would look like:
+
+                ```json
+                {
+                    "originalInputKey": "someValue",
+                    "status": {
+                        "orderStatus": "Confirmed"
+                    }
+                }
+                ```
+
+            </details>
+
+        -   <details><summary style="font-size:18px;color:#FF1493">OutputPath:</summary>
+
+            -   Extract a part of the JSON object from the result of the task of that state to pass to the output of that state.
+            -   `Purpose`: Filters the **final output** of a state **before passing it to the next state**.
+            -   `Function`: Selects a portion of the final result to be passed along.
+            -   `Usage`: If a state produces extra data that is unnecessary for downstream steps, `OutputPath` can extract only the relevant parts.
+            -   `Example`:  
+                Final state output:
+                ```json
+                {
+                    "order": {
+                        "id": "1234",
+                        "processedData": {
+                            "processed": true
+                        }
+                    },
+                    "metadata": {
+                        "timestamp": "2024-02-17T12:00:00Z"
+                    }
+                }
+                ```
+                Applying:
+                ```json
+                "OutputPath": "$.order"
+                ```
+                The output passed to the next state will be:
+                ```json
+                {
+                    "id": "1234",
+                    "processedData": {
+                        "processed": true
+                    }
+                }
+                ```
+
+            </details>
+
+        ##### REMARKS:
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:#FF1493">JSONPath</summary>
+
+        JSONPath is a query language used for extracting and filtering data from JSON documents. It is similar to XPath for XML but designed specifically for JSON. JSONPath expressions allow you to navigate JSON structures, retrieve specific elements, and manipulate data.
+
+        -   **Basic Syntax of JSONPath**: JSONPath expressions use **dot notation** (`$.key`) and **bracket notation** (`$['key']`) to access elements inside a JSON document.
+
+        | **Symbol**    | **Description**                         | **Example**                                                               |
+        | ------------- | --------------------------------------- | ------------------------------------------------------------------------- |
+        | `$`           | Root element                            | `$` selects the entire JSON object                                        |
+        | `.`           | Child operator                          | `$.name` selects `"John Doe"` from `{"name": "John Doe"}`                 |
+        | `[]`          | Bracket notation for keys or indexes    | `$['name']` (same as `$.name`), `$[0]` selects the first item in an array |
+        | `*`           | Wildcard (selects all elements)         | `$.*` selects all keys at the root level                                  |
+        | `..`          | Recursive descent (searches all levels) | `$..price` selects all `price` values from nested objects                 |
+        | `?()`         | Filter expression                       | `$[?(@.price > 20)]` selects items where `price > 20`                     |
+        | `@`           | Current element in filter expressions   | `$[?(@.status == "active")]` selects elements with `"status": "active"`   |
+        | `[,]`         | Union (select multiple elements)        | `$['name', 'age']` selects both `name` and `age`                          |
+        | `[start:end]` | Array slice (Python-like slicing)       | `$[0:3]` selects the first three elements of an array                     |
+
+        1. **Selecting a Specific Key (`$.key`)**
+
+            ```json
+            {
+                "name": "John Doe",
+                "age": 30,
+                "email": "john@example.com"
+            }
+            ```
+
+            ```json
+            $.name
+            ```
+
+            ```json
+            "John Doe"
+            ```
+
+        2. **Accessing Nested Keys (`$.parent.child`)**
+
+            ```json
+            {
+                "user": {
+                    "id": 101,
+                    "name": "Alice",
+                    "contact": {
+                        "email": "alice@example.com",
+                        "phone": "1234567890"
+                    }
+                }
+            }
+            ```
+
+            ```json
+            $.user.contact.email
+            ```
+
+            ```json
+            "alice@example.com"
+            ```
+
+        3. **Selecting Elements from an Array (`$[index]`)**
+
+            ```json
+            {
+                "products": [
+                    { "name": "Laptop", "price": 1200 },
+                    { "name": "Phone", "price": 800 },
+                    { "name": "Tablet", "price": 600 }
+                ]
+            }
+            ```
+
+            ```json
+            $.products[1]
+            ```
+
+            ```json
+            { "name": "Phone", "price": 800 }
+            ```
+
+        4. **Selecting All Items in an Array (`$[*]`)**
+
+            ```json
+            $.products[*].name
+            ```
+
+            ```json
+            ["Laptop", "Phone", "Tablet"]
+            ```
+
+        5. **Using Wildcards (`$.*` or `$[*]`)**
+
+            ```json
+            {
+                "id": 1,
+                "name": "Alice",
+                "contact": {
+                    "email": "alice@example.com",
+                    "phone": "1234567890"
+                }
+            }
+            ```
+
+            ```json
+            $..email
+            ```
+
+            ```json
+            ["alice@example.com"]
+            ```
+
+            (Finds all `email` values in the JSON)
+
+        6. **Using Filters (`$[?()]`)**
+
+            ```json
+            {
+                "employees": [
+                    { "name": "John", "age": 30, "salary": 5000 },
+                    { "name": "Jane", "age": 25, "salary": 6000 },
+                    { "name": "Doe", "age": 28, "salary": 7000 }
+                ]
+            }
+            ```
+
+            ```json
+            $.employees[?(@.salary > 6000)]
+            ```
+
+            ```json
+            [{ "name": "Doe", "age": 28, "salary": 7000 }]
+            ```
+
+            (Selects employees with salary greater than 6000)
+
+        7. **Selecting Multiple Keys (`$['key1', 'key2']`)**
+
+            ```json
+            $.employees[*]['name', 'salary']
+            ```
+
+            ```json
+            [
+                { "name": "John", "salary": 5000 },
+                { "name": "Jane", "salary": 6000 },
+                { "name": "Doe", "salary": 7000 }
+            ]
+            ```
+
+        8. **Selecting Data from a Range (`$[start:end]`)**
+
+            ```json
+            $.employees[0:2]
+            ```
+
+            ```json
+            [
+                { "name": "John", "age": 30, "salary": 5000 },
+                { "name": "Jane", "age": 25, "salary": 6000 }
+            ]
+            ```
+
+            (Selects the first two employees)
+
+        </details>
+
+    #### Example Workflow with State Machine Definition
+
+    ```json
+    {
+        // Optional comment describing the purpose of the state machine
+        "Comment": "A description of my state machine",
+        // The name of the state to start execution with
+        "StartAt": "Add Order Entry",
+        // All states in the state machine are defined under the "States" key
+        "States": {
+            // First state: Add Order Entry
+            "Add Order Entry": {
+                "Type": "Pass", // A Pass state simply passes its input to output without any work
+                "Result": "Order Entry Added", // This is the hardcoded result/output
+                "Next": "Choice" // Next state to transition to
+            },
+            // A dummy choice state (Note: it's a Pass state here, not a real Choice type)
+            "Choice": {
+                "Type": "Pass", // Again, just passing data through
+                "Result": "Choice State", // Hardcoded result to simulate a decision point
+                "Next": "Call Credit Card Service To Charge Customer" // Moves to Lambda task
+            },
+            // Lambda Task to charge the customer
+            "Call Credit Card Service To Charge Customer": {
+                "Type": "Task", // A Task state performs actual work by invoking a resource
+                "Resource": "arn:aws:states:::lambda:invoke", // Managed integration with AWS Lambda
+                // Parameters to send to the Lambda function
+                "Parameters": {
+                    "Payload.$": "$", // Sends the entire state input as the payload
+                    "FunctionName": "arn:aws:lambda:us-east-1:755314965794:function:Test:$LATEST"
+                },
+                // Retry policy configuration
+                "Retry": [
+                    {
+                        "ErrorEquals": [
+                            // Types of errors to retry on
+                            "Lambda.ServiceException",
+                            "Lambda.AWSLambdaException",
+                            "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2, // Wait 2 seconds before retrying
+                        "MaxAttempts": 6, // Retry up to 6 times
+                        // Exponential backoff: A multiplier that increases the delay time exponentially for each retry
+                        "BackoffRate": 2 // Delay_n = IntervalSeconds × (BackoffRate)^(n-1)
+                    }
+                ],
+                "Next": "Success", // If successful, go to the Success state
+                // Catch any errors if the Lambda fails
+                "Catch": [
+                    {
+                        "ErrorEquals": [
+                            "States.ALL" // Catch all errors
+                        ],
+                        "Next": "Fallback - Delete failed order", // Go to a cleanup/failure handler
+                        "ResultPath": "$.result" // Store error result in the `result` field
+                    }
+                ],
+                "ResultPath": "$.result" // Store the Lambda output in `result` field of state data
+            },
+            // Cleanup task in case of failure (e.g., delete from DynamoDB)
+            "Fallback - Delete failed order": {
+                "Type": "Task", // A task to perform DynamoDB deletion
+                "Resource": "arn:aws:states:::dynamodb:deleteItem", // Managed integration with DynamoDB
+                // Parameters for DynamoDB DeleteItem API
+                "Parameters": {
+                    "TableName": "CustomerOrdersTable", // DynamoDB table to delete from
+                    "Key": {
+                        "customerId": {
+                            "S.$": "$.customerId" // Take the value at path $.customerId from the input JSON, and use it as the value of a DynamoDB String-typed attribute.
+                        },
+                        "orderId": {
+                            "S.$": "$.orderId" // Use state input to provide orderId
+                        }
+                    }
+                },
+                "Next": "Fail" // After deleting, go to the Fail state
+            },
+            // Indicates successful completion
+            "Success": {
+                "Type": "Succeed" // Terminates the execution successfully
+            },
+            // Indicates failure completion
+            "Fail": {
+                "Type": "Fail" // Terminates execution with a failure
+            }
+        }
+    }
+    ```
+
+    #### Use Cases
+
+    -   **ETL and Data Processing**: Orchestrate ETL (Extract, Transform, Load) workflows by integrating with AWS Glue, Lambda, and S3.
+    -   **Microservices Coordination**: Coordinate microservices architectures, ensuring the right services are called in the correct sequence with error handling.
+    -   **Long-Running Processes**: Manage long-running processes such as order fulfillment, user sign-ups, or data analysis tasks that involve multiple steps and services.
+    -   **Serverless Applications**: Build complex serverless applications by orchestrating Lambda functions and other AWS services without managing servers.
+    -   **Automation and Batch Jobs**: Automate batch jobs and administrative tasks that require coordination of multiple services.
+
+    #### Standard Workflow vs Express Workflow
+
+    AWS Step Functions offers two types of workflows to handle different use cases: Express Workflows and Standard Workflows. Each has its own characteristics and is suited for different kinds of tasks.
+
+    -   **Standard Workflows**
+
+        -   `Execution Duration`: Standard Workflows can run for up to a year, making them suitable for long-running processes.
+        -   `Execution History`: They provide detailed execution history for each step, which is useful for debugging and auditing.
+        -   `State Transition`: State transitions are recorded, and you can visualize the execution flow.
+        -   `Reliability`: Designed for high reliability and durability, ensuring the state machine's execution is accurately recorded and completed.
+        -   `Concurrency`: They support high levels of concurrency but have a rate limit for execution starts.
+        -   `Error Handling`: Supports robust error handling and retry mechanisms.
+
+        -   `Use Cases`: Use when you need detailed execution history, long-running processes, complex business logic, and robust error handling.
+
+            -   Long-running ETL processes.
+            -   Complex business workflows that require detailed audit trails.
+            -   Processes where each step's result and execution path need to be tracked and visualized.
+
+        -   `Pricing`
+            -   Pricing is based on the number of state transitions.
+            -   Execution time also impacts cost.
+
+    -   **Express Workflows**
+
+        -   `Execution Duration`: Express Workflows are designed for short-lived executions, with a maximum duration of five minutes. - `Execution Volume`: Optimized for high-volume, short-duration workloads. - `Concurrency`: Can handle a much higher rate of executions compared to Standard Workflows. - `State Transition`: Transitions are recorded at a summary level rather than a detailed step-by-step history. - `Cost`: Pricing is based on the number of requests and their duration, making it cost-effective for high-frequency, short-duration tasks. - `Reliability`: Provides good reliability, though not as high as Standard Workflows. Suitable for high-scale operations that need to manage massive volumes of requests efficiently.
+
+        -   `Use Cases`: Use when you need to handle a high volume of short-duration executions efficiently and cost-effectively, such as in real-time data processing and event-driven architectures.
+
+            -   Real-time data processing.
+            -   Event-driven architectures.
+            -   Microservices orchestration.
+            -   High-frequency, short-duration jobs such as real-time file processing or data ingestion tasks.
+
+        -   `Pricing`
+            -   Based on the number of requests and their duration.
+            -   More cost-effective for high-throughput, short-duration tasks.
+
+    -   **Detailed Comparison**
+
+        | Feature            | Standard Workflows                             | Express Workflows                                |
+        | :----------------- | :--------------------------------------------- | :----------------------------------------------- |
+        | Execution Duration | Up to 1 year                                   | Up to 5 minutes                                  |
+        | Concurrency        | High, but with rate limits on execution starts | Extremely high, designed for massive concurrency |
+        | State Transition   | Detailed history for each step                 | Summary-level transitions                        |
+        | Error Handling     | Robust with detailed retry policies            | Basic retry capabilities                         |
+        | Execution History  | Detailed and visualized                        | Minimal, focused on summary information          |
+        | Cost Model         | Per state transition                           | Per request and duration                         |
+        | Use Cases          | Long-running, complex workflows                | Short-duration, high-volume tasks                |
+
+    #### Features and Capabilities
+
+    -   **Visual Workflow Design**: Step Functions provides a visual editor in the AWS Management Console to create and visualize workflows, making it easier to understand and design complex workflows.
+    -   **Built-in Error Handling**: Step Functions includes built-in error handling, retry, and catch capabilities to handle errors and exceptions during state execution.
+    -   **Service Integrations**: Step Functions can integrate with over 200 AWS services, including Lambda, SNS, SQS, DynamoDB, ECS, Batch, Glue, and more. This allows for powerful orchestration of complex tasks across multiple services.
+    -   **Execution History**: Step Functions provides detailed execution history, including event logs for each step of your workflow. This helps with debugging and monitoring.
+    -   **Express Workflows**: In addition to standard workflows, Step Functions offers express workflows designed for high-volume, short-duration workflows. They provide lower latency and cost for large-scale applications.
 
     </details>
 

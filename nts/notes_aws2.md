@@ -1693,844 +1693,6 @@
 
 ---
 
--   <details><summary style="font-size:25px;color:Orange">Step Function</summary>
-
-    -   **NOTES**:
-        -   Each state can store up to 256 KiB of data
-
-    AWS Step Functions is a serverless orchestration service that lets you coordinate multiple AWS services into automated workflows. It helps break complex processes into a series of steps that can run in sequence or parallel. You define each step in the process using a state machine, and Step Functions automatically triggers each step, handles failures, and retries if needed, all while visualizing the flow for easier monitoring and debugging.. Below are the key terms and concepts of AWS Step Functions explained in detail:
-
-    AWS Step Functions is a **serverless orchestration service** that lets you create robust, multi-step application workflows as visual diagrams called **State Machines**. It manages the sequencing, logging, error handling, and state management between the components (microservices, Lambda functions, etc.) of your application.
-
-    -   <details><summary style="font-size:20px;color:Magenta">Core Concepts and Components</summary>
-
-        1. **State Machine (Workflow)**: A State Machine is the central component of Step Functions. It's the definition of your entire workflow, expressed in the **Amazon States Language (ASL)**, a structured JSON-based language.
-
-            - **Definition:** The ASL defines the sequence of steps (called **States**), the rules for transitioning between them, and the error handling logic.
-            - **Visual Editor:** Step Functions provides **Workflow Studio**, a graphical console that allows you to design, arrange, and visualize the workflow without manually writing ASL.
-
-        2. **State**: A **State** is a single element in your workflow—a step that performs a unit of work, makes a decision, or controls the flow. Every step in the workflow is a state.
-
-        3. **Execution**: An **Execution** is a running instance of a State Machine. When you start a State Machine, a unique execution is created, and Step Functions automatically tracks its progress, managing the transitions from one state to the next.
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">Workflow Types</summary>
-
-        Step Functions offers two distinct workflow types, catering to different performance and duration needs:
-
-        | Feature                 | Standard Workflows                                                            | Express Workflows                                                                         |
-        | :---------------------- | :---------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
-        | **Duration**            | Up to **one year**                                                            | Up to **five minutes**                                                                    |
-        | **Execution Semantics** | **Exactly-once** (each step executes precisely once)                          | **At-least-once** (a step may execute more than once)                                     |
-        | **Use Case**            | Long-running processes, auditing, human-in-the-loop, payment processing.      | High-volume, short-duration, event-rate workloads, IoT data ingestion, stream processing. |
-        | **Pricing**             | Based on the number of **State Transitions**.                                 | Based on the number of requests, duration, and memory used.                               |
-        | **History**             | Detailed, durable execution history is logged and viewable for up to 90 days. | History is logged to CloudWatch Logs (less detailed, but higher throughput).              |
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">State Types (Building Blocks)</summary>
-
-        States are categorized into two main groups: **Task States** (work performing) and **Flow States** (flow control).
-
-        1. **Task States**: These perform the actual work by integrating with other services.
-
-            - **Task State (`Task`):** Executes a unit of work. This is the most common state, used to call AWS services like **AWS Lambda** functions.
-                - Optimized integrations with over 220 AWS services (DynamoDB, ECS, SNS, SQS, SageMaker, etc.)
-                - External HTTPS endpoints (**HTTP Task**).
-                - **Activities:** A mechanism for external applications (Activity Workers) to poll Step Functions for work, perform it, and send the result back.
-
-        2. **Flow States**: These control the structure and flow of the execution.
-
-            - **Choice State (`Choice`):** Adds **conditional branching** to the workflow (like an `if/else` statement) based on the input data.
-            - **Parallel State (`Parallel`):** Executes multiple branches of states **concurrently** and waits for all of them to complete before moving to the next state.
-            - **Map State (`Map`):** Used for **dynamic parallelism**. It executes a set of steps for _each item_ in an input array.
-                - **Inline Map:** Executes concurrently within the main workflow execution (limited to 40 concurrent iterations).
-                - **Distributed Map:** Launches thousands of independent child workflows (executions) for massive parallel processing, ideal for large data sets (e.g., millions of S3 objects).
-            - **Wait State (`Wait`):** Pauses the execution for a specified amount of time or until a specific date/time.
-            - **Pass State (`Pass`):** Simply passes its input to its output, performing no work. Useful for data manipulation or debugging.
-            - **Succeed State (`Succeed`):** Stops an execution successfully, trimming the execution path.
-            - **Fail State (`Fail`):** Stops an execution and marks it as a failure.
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">Service Integration Patterns</summary>
-
-        -   **Request Response (Default):** Step Functions calls the service and immediately moves to the next state upon receiving an HTTP response. The workflow does **not** wait for the job to complete.
-        -   **Run a Job (`.sync`):** Step Functions starts a long-running job (e.g., AWS Batch, ECS Task, SageMaker Training Job) and **pauses** until the job is complete. This is supported only by **Standard Workflows**.
-        -   **Wait for Callback (`.waitForTaskToken`):** Step Functions sends a unique **Task Token** to the integrated service (like SQS or SNS) and **pauses** indefinitely until an external process returns the token with a result. This is used for "human-in-the-loop" or integration with external systems. Supported only by **Standard Workflows**.
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">Data Flow and Transformation</summary>
-
-        **Data Flow and Transformation**: Data between states is passed as a **JSON payload**.
-
-        The **Data Flow and Transformation** capabilities within AWS Step Functions are essential for managing and manipulating the JSON data (the **payload**) that moves between the individual steps (States) of your workflow. The primary tool for this is **JSONPath**.
-
-        JSONPath allows you to select, filter, and extract specific elements from the input or output JSON payload, ensuring that each state only receives the necessary information and passes on only the relevant results.
-
-        -   **The Data Flow Cycle**: In a Step Functions execution, data flows through each state in a predictable cycle using four key properties, all of which leverage JSONPath expressions (paths starting with `$`):
-
-            1. **State Input**: When a state begins, it receives its **Input Payload**, which is usually the **Output** of the previous state.
-
-            2. **InputPath (Input Filtering)**: The first operation is to filter the incoming payload using the `InputPath` property.
-
-                - **Purpose:** To select a specific subset of the State Input to be used as the **Effective Input** for the state's task logic. This prevents the state from dealing with irrelevant data.
-                - **Default:** If `InputPath` is omitted, the entire input payload (`$`) is passed to the state.
-                - **Example:** If the input is `{"user_id": 123, "order_details": {...}}`, and you only need the order details, you set `"InputPath": "$.order_details"`. The state's task (e.g., a Lambda function) only sees the order details.
-
-            3. **Parameters (Input Transformation)**: After filtering, the `Parameters` property (if present) allows you to perform **structural and value transformations** on the Effective Input before the task is executed.
-
-                - **Purpose:** To create a new, well-formed JSON object that the integrated service (like a Lambda function or a DynamoDB API call) expects.
-                - **Mechanism:** You define a JSON object where keys are the expected parameters, and values can be static text or dynamically sourced using JSONPath from the Effective Input.
-                - **Example:** To rename a field for a Lambda function:
-                    ```json
-                    "Parameters": {
-                    "customer_id.$": "$.user_id",
-                    "timestamp": "2025-01-01T00:00:00Z"
-                    }
-                    ```
-                    (Note the `.$` suffix, which tells Step Functions to evaluate the value as a JSONPath.)
-
-            4. **ResultPath (Output Integration)**: Once the state's task (e.g., a Lambda function) completes, it produces a **Result**. The `ResultPath` determines how this result is integrated into the original state input payload.
-
-                - **Purpose:** To combine the new result with the data that was passed into the state, preserving context from earlier steps.
-                - **Mechanism:** You specify a JSONPath where the result should be placed.
-                    - `"ResultPath": "$.new_field"`: The result is inserted into the payload under the key `new_field`.
-                    - `"ResultPath": "$"`: The result completely **replaces** the entire State Input payload.
-                    - Omit or `"ResultPath": null`: The result is **discarded**, and the original State Input becomes the State Output.
-
-            5. **OutputPath (Output Filtering)**: The final step is to filter the data resulting from step 4 (the integrated input and result) using the `OutputPath` property.
-
-                - **Purpose:** To select a subset of the integrated JSON payload to be passed as the **State Output** to the next state in the workflow.
-                - **Default:** If `OutputPath` is omitted, the entire integrated payload (`$`) is passed.
-                - **Example:** If the integrated payload is `{"user_id": 123, "task_result": "Success"}`, and you only want to pass the `task_result` to the next state, you set `"OutputPath": "$.task_result"`.
-
-        -   **JSONPath and JSONata**:
-
-            1. **JSONPath Fundamentals**: JSONPath expressions start with `$` and are used within the State Machine definition to reference data.
-
-                | Expression     | Description                        | Example Input: `{"a": 1, "b": {"c": 2}}` | Result                    |
-                | :------------- | :--------------------------------- | :--------------------------------------- | :------------------------ |
-                | `$`            | The root object/element.           | `$`                                      | `{"a": 1, "b": {"c": 2}}` |
-                | `$.name`       | Selects a child element by name.   | `$.a`                                    | `1`                       |
-                | `$.name.child` | Selects a nested element.          | `$.b.c`                                  | `2`                       |
-                | `$[0]`         | Selects an array element by index. | `$.array[0]` (if `array` is `[10, 20]`)  | `10`                      |
-
-            2. **JSONata for Advanced Transformation (Using `Parameters`)**: While JSONPath is limited to selection, Step Functions leverages **JSONata** for complex transformations within the `Parameters` property. This allows you to perform operations like mapping, filtering, and aggregation.
-
-                - **Example (JSONPath Selection):**
-                    ```json
-                    "Parameters": {
-                        "userId.$": "$.detail.id"
-                    }
-                    ```
-                - **Example (JSONata Transformation):**
-                    ```json
-                    "Parameters": {
-                        "statusMessage.$": "States.Format('Order {} complete for user {}', $.order.id, $.user.id)",
-                        "itemsTotal.$": "$.items[].price | $sum($)"
-                    }
-                    ```
-                    The `States.Format` function is an intrinsic function provided by Step Functions that uses JSONata to build a string dynamically. This ability to perform logic within the data flow greatly enhances the workflow's flexibility.
-
-        -   **Context Object (`$$`)**:Separate from the execution data, the **Context Object** (`$$`) is an internal, read-only JSON structure that Step Functions makes available to every state.
-
-            -   **Purpose:** Provides metadata about the running execution, independent of the input/output data.
-            -   **Contents:** Includes details like the execution ARN, state machine ARN, state name, retry counts, and the **Task Token** (crucial for `.waitForTaskToken` integration).
-            -   **Usage:** You access context data by prefixing the path with `$$` (e.g., `"ARN.$": "$$.Execution.Id"`).
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Magenta">Built-in Error Handling</summary>
-
-        Step Functions automatically handles errors using declarative logic defined in ASL:
-
-        -   **Retries (`Retry`):** You can define a policy to automatically retry a failed `Task` state a specified number of times, often using an **exponential backoff** strategy.
-        -   **Catchers (`Catch`):** You can define a fallback state to transition to if a specific error is caught, allowing you to implement graceful degradation or alternative cleanup logic.
-
-        </details>
-
-    #### Terminology, Concepts and Components
-
-    -   **State Machine**:
-
-        -   A state machine is a workflow definition in Step Functions. It represents the various steps of your application as states.
-        -   The state machine specifies how the states interact with each other, the transitions between states, and the inputs/outputs of each state.
-        -   The state machine definition is written in JSON or Amazon States Language (ASL). It defines the states, transitions, input/output, and other configurations.
-
-    -   **States**: States are the individual steps in a state machine. Step Functions supports several types of states:
-
-        -   [Discovering workflow states to use in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-states.html)
-        -   `Task State`: Executes an AWS Lambda function or integrates with other AWS services like SNS, SQS, DynamoDB, etc.
-        -   `Choice State`: Adds branching logic to your state machine based on certain conditions.
-        -   `Parallel State`: Executes multiple branches of states simultaneously.
-        -   `Map State`: Iterates over a list of items and executes the same workflow for each item.
-        -   `Wait State`: Introduces a delay for a specified amount of time before moving to the next state.
-        -   `Succeed State`: Indicates that the execution has succeeded.
-        -   `Fail State`: Indicates that the execution has failed and provides error information.
-        -   `Pass State`: Passes its input to its output, performing no work.
-
-    #### Amazon State Language
-
-    -   The QueryLanguage field can be set to "JSONPath" or "JSONata". If the top-level QueryLanguage field is omitted, it defaults to "JSONPath". If a state contains a state-level QueryLanguage field, Step Functions will use the specified query language for that state. If the state does not contain a QueryLanguage field, then it will use the query language specified in the top-level QueryLanguage field.
-
-    -   **[Amazon States Language (ASL)](https://states-language.net/)**: ASL is the JSON-based and structured language used to define state machines. It includes the syntax for defining states, transitions, and error handling. Detailed Explanation of Common Fields:
-
-        -   `Type`: Defines the type of state (`Task`, `Choice`, `Succeed`, `Fail`, etc.).
-        -   `Resource`: Specifies the ARN of the resource to be executed (e.g., Lambda function ARN).
-        -   `Next`: Specifies the next state to transition to after the current state completes.
-        -   `End`: If set to true, designates the state as the final state.
-        -   `InputPath`: JSONPath that selects part of the state input to be passed to the resource.
-        -   `OutputPath`: JSONPath that selects part of the state output to be passed to the next state.
-        -   `Parameters`: Passes specific JSON as input to the resource.
-        -   `ResultPath`: Specifies where to place the result of the resource's execution in the state’s input.
-        -   `ResultSelector`: Manipulates the raw result from the resource before it’s passed to the ResultPath.
-        -   `Retry`: Array of retry policy objects that define retry logic for a state.
-        -   `Catch`: Array of catcher objects that define what to do if an error is encountered.
-
-    -   **Execution**: An execution is an instance of your state machine in action. Each execution is unique and can be tracked separately.
-    -   **Context Object**: The context object contains metadata about the execution, such as execution ID, name, and start time. It can be accessed within the state machine. You can access context with `$$.` as in `$$.Execution.Id` in JSONPath expressions.
-    -   **Event**: Events are the inputs, outputs, and error messages generated by each state during execution.
-
-    -   **Error Handling**: AWS Step Functions support robust error handling with `Retry` and `Catch` fields.
-
-        -   `Retry`: Defines retry behavior for states in case of errors. You can specify the number of retry attempts, interval between retries, and backoff rate.
-        -   `Catch`: Defines how to handle errors that occur during state execution. You can specify different catch blocks for different error types.
-
-    -   <details><summary style="font-size:20px;color:#FF1493">Input and Output Processing</summary>
-
-        -   [**Input and Output Processing**](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html): Each state can receive input, process it, and produce output. The output of one state can be the input for the next state.
-        -   [**Example**: Manipulating state data with paths in Step Functions workflows](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html)
-
-        -   AWS Step Functions applies the `InputPath` field first, and then the `Parameters` field. You can first filter your raw input to a selection you want using `InputPath`, and then apply `Parameters` to manipulate that input further, or add new values. You can then use the `ResultSelector` field to manipulate the state's output before `ResultPath` is applied.
-
-        -   <details><summary style="font-size:18px;color:#FF1493">InputPath:</summary>
-
-            -   Extract a part of the JSON object from the original input to pass to the task of that state.
-            -   **Purpose**: Filters the input data before it reaches the state.
-            -   **Function**: Extracts a subset of the original input using a JSONPath expression.
-            -   **Usage**: If you only need a portion of the input, you can define an `InputPath` to pass only that subset to the state.
-            -   **Default Behavior**: If omitted or set to `"$"`, the entire input is passed to the state.
-
-            -   **Example**:  
-                Consider this input JSON:
-                ```json
-                {
-                    "order": {
-                        "id": "1234",
-                        "customer": {
-                            "name": "Alice",
-                            "email": "alice@example.com"
-                        },
-                        "items": ["item1", "item2"]
-                    }
-                }
-                ```
-                If you only need the `customer` object:
-                ```json
-                "InputPath": "$.order.customer"
-                ```
-                The state will receive:
-                ```json
-                {
-                    "name": "Alice",
-                    "email": "alice@example.com"
-                }
-                ```
-
-            </details>
-
-        -   <details><summary style="font-size:18px;color:#FF1493">Parameters:</summary>
-
-            -   Parameters are used to specify which parts of the input are passed to the state’s resource. They allow the customization of input data passed to the resource that performs the task.
-
-            -   **Purpose**: Transforms input data before sending it to a task.
-            -   **Function**: Allows you to customize the request by selecting or renaming fields.
-            -   **Usage**: You can define **key-value pairs** to structure the input.
-
-            -   **Example**: Using the same input JSON:
-
-                ```json
-                "Parameters": {
-                    "customerName.$": "$.order.customer.name",
-                    "customerEmail.$": "$.order.customer.email",
-                    "orderItems.$": "$.order.items"
-                }
-                ```
-
-                This modifies the input to:
-
-                ```json
-                {
-                    "customerName": "Alice",
-                    "customerEmail": "alice@example.com",
-                    "orderItems": ["item1", "item2"]
-                }
-                ```
-
-            </details>
-
-        -   <details><summary style="font-size:18px;color:#FF1493">ResultSelector</summary>
-
-            -   **Purpose**: Extract from the task result of a state and pass it to the `ResultPath`.
-            -   **Function**: Similar to `Parameters`, but it applies to the **result** of a task.
-            -   **Usage**: Extracts or restructures data **after** execution.
-
-            -   **Example**:
-                -   Assume an AWS Lambda task returns this output:
-                    ```json
-                    {
-                        "statusCode": 200,
-                        "body": {
-                            "message": "Order processed successfully",
-                            "orderId": "1234"
-                        }
-                    }
-                    ```
-                -   Applying a `ResultSelector`:
-                    ```json
-                    "ResultSelector": {
-                        "message.$": "$.body.message",
-                        "orderId.$": "$.body.orderId"
-                    }
-                    ```
-                -   The transformed output becomes the following and passed to ResultPath:
-                    ```json
-                    {
-                        "message": "Order processed successfully",
-                        "orderId": "1234"
-                    }
-                    ```
-
-            </details>
-
-        -   <details><summary style="font-size:18px;color:#FF1493">ResultPath</summary>
-
-            -   **ResultPath** is a field that place the results of a task of that state in the original input JSON. This allows the combining of the task of that state outputs with the initial input.
-            -   **Purpose**: Controls where the **output of a state** is merged with its input.
-            -   **Function**: Defines whether the result **replaces, merges, or is discarded**.
-            -   **Usage**:
-                -   If omitted, the result replaces the entire input.
-                -   If set to a JSON path (like `$.result`), the result is merged into the input at that location.
-                -   If set to `null`, the result is discarded and the state will pass the original input to the output
-            -   If you use **Result** and **ResultPath** together to inject static data into the input:
-
-                ```json
-                // State Definition
-                {
-                    "Type": "Pass",
-                    "Result": {
-                        "orderStatus": "Confirmed"
-                    },
-                    "ResultPath": "$.status",
-                    "Next": "NextState"
-                }
-                ```
-
-                -   The output of the state would look like:
-
-                ```json
-                {
-                    "originalInputKey": "someValue",
-                    "status": {
-                        "orderStatus": "Confirmed"
-                    }
-                }
-                ```
-
-            </details>
-
-        -   <details><summary style="font-size:18px;color:#FF1493">OutputPath:</summary>
-
-            -   Extract a part of the JSON object from the result of the task of that state to pass to the output of that state.
-            -   `Purpose`: Filters the **final output** of a state **before passing it to the next state**.
-            -   `Function`: Selects a portion of the final result to be passed along.
-            -   `Usage`: If a state produces extra data that is unnecessary for downstream steps, `OutputPath` can extract only the relevant parts.
-            -   `Example`:  
-                Final state output:
-                ```json
-                {
-                    "order": {
-                        "id": "1234",
-                        "processedData": {
-                            "processed": true
-                        }
-                    },
-                    "metadata": {
-                        "timestamp": "2024-02-17T12:00:00Z"
-                    }
-                }
-                ```
-                Applying:
-                ```json
-                "OutputPath": "$.order"
-                ```
-                The output passed to the next state will be:
-                ```json
-                {
-                    "id": "1234",
-                    "processedData": {
-                        "processed": true
-                    }
-                }
-                ```
-
-            </details>
-
-        ##### REMARKS:
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:#FF1493">JSONPath</summary>
-
-        JSONPath is a query language used for extracting and filtering data from JSON documents. It is similar to XPath for XML but designed specifically for JSON. JSONPath expressions allow you to navigate JSON structures, retrieve specific elements, and manipulate data.
-
-        -   **Basic Syntax of JSONPath**: JSONPath expressions use **dot notation** (`$.key`) and **bracket notation** (`$['key']`) to access elements inside a JSON document.
-
-        | **Symbol**    | **Description**                         | **Example**                                                               |
-        | ------------- | --------------------------------------- | ------------------------------------------------------------------------- |
-        | `$`           | Root element                            | `$` selects the entire JSON object                                        |
-        | `.`           | Child operator                          | `$.name` selects `"John Doe"` from `{"name": "John Doe"}`                 |
-        | `[]`          | Bracket notation for keys or indexes    | `$['name']` (same as `$.name`), `$[0]` selects the first item in an array |
-        | `*`           | Wildcard (selects all elements)         | `$.*` selects all keys at the root level                                  |
-        | `..`          | Recursive descent (searches all levels) | `$..price` selects all `price` values from nested objects                 |
-        | `?()`         | Filter expression                       | `$[?(@.price > 20)]` selects items where `price > 20`                     |
-        | `@`           | Current element in filter expressions   | `$[?(@.status == "active")]` selects elements with `"status": "active"`   |
-        | `[,]`         | Union (select multiple elements)        | `$['name', 'age']` selects both `name` and `age`                          |
-        | `[start:end]` | Array slice (Python-like slicing)       | `$[0:3]` selects the first three elements of an array                     |
-
-        1. **Selecting a Specific Key (`$.key`)**
-
-            ```json
-            {
-                "name": "John Doe",
-                "age": 30,
-                "email": "john@example.com"
-            }
-            ```
-
-            ```json
-            $.name
-            ```
-
-            ```json
-            "John Doe"
-            ```
-
-        2. **Accessing Nested Keys (`$.parent.child`)**
-
-            ```json
-            {
-                "user": {
-                    "id": 101,
-                    "name": "Alice",
-                    "contact": {
-                        "email": "alice@example.com",
-                        "phone": "1234567890"
-                    }
-                }
-            }
-            ```
-
-            ```json
-            $.user.contact.email
-            ```
-
-            ```json
-            "alice@example.com"
-            ```
-
-        3. **Selecting Elements from an Array (`$[index]`)**
-
-            ```json
-            {
-                "products": [
-                    { "name": "Laptop", "price": 1200 },
-                    { "name": "Phone", "price": 800 },
-                    { "name": "Tablet", "price": 600 }
-                ]
-            }
-            ```
-
-            ```json
-            $.products[1]
-            ```
-
-            ```json
-            { "name": "Phone", "price": 800 }
-            ```
-
-        4. **Selecting All Items in an Array (`$[*]`)**
-
-            ```json
-            $.products[*].name
-            ```
-
-            ```json
-            ["Laptop", "Phone", "Tablet"]
-            ```
-
-        5. **Using Wildcards (`$.*` or `$[*]`)**
-
-            ```json
-            {
-                "id": 1,
-                "name": "Alice",
-                "contact": {
-                    "email": "alice@example.com",
-                    "phone": "1234567890"
-                }
-            }
-            ```
-
-            ```json
-            $..email
-            ```
-
-            ```json
-            ["alice@example.com"]
-            ```
-
-            (Finds all `email` values in the JSON)
-
-        6. **Using Filters (`$[?()]`)**
-
-            ```json
-            {
-                "employees": [
-                    { "name": "John", "age": 30, "salary": 5000 },
-                    { "name": "Jane", "age": 25, "salary": 6000 },
-                    { "name": "Doe", "age": 28, "salary": 7000 }
-                ]
-            }
-            ```
-
-            ```json
-            $.employees[?(@.salary > 6000)]
-            ```
-
-            ```json
-            [{ "name": "Doe", "age": 28, "salary": 7000 }]
-            ```
-
-            (Selects employees with salary greater than 6000)
-
-        7. **Selecting Multiple Keys (`$['key1', 'key2']`)**
-
-            ```json
-            $.employees[*]['name', 'salary']
-            ```
-
-            ```json
-            [
-                { "name": "John", "salary": 5000 },
-                { "name": "Jane", "salary": 6000 },
-                { "name": "Doe", "salary": 7000 }
-            ]
-            ```
-
-        8. **Selecting Data from a Range (`$[start:end]`)**
-
-            ```json
-            $.employees[0:2]
-            ```
-
-            ```json
-            [
-                { "name": "John", "age": 30, "salary": 5000 },
-                { "name": "Jane", "age": 25, "salary": 6000 }
-            ]
-            ```
-
-            (Selects the first two employees)
-
-        </details>
-
-    #### Example Workflow with State Machine Definition
-
-    ```json
-    {
-        // Optional comment describing the purpose of the state machine
-        "Comment": "A description of my state machine",
-        // The name of the state to start execution with
-        "StartAt": "Add Order Entry",
-        // All states in the state machine are defined under the "States" key
-        "States": {
-            // First state: Add Order Entry
-            "Add Order Entry": {
-                "Type": "Pass", // A Pass state simply passes its input to output without any work
-                "Result": "Order Entry Added", // This is the hardcoded result/output
-                "Next": "Choice" // Next state to transition to
-            },
-            // A dummy choice state (Note: it's a Pass state here, not a real Choice type)
-            "Choice": {
-                "Type": "Pass", // Again, just passing data through
-                "Result": "Choice State", // Hardcoded result to simulate a decision point
-                "Next": "Call Credit Card Service To Charge Customer" // Moves to Lambda task
-            },
-            // Lambda Task to charge the customer
-            "Call Credit Card Service To Charge Customer": {
-                "Type": "Task", // A Task state performs actual work by invoking a resource
-                "Resource": "arn:aws:states:::lambda:invoke", // Managed integration with AWS Lambda
-                // Parameters to send to the Lambda function
-                "Parameters": {
-                    "Payload.$": "$", // Sends the entire state input as the payload
-                    "FunctionName": "arn:aws:lambda:us-east-1:755314965794:function:Test:$LATEST"
-                },
-                // Retry policy configuration
-                "Retry": [
-                    {
-                        "ErrorEquals": [
-                            // Types of errors to retry on
-                            "Lambda.ServiceException",
-                            "Lambda.AWSLambdaException",
-                            "Lambda.SdkClientException"
-                        ],
-                        "IntervalSeconds": 2, // Wait 2 seconds before retrying
-                        "MaxAttempts": 6, // Retry up to 6 times
-                        // Exponential backoff: A multiplier that increases the delay time exponentially for each retry
-                        "BackoffRate": 2 // Delay_n = IntervalSeconds × (BackoffRate)^(n-1)
-                    }
-                ],
-                "Next": "Success", // If successful, go to the Success state
-                // Catch any errors if the Lambda fails
-                "Catch": [
-                    {
-                        "ErrorEquals": [
-                            "States.ALL" // Catch all errors
-                        ],
-                        "Next": "Fallback - Delete failed order", // Go to a cleanup/failure handler
-                        "ResultPath": "$.result" // Store error result in the `result` field
-                    }
-                ],
-                "ResultPath": "$.result" // Store the Lambda output in `result` field of state data
-            },
-            // Cleanup task in case of failure (e.g., delete from DynamoDB)
-            "Fallback - Delete failed order": {
-                "Type": "Task", // A task to perform DynamoDB deletion
-                "Resource": "arn:aws:states:::dynamodb:deleteItem", // Managed integration with DynamoDB
-                // Parameters for DynamoDB DeleteItem API
-                "Parameters": {
-                    "TableName": "CustomerOrdersTable", // DynamoDB table to delete from
-                    "Key": {
-                        "customerId": {
-                            "S.$": "$.customerId" // Take the value at path $.customerId from the input JSON, and use it as the value of a DynamoDB String-typed attribute.
-                        },
-                        "orderId": {
-                            "S.$": "$.orderId" // Use state input to provide orderId
-                        }
-                    }
-                },
-                "Next": "Fail" // After deleting, go to the Fail state
-            },
-            // Indicates successful completion
-            "Success": {
-                "Type": "Succeed" // Terminates the execution successfully
-            },
-            // Indicates failure completion
-            "Fail": {
-                "Type": "Fail" // Terminates execution with a failure
-            }
-        }
-    }
-    ```
-
-    #### Use Cases
-
-    -   **ETL and Data Processing**: Orchestrate ETL (Extract, Transform, Load) workflows by integrating with AWS Glue, Lambda, and S3.
-    -   **Microservices Coordination**: Coordinate microservices architectures, ensuring the right services are called in the correct sequence with error handling.
-    -   **Long-Running Processes**: Manage long-running processes such as order fulfillment, user sign-ups, or data analysis tasks that involve multiple steps and services.
-    -   **Serverless Applications**: Build complex serverless applications by orchestrating Lambda functions and other AWS services without managing servers.
-    -   **Automation and Batch Jobs**: Automate batch jobs and administrative tasks that require coordination of multiple services.
-
-    #### Standard Workflow vs Express Workflow
-
-    AWS Step Functions offers two types of workflows to handle different use cases: Express Workflows and Standard Workflows. Each has its own characteristics and is suited for different kinds of tasks.
-
-    -   **Standard Workflows**
-
-        -   `Execution Duration`: Standard Workflows can run for up to a year, making them suitable for long-running processes.
-        -   `Execution History`: They provide detailed execution history for each step, which is useful for debugging and auditing.
-        -   `State Transition`: State transitions are recorded, and you can visualize the execution flow.
-        -   `Reliability`: Designed for high reliability and durability, ensuring the state machine's execution is accurately recorded and completed.
-        -   `Concurrency`: They support high levels of concurrency but have a rate limit for execution starts.
-        -   `Error Handling`: Supports robust error handling and retry mechanisms.
-
-        -   `Use Cases`: Use when you need detailed execution history, long-running processes, complex business logic, and robust error handling.
-
-            -   Long-running ETL processes.
-            -   Complex business workflows that require detailed audit trails.
-            -   Processes where each step's result and execution path need to be tracked and visualized.
-
-        -   `Pricing`
-            -   Pricing is based on the number of state transitions.
-            -   Execution time also impacts cost.
-
-    -   **Express Workflows**
-
-        -   `Execution Duration`: Express Workflows are designed for short-lived executions, with a maximum duration of five minutes. - `Execution Volume`: Optimized for high-volume, short-duration workloads. - `Concurrency`: Can handle a much higher rate of executions compared to Standard Workflows. - `State Transition`: Transitions are recorded at a summary level rather than a detailed step-by-step history. - `Cost`: Pricing is based on the number of requests and their duration, making it cost-effective for high-frequency, short-duration tasks. - `Reliability`: Provides good reliability, though not as high as Standard Workflows. Suitable for high-scale operations that need to manage massive volumes of requests efficiently.
-
-        -   `Use Cases`: Use when you need to handle a high volume of short-duration executions efficiently and cost-effectively, such as in real-time data processing and event-driven architectures.
-
-            -   Real-time data processing.
-            -   Event-driven architectures.
-            -   Microservices orchestration.
-            -   High-frequency, short-duration jobs such as real-time file processing or data ingestion tasks.
-
-        -   `Pricing`
-            -   Based on the number of requests and their duration.
-            -   More cost-effective for high-throughput, short-duration tasks.
-
-    -   **Detailed Comparison**
-
-        | Feature            | Standard Workflows                             | Express Workflows                                |
-        | :----------------- | :--------------------------------------------- | :----------------------------------------------- |
-        | Execution Duration | Up to 1 year                                   | Up to 5 minutes                                  |
-        | Concurrency        | High, but with rate limits on execution starts | Extremely high, designed for massive concurrency |
-        | State Transition   | Detailed history for each step                 | Summary-level transitions                        |
-        | Error Handling     | Robust with detailed retry policies            | Basic retry capabilities                         |
-        | Execution History  | Detailed and visualized                        | Minimal, focused on summary information          |
-        | Cost Model         | Per state transition                           | Per request and duration                         |
-        | Use Cases          | Long-running, complex workflows                | Short-duration, high-volume tasks                |
-
-    #### Features and Capabilities
-
-    -   **Visual Workflow Design**: Step Functions provides a visual editor in the AWS Management Console to create and visualize workflows, making it easier to understand and design complex workflows.
-    -   **Built-in Error Handling**: Step Functions includes built-in error handling, retry, and catch capabilities to handle errors and exceptions during state execution.
-    -   **Service Integrations**: Step Functions can integrate with over 200 AWS services, including Lambda, SNS, SQS, DynamoDB, ECS, Batch, Glue, and more. This allows for powerful orchestration of complex tasks across multiple services.
-    -   **Execution History**: Step Functions provides detailed execution history, including event logs for each step of your workflow. This helps with debugging and monitoring.
-    -   **Express Workflows**: In addition to standard workflows, Step Functions offers express workflows designed for high-volume, short-duration workflows. They provide lower latency and cost for large-scale applications.
-
-    </details>
-
----
-
--   <details><summary style="font-size:25px;color:Orange">AWS EMR</summary>
-
-    Amazon Elastic MapReduce (EMR) is a managed big data platform on AWS that simplifies the processing and analysis of large datasets using popular open-source frameworks such as Apache Hadoop, Apache Spark, and Apache HBase. Here are some key terms and concepts associated with AWS EMR:
-    AWS EMR (Amazon Elastic MapReduce) is a cloud-based big data platform provided by Amazon Web Services (AWS). It simplifies the processing and analysis of large datasets by offering a managed environment for running open-source distributed computing frameworks such as Apache Hadoop, Apache Spark, Apache Hive, and Apache HBase. In simple terms, AWS EMR allows you to:
-    Amazon Elastic MapReduce (Amazon EMR) is a cloud big data platform designed to process and analyze vast amounts of data using frameworks like Apache Hadoop, Spark, HBase, and Presto. The key components and configurations in Amazon EMR, including **Master Node, Core Node, Task Node, Managed Scaling, Steps, Amazon EMR Studio, and Security Configurations**, are as follows:
-
-    -   **Cluster**: A cluster is a group of EC2 instances (nodes) provisioned by EMR to perform data processing tasks. EMR clusters can include master nodes, core nodes, and task nodes, depending on the configuration.
-
-    -   **Instance Type**: An instance type determines the compute, memory, and storage capacity of each node in an EMR cluster. AWS offers various instance types optimized for different workloads and use cases.
-
-    -   **Bootstrap Actions**: Bootstrap actions are scripts or commands executed on cluster nodes during cluster startup. They are used to install software packages, configure environment settings, or perform custom initialization tasks.
-
-    -   **Cluster Auto-termination**: Cluster auto-termination is a feature of EMR that automatically shuts down idle clusters after a specified period of inactivity. It helps minimize costs by ensuring that clusters are only running when needed.
-
-    #### Master Node:
-
-    The master node is the control node of an EMR cluster responsible for coordinating the execution of tasks and managing the overall cluster. It hosts the Hadoop Distributed File System (HDFS) NameNode and other cluster-level services.
-
-    -   **Role**:
-        -   The **master node** coordinates the entire cluster by assigning tasks to core and task nodes, tracking their progress, and managing the cluster state.
-        -   It runs key cluster management services such as Hadoop NameNode (for HDFS), YARN Resource Manager (for resource allocation), or Spark driver (for job coordination).
-    -   **Significance**:
-        -   Without the master node, the cluster cannot function, as it orchestrates data processing and resource management.
-        -   Typically, a cluster has **one master node**, but you can set up high availability with multiple master nodes in EMR versions that support this feature.
-    -   **Specifications**:
-        -   Should have robust hardware specifications since it handles critical management processes.
-
-    #### Core Node:
-
-    Core nodes are responsible for storing and processing data in an EMR cluster. They host HDFS DataNodes and participate in data processing tasks such as MapReduce or Spark jobs.
-
-    -   **Role**:
-        -   Core nodes are responsible for running processing tasks and storing data in the Hadoop Distributed File System (**HDFS**).
-        -   They manage long-term data storage and perform computational tasks like executing map and reduce operations in Hadoop or Spark jobs.
-    -   **Significance**:
-        -   Core nodes form the backbone of the EMR cluster as they handle data and process workloads simultaneously.
-        -   They report back to the master node on task progress.
-    -   **Characteristics**:
-        -   Loss of core nodes may lead to data loss unless redundancy is configured using S3 or HDFS replication.
-
-    #### Task Node:
-
-    Task nodes are optional nodes in an EMR cluster used to offload processing tasks from core nodes. They do not store data and are typically used to scale processing capacity dynamically.
-
-    -   **Role**:
-        -   Task nodes perform only computational tasks without storing data in HDFS.
-        -   These are optional and typically added to increase processing capacity during peak workloads.
-    -   **Significance**:
-        -   Task nodes provide scalability and flexibility, enabling the cluster to handle larger workloads dynamically.
-        -   They can be added or removed without impacting the cluster's data storage.
-    -   **Use Case**:
-        -   Useful for one-off tasks or temporary scaling of compute capacity.
-
-    #### Managed Scaling
-
-    Managed Scaling is a feature of EMR that automatically resizes the cluster by adding or removing task nodes based on the workload and resource requirements. It helps optimize cluster utilization and cost-efficiency.
-
-    -   **Description**:
-        -   Managed Scaling allows Amazon EMR to **automatically adjust the number of nodes** in a cluster based on workload demands.
-    -   **How It Works**:
-        -   The cluster adjusts the compute capacity (adding/removing nodes) to match application needs, optimizing costs and performance.
-        -   Scaling is based on CloudWatch metrics and thresholds defined by the user.
-    -   **Benefits**:
-        -   **Cost Efficiency**: Reduces costs by scaling down resources when idle.
-        -   **Performance Optimization**: Ensures sufficient capacity during peak loads.
-    -   **Configuration**:
-        -   Enabled during cluster setup, with users specifying the minimum and maximum node limits.
-
-    #### Steps:
-
-    Steps are individual processing tasks or jobs submitted to an EMR cluster for execution. Each step typically represents a specific data processing operation, such as running a MapReduce job or executing a Spark application.
-
-    -   **Definition**:
-        -   A "Step" in Amazon EMR represents a unit of work to be performed on the cluster, such as running a Hadoop, Spark, or Hive job.
-    -   **Types**:
-        -   **Custom JARs**: User-defined MapReduce applications.
-        -   **Streaming Programs**: Hadoop Streaming jobs.
-        -   **Framework-Specific**: Spark applications, Hive queries, or Presto queries.
-    -   **Execution Flow**:
-        -   Steps are added in sequence and executed in the order defined.
-        -   A step can be terminated early if it fails or on user intervention.
-    -   **Benefits**:
-        -   Simplifies job submission and allows monitoring progress via the AWS Management Console.
-
-    #### Amazon EMR Studio
-
-    Amazon EMR Studio is an integrated development environment (IDE) for data scientists and developers to interactively develop, visualize, and debug big data applications on EMR clusters. It provides a notebook-like interface with support for multiple programming languages and frameworks.
-
-    -   **Overview**:
-        -   Amazon EMR Studio is an integrated, web-based environment for developing, debugging, and running big data applications using tools like Apache Spark and Jupyter notebooks.
-    -   **Features**:
-        -   **Notebook Integration**: Supports Jupyter-based notebooks for Spark development.
-        -   **Collaboration**: Multiple users can collaborate on shared notebooks.
-        -   **Job Management**: Enables monitoring and debugging Spark jobs in real time.
-        -   **Interactive UI**: Offers a streamlined interface for data scientists and analysts.
-    -   **Benefits**:
-        -   Simplifies development by eliminating the need for SSH or manual job setup.
-        -   Enhances productivity through direct integration with EMR clusters and AWS Identity and Access Management (IAM).
-
-    #### Security Configurations
-
-    Security configurations in EMR define encryption settings, authentication mechanisms, and authorization policies to ensure data security and compliance with regulatory requirements. They can be applied to EMR clusters to enforce security best practices.
-
-    -   **Purpose**:
-        -   Security configurations define encryption settings, authentication mechanisms, and network policies to safeguard data processed by EMR.
-    -   **Key Elements**:
-        1. **Encryption**:
-            - **At Rest**: Data stored in S3, HDFS, or EBS volumes can be encrypted.
-            - **In Transit**: Secure communication between cluster nodes using TLS.
-        2. **Authentication**:
-            - Kerberos integration can be used for secure authentication and authorization.
-        3. **Access Control**:
-            - IAM roles and policies manage who can access and perform actions on the cluster.
-        4. **Data Governance**:
-            - AWS Lake Formation or AWS Glue Data Catalog can be used to enforce fine-grained access control.
-    -   **Configuration**:
-        -   Defined during cluster setup via the **Security Configuration** feature in the AWS Management Console.
-    -   **Compliance**:
-        -   Helps meet regulatory requirements such as GDPR, HIPAA, or PCI DSS.
-
-    </details>
-
----
-
 -   <details><summary style="font-size:25px;color:Orange">AWS Redshift</summary>
 
     > Amazon Redshift is a fully managed, petabyte-scale data warehousing service provided by AWS (Amazon Web Services). It is designed to handle large-scale analytics workloads, allowing users to analyze vast amounts of data quickly and cost-effectively.
@@ -2713,446 +1875,125 @@
 
 ---
 
--   <details><summary style="font-size:25px;color:Orange">AWS Glue</summary>
+-   <details><summary style="font-size:25px;color:Orange">AWS EMR</summary>
 
-    [AWS Glue ETL scripts in PySpark](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python.html)
+    Amazon Elastic MapReduce (EMR) is a managed big data platform on AWS that simplifies the processing and analysis of large datasets using popular open-source frameworks such as Apache Hadoop, Apache Spark, and Apache HBase. Here are some key terms and concepts associated with AWS EMR:
+    AWS EMR (Amazon Elastic MapReduce) is a cloud-based big data platform provided by Amazon Web Services (AWS). It simplifies the processing and analysis of large datasets by offering a managed environment for running open-source distributed computing frameworks such as Apache Hadoop, Apache Spark, Apache Hive, and Apache HBase. In simple terms, AWS EMR allows you to:
+    Amazon Elastic MapReduce (Amazon EMR) is a cloud big data platform designed to process and analyze vast amounts of data using frameworks like Apache Hadoop, Spark, HBase, and Presto. The key components and configurations in Amazon EMR, including **Master Node, Core Node, Task Node, Managed Scaling, Steps, Amazon EMR Studio, and Security Configurations**, are as follows:
 
-    AWS Glue is a fully managed extract, transform, and load (ETL) service provided by Amazon Web Services (AWS). It offers a range of features and components for building and managing data integration workflows. Here's an explanation of the terms and concepts used in AWS Glue:
-    AWS Glue is a fully managed ETL (Extract, Transform, Load) service that simplifies data preparation, transformation, and loading processes for analytics. It automates much of the work involved in data integration, providing a scalable platform for processing large data sets. Here are the main concepts in AWS Glue:
+    -   **Cluster**: A cluster is a group of EC2 instances (nodes) provisioned by EMR to perform data processing tasks. EMR clusters can include master nodes, core nodes, and task nodes, depending on the configuration.
 
-    -   `ETL`: Stands for Extract, Transform, and Load. It refers to the process of extracting data from various sources, transforming it into a desired format, and loading it into a target destination, such as a data warehouse or data lake.
-    -   `Jobs`: In AWS Glue, jobs are ETL workflows that define the data transformation logic to be applied to datasets. Jobs are created using the Glue ETL language, which is based on Apache Spark. Jobs can perform various data processing tasks, such as filtering, aggregating, joining, and transforming data.
-    -   `Development Endpoints`: Development endpoints are AWS Glue resources that provide an environment for developing and testing ETL scripts and jobs. They allow developers to interactively write, debug, and run Glue ETL scripts using tools like Jupyter notebooks or integrated development environments (IDEs).
-    -   `Triggers`: Triggers are AWS Glue components used to schedule the execution of ETL jobs based on time or event triggers. They enable automation of data processing workflows by specifying when jobs should be run, such as hourly, daily, or in response to data arrival events.
-    -   `Schedulers`: Schedulers are AWS Glue components responsible for managing the execution and scheduling of ETL jobs. They ensure that jobs are executed according to the specified schedule, monitor job execution status, and handle job failures or retries.
-    -   `Connections`: Connections are AWS Glue resources used to define and store connection information for accessing external data sources, such as databases, data warehouses, or cloud storage services. They store connection parameters like endpoint URL, port number, authentication credentials, and encryption settings.
-    -   `Security and Access Control`: AWS Glue provides features for managing security and access control to data and resources. It integrates with AWS `IAM` (Identity Access Management) to control user access to Glue resources, enforce permissions, and audit user actions. Glue also supports encryption of data at rest and in transit for enhanced security.
-    -   `Serverless Architecture`: AWS Glue is built on a serverless architecture, which means that users do not need to provision or manage any infrastructure. AWS Glue automatically scales resources up or down based on demand, allowing users to focus on building and managing data integration workflows without worrying about underlying infrastructure.
+    -   **Instance Type**: An instance type determines the compute, memory, and storage capacity of each node in an EMR cluster. AWS offers various instance types optimized for different workloads and use cases.
 
-    #### Data Catalog
+    -   **Bootstrap Actions**: Bootstrap actions are scripts or commands executed on cluster nodes during cluster startup. They are used to install software packages, configure environment settings, or perform custom initialization tasks.
 
-    The **AWS Glue Data Catalog** is a centralized metadata repository that stores information about data sources. It is a key component of AWS Glue, providing a catalog of data for discovery, querying, and processing.
-    The AWS Glue Data Catalog is a central metadata repository that stores metadata information about datasets, tables, and schemas. It provides a unified view of the data assets within an organization and enables data discovery, querying, and analysis.
-    Data Catalog is the central metadata repository within AWS Glue. It acts as a unified metadata repository for all your data sources and stores metadata about data structures and schema. Here are its key features and concepts:
+    -   **Cluster Auto-termination**: Cluster auto-termination is a feature of EMR that automatically shuts down idle clusters after a specified period of inactivity. It helps minimize costs by ensuring that clusters are only running when needed.
 
-    -   `Metadata Storage`: Stores information such as table definitions, schemas, and locations of data in S3, RDS, Redshift, and other sources.
-    -   `Centralized Repository`: Provides a single place to store and access metadata, making it easy to discover and manage data.
-    -   `Automatic Schema Discovery`: Works with Crawlers to automatically infer and catalog the schema of your data.
-    -   `Integration with AWS Services`: Integrates seamlessly with AWS services like Amazon Athena, Amazon Redshift Spectrum, and Amazon EMR for querying and analysis.
+    #### Master Node:
+
+    The master node is the control node of an EMR cluster responsible for coordinating the execution of tasks and managing the overall cluster. It hosts the Hadoop Distributed File System (HDFS) NameNode and other cluster-level services.
+
+    -   **Role**:
+        -   The **master node** coordinates the entire cluster by assigning tasks to core and task nodes, tracking their progress, and managing the cluster state.
+        -   It runs key cluster management services such as Hadoop NameNode (for HDFS), YARN Resource Manager (for resource allocation), or Spark driver (for job coordination).
+    -   **Significance**:
+        -   Without the master node, the cluster cannot function, as it orchestrates data processing and resource management.
+        -   Typically, a cluster has **one master node**, but you can set up high availability with multiple master nodes in EMR versions that support this feature.
+    -   **Specifications**:
+        -   Should have robust hardware specifications since it handles critical management processes.
+
+    #### Core Node:
+
+    Core nodes are responsible for storing and processing data in an EMR cluster. They host HDFS DataNodes and participate in data processing tasks such as MapReduce or Spark jobs.
+
+    -   **Role**:
+        -   Core nodes are responsible for running processing tasks and storing data in the Hadoop Distributed File System (**HDFS**).
+        -   They manage long-term data storage and perform computational tasks like executing map and reduce operations in Hadoop or Spark jobs.
+    -   **Significance**:
+        -   Core nodes form the backbone of the EMR cluster as they handle data and process workloads simultaneously.
+        -   They report back to the master node on task progress.
+    -   **Characteristics**:
+        -   Loss of core nodes may lead to data loss unless redundancy is configured using S3 or HDFS replication.
+
+    #### Task Node:
+
+    Task nodes are optional nodes in an EMR cluster used to offload processing tasks from core nodes. They do not store data and are typically used to scale processing capacity dynamically.
+
+    -   **Role**:
+        -   Task nodes perform only computational tasks without storing data in HDFS.
+        -   These are optional and typically added to increase processing capacity during peak workloads.
+    -   **Significance**:
+        -   Task nodes provide scalability and flexibility, enabling the cluster to handle larger workloads dynamically.
+        -   They can be added or removed without impacting the cluster's data storage.
+    -   **Use Case**:
+        -   Useful for one-off tasks or temporary scaling of compute capacity.
+
+    #### Managed Scaling
+
+    Managed Scaling is a feature of EMR that automatically resizes the cluster by adding or removing task nodes based on the workload and resource requirements. It helps optimize cluster utilization and cost-efficiency.
+
+    -   **Description**:
+        -   Managed Scaling allows Amazon EMR to **automatically adjust the number of nodes** in a cluster based on workload demands.
+    -   **How It Works**:
+        -   The cluster adjusts the compute capacity (adding/removing nodes) to match application needs, optimizing costs and performance.
+        -   Scaling is based on CloudWatch metrics and thresholds defined by the user.
+    -   **Benefits**:
+        -   **Cost Efficiency**: Reduces costs by scaling down resources when idle.
+        -   **Performance Optimization**: Ensures sufficient capacity during peak loads.
+    -   **Configuration**:
+        -   Enabled during cluster setup, with users specifying the minimum and maximum node limits.
+
+    #### Steps:
+
+    Steps are individual processing tasks or jobs submitted to an EMR cluster for execution. Each step typically represents a specific data processing operation, such as running a MapReduce job or executing a Spark application.
+
+    -   **Definition**:
+        -   A "Step" in Amazon EMR represents a unit of work to be performed on the cluster, such as running a Hadoop, Spark, or Hive job.
+    -   **Types**:
+        -   **Custom JARs**: User-defined MapReduce applications.
+        -   **Streaming Programs**: Hadoop Streaming jobs.
+        -   **Framework-Specific**: Spark applications, Hive queries, or Presto queries.
+    -   **Execution Flow**:
+        -   Steps are added in sequence and executed in the order defined.
+        -   A step can be terminated early if it fails or on user intervention.
+    -   **Benefits**:
+        -   Simplifies job submission and allows monitoring progress via the AWS Management Console.
+
+    #### Amazon EMR Studio
+
+    Amazon EMR Studio is an integrated development environment (IDE) for data scientists and developers to interactively develop, visualize, and debug big data applications on EMR clusters. It provides a notebook-like interface with support for multiple programming languages and frameworks.
+
+    -   **Overview**:
+        -   Amazon EMR Studio is an integrated, web-based environment for developing, debugging, and running big data applications using tools like Apache Spark and Jupyter notebooks.
     -   **Features**:
-        -   Stores **table definitions**, schema information, and metadata for data sources (e.g., S3, RDS, Redshift).
-        -   Automatically crawls data sources to extract metadata.
-        -   Provides a unified view of data across different data stores.
-        -   Integrated with services like **Amazon Athena** and **Amazon Redshift Spectrum** for querying.
-
-    #### Crawlers
-
-    A **crawler** in AWS Glue is used to automatically scan data stores and extract metadata to populate the Glue Data Catalog. Crawlers determine the schema of the data and create or update tables in the Data Catalog.
-    Crawlers are AWS Glue components used to automatically discover and catalog data stored in various data sources, such as Amazon S3, Amazon RDS, Amazon Redshift, and databases hosted on-premises or in other cloud platforms. Crawlers analyze data in these sources, infer its schema, and create metadata entries in the Glue Data Catalog.
-    Crawlers are components in AWS Glue that automate the process of discovering and cataloging data. Crawlers traverse your data sources, inspect the data, and infer the schema to populate the Data Catalog. Key aspects include:
-
-    -   `Schema Inference`: Automatically determines the structure of your data, such as tables and columns.
-    -   `Data Source Detection`: Can work with various data sources including S3, RDS, DynamoDB, and more.
-    -   `Scheduled Runs`: Can be scheduled to run at regular intervals to keep the Data Catalog up-to-date with changes in the data.
-    -   `Output`: Creates or updates tables in the Data Catalog with the inferred schema and metadata.
-
-    -   **Features**:
-        -   Can crawl structured and semi-structured data in **Amazon S3**, **RDS**, **DynamoDB**, and other sources.
-        -   Automatically infers the schema, partitions, and formats of the data.
-        -   Supports custom classifiers for non-standard data formats.
-
-    #### Classifiers
-
-    Classifiers are AWS Glue components used to classify the format and structure of data files. They analyze the content of data files and determine their file format, compression type, and schema. Glue provides built-in classifiers for common file formats like CSV, JSON, Parquet, and Avro, as well as custom classifiers for proprietary formats.
-    A **classifier** in AWS Glue is a rule that determines the format and structure of a data source, such as CSV, JSON, or Parquet.
-
-    -   Classifiers in AWS Glue help Crawlers understand the structure of your data. They determine the schema of the data by recognizing patterns in the data files. Classifiers can be predefined or custom:
-
-    -   `Built-in Classifiers`: AWS Glue comes with a set of built-in classifiers for common file types like JSON, CSV, Parquet, Avro, etc.
-    -   `Custom Classifiers`: You can create custom classifiers using grok patterns, JSONPath, or XML tags to handle specific data formats.
-    -   `Pattern Matching`: Classifiers use pattern matching to determine how to parse and structure the data.
-    -   `Integration with Crawlers`: Crawlers use these classifiers to infer the schema of your data and create corresponding tables in the Data Catalog.
-
-    -   **Features**:
-        -   AWS Glue comes with built-in classifiers for common file formats.
-        -   You can create **custom classifiers** to handle non-standard or proprietary data formats.
-
-    #### Glue ETL Jobs
-
-    An **ETL job** in AWS Glue defines the process of extracting data from a source, transforming it based on business logic, and loading it into a destination (e.g., S3, Redshift, RDS).
-
-    -   **Types of Jobs**:
-
-        -   **Python or PySpark Scripts**: Glue jobs typically run Python or PySpark scripts to process and transform data.
-        -   **Spark-based ETL**: AWS Glue runs on **Apache Spark** under the hood for large-scale data processing.
-
-    -   **Job Creation**:
-        -   AWS Glue can automatically generate ETL code using its **Job Wizard**, based on the source and target data schemas.
-        -   Users can write custom transformation logic in **PySpark** or **Python**.
-
-    #### Glue Triggers
-
-    **Triggers** in AWS Glue are used to automate the start of jobs based on a schedule or event.
-
-    -   **What is an AWS Glue Trigger?**
-
-        -   An AWS Glue Trigger is a mechanism to start Glue Jobs or Crawlers automatically based on:
-
-            -   A schedule (time-based)
-            -   A manual action (on-demand)
-            -   Or dependent job/crawler completion status (conditional)
-
-        -   Can be used independently or within Glue Workflows
-
-    -   **Glue Trigger Use Cases**
-
-        -   Start a job when a crawler completes
-        -   Start a job when a previous job succeeds/fails
-        -   Schedule a daily ETL pipeline at midnight
-        -   Launch a pipeline from an external event using an on-demand trigger
-
-    -   **Types of Triggers**
-
-        -   `SCHEDULED`: Runs automatically at a specified cron or rate expression
-        -   `ON_DEMAND`: Runs only when explicitly invoked via console, CLI, or SDK
-        -   `CONDITIONAL`: Fires when specified jobs or crawlers succeed/fail
-
-    -   **Trigger Components**
-
-        -   **Name**: Unique name for the trigger
-        -   **Type**: `SCHEDULED`, `ON_DEMAND`, or `CONDITIONAL`
-        -   **Actions**: List of Jobs or Crawlers to start when trigger fires
-        -   **Predicate**: For `CONDITIONAL` triggers, defines conditions like job success or failure
-        -   **Schedule**: For `SCHEDULED` triggers, uses cron or rate expressions
-        -   **WorkflowName**: Associates the trigger with a Workflow (optional)
-        -   **StartOnCreation**: If `True`, starts trigger right after creation
-        -   **State**: `ACTIVE` or `INACTIVE`
-        -   **Description**: Optional description
-
-    -   **Example: Conditional Trigger**
-
-        ```json
-        {
-            "Name": "trigger-after-job-a",
-            "Type": "CONDITIONAL",
-            "Actions": [{ "JobName": "job-b" }],
-            "Predicate": {
-                "Conditions": [
-                    {
-                        "LogicalOperator": "EQUALS",
-                        "JobName": "job-a",
-                        "State": "SUCCEEDED"
-                    }
-                ]
-            }
-        }
-        ```
-
-    -   **Example: Scheduled Trigger**
-
-        ```json
-        {
-            "Name": "daily-trigger",
-            "Type": "SCHEDULED",
-            "Schedule": "cron(0 0 * * ? *)",
-            "Actions": [{ "JobName": "daily-etl-job" }]
-        }
-        ```
-
-    -   **Lifecycle of a Trigger**
-
-        -   **Create**: Via Console, CLI, or SDK (e.g., `create_trigger()` in boto3)
-        -   **Activate**: Call `start_trigger()` if not `StartOnCreation`
-        -   **Execute**: Trigger fires when condition is met
-        -   **Disable/Delete**: Use `update_trigger()` or `delete_trigger()`
-
-    -   **Trigger Status and Monitoring**
-
-        -   Monitor in AWS Glue Console under Triggers
-        -   Track job logs in CloudWatch Logs
-        -   Use AWS CloudTrail to trace API calls
-
-    -   **IAM Permissions Needed**
-
-        ```json
-        {
-            "Effect": "Allow",
-            "Action": [
-                "glue:CreateTrigger",
-                "glue:StartTrigger",
-                "glue:GetTrigger",
-                "glue:DeleteTrigger",
-                "glue:UpdateTrigger"
-            ],
-            "Resource": "*"
-        }
-        ```
-
-    -   **Integration with Workflows**
-
-        -   Triggers define orchestration in Glue Workflows
-        -   Each trigger is a node in the visual graph
-        -   Use `Predicate.Conditions` to define dependencies
-
-    -   **Testing Triggers**
-
-        -   **On-demand**: Call `start_trigger()`
-        -   **Conditional**: Manually run dependency and watch behavior
-        -   **Scheduled**: Use `rate(5 minutes)` for quick testing
-
-    -   **Common Issues**
-
-        -   **Trigger not firing**: State is `INACTIVE` or `StartOnCreation` was `False`
-        -   **Conditional trigger not working**: Misconfigured predicate
-        -   **Scheduled trigger not working**: Invalid cron expression
-        -   **IAM permission errors**: Missing required Glue permissions
-
-    -   **Summary Cheat Sheet**
-
-        -   `Trigger`: A mechanism to start jobs/crawlers automatically
-        -   `Type`: ON_DEMAND, SCHEDULED, CONDITIONAL
-        -   `Actions`: Jobs or crawlers to run
-        -   `Predicate`: Dependencies on job/crawler result
-        -   `WorkflowName`: Optional Glue Workflow association
-        -   `State`: ACTIVE or INACTIVE
-
-    #### Glue Workflows
-
-    AWS Glue Workflow is a managed orchestration feature that allows you to define a data pipeline composed of AWS Glue jobs, crawlers, and triggers, and to manage their execution order in a visual, DAG-like (Directed Acyclic Graph) interface.
-    A workflow in AWS Glue is a set of interconnected actions executed in a specified order. It helps automate the orchestration of multiple AWS Glue jobs and crawlers, allowing for a streamlined ETL process.
-    A **workflow** in AWS Glue is a collection of jobs, crawlers, and triggers organized in a directed acyclic graph (DAG) that defines the sequence of tasks.
-
-    -   **Workflow**
-
-        -   A **container** for defining, managing, and monitoring complex ETL pipelines.
-        -   It orchestrates multiple components like Jobs, Crawlers, and Triggers in a **logical sequence**.
-
-    -   **Workflow Graph**
-
-        -   A **visual representation** of your pipeline in the AWS Console.
-        -   It shows the **dependencies** and **execution flow** between different entities (e.g., Job A → Trigger → Job B).
-
-    -   **Workflow Run**
-
-        -   Represents a **single execution instance** of a workflow.
-        -   Every time you start a workflow manually or by trigger, a new **run ID** is generated.
-
-    -   **Workflow Run Properties**
-
-        -   Key-value pairs (e.g., `{"S3_BUCKET": "my-bucket", "JOB_NAME": "etl_job"}`) that can be **passed between nodes** (job/crawler).
-        -   Used to **parameterize Jobs** and **track lineage** across runs.
-
-    -   **Conditional Trigger**
-
-        -   Triggered when **specified conditions are met** (e.g., job succeeded/failed).
-        -   You can chain multiple jobs/crawlers based on previous outcomes.
-
-    -   **Start and End Nodes**
-
-        -   Every workflow begins with a **Start trigger** and ends when **all branches** are completed.
-        -   You can **manually define the Start trigger** or let AWS Glue infer it.
-
-    -   **Error Handling & Monitoring**
-
-        -   Errors during a workflow run can be captured and rerouted.
-        -   Glue integrates with **CloudWatch Logs** and **CloudWatch Events** for logging and monitoring.
-
-    -   **Best Practices**
-
-        -   **Use run properties** to avoid hardcoding values in your scripts.
-        -   **Isolate failed components** with conditional triggers.
-        -   **Combine with Step Functions** for hybrid orchestration if needed.
-        -   **Tag and document each workflow** for observability and cost tracking.
-
-    #### Glue Connection
-
-    A **connection** in AWS Glue is used to define how AWS Glue interacts with external data sources (e.g., relational databases, data warehouses).
-
-    -   **Features**:
-        -   Supports a variety of connection types, such as **JDBC** connections to relational databases (RDS, Redshift).
-        -   Allows for secure access to data sources with VPC-based security configurations.
-
-    #### Glue Studio
-
-    AWS Glue **Studio** is a graphical interface for building, running, and monitoring ETL jobs.
-
-    -   **Features**:
-        -   Provides a drag-and-drop interface for creating ETL workflows without needing to write code.
-        -   Users can visually define the data flow and the transformations required on the data.
-
-    #### Glue DataBrew
-
-    AWS Glue DataBrew is a powerful visual data preparation tool designed to simplify the process of cleaning, transforming, and analyzing data. It is part of the AWS Glue ecosystem, which provides a serverless environment for data integration, ETL (Extract, Transform, Load), and analytics.
-
-    AWS Glue DataBrew is a fully managed, no-code data preparation service that enables users to clean, transform, and visualize data without writing any code. DataBrew provides a simple, interactive interface to work with data from various sources, perform data transformations, and prepare the data for analysis or machine learning (ML).
-
-    -   **Key Features**:
-
-        -   `Visual Interface`: A drag-and-drop interface for data transformation and cleaning.
-        -   `Pre-built transformations`: Over 250 built-in transformations to handle common data preparation tasks such as data cleaning, filtering, grouping, and more.
-        -   `Data Profiling`: Provides insights into your data’s quality, distribution, and patterns.
-        -   `Data Exploration`: Easy data exploration features to inspect and filter datasets interactively.
-        -   `Integrated with AWS Services`: Integrates well with AWS analytics and machine learning services like Amazon S3, Amazon Redshift, Amazon RDS, and AWS Glue.
-
-    -   **Projects**: A DataBrew project allows you to create, manage, and organize data transformation tasks. A project contains the following:
-
-        -   `Dataset`: The data you’re working on.
-        -   `Recipe`: A series of transformations applied to the dataset.
-        -   `Profile and Data Visualizations`: Insights into the dataset, like distributions, missing values, and outliers.
-
-        -   Projects allow users to experiment with and refine transformations before creating a recipe or final output.
-
-    -   **Datasets**: Datasets in DataBrew represent the data you want to transform and prepare for analysis. These datasets can come from a variety of sources such as Amazon S3, Amazon RDS, Amazon Redshift, Amazon Athena, and Amazon DynamoDB
-
-        -   When you create a dataset in DataBrew, you specify the data source, and DataBrew automatically ingests the data into the workspace for transformation.
-
-    -   **Recipes**: Recipes are a set of transformations applied to datasets. You can think of a recipe as a step-by-step guide for cleaning and transforming data. Recipes are reusable, meaning you can apply them to other datasets for similar transformations. Common transformations include:
-
-        -   `Cleaning`: Removing duplicates, handling missing values, or fixing incorrect data types.
-        -   `Normalization`: Scaling or standardizing numerical values.
-        -   `Filtering`: Removing outliers or unnecessary rows based on specified conditions.
-        -   `Column Operations`: Adding new columns, renaming, or dropping columns.
-        -   `Grouping and Aggregation`: Summarizing data by applying functions like sum, average, etc.
-        -   `Joins`: Merging data from different datasets.
-
-    -   **Transformation Steps**: Each recipe consists of multiple **transformation steps**, which can be executed one after another. These steps can be added using the visual interface, and each step is an operation performed on your dataset. Transformation steps include:
-
-        -   `Built-in Functions`: DataBrew provides over 250 predefined functions that cover common operations like filtering, aggregation, string manipulations, and more.
-        -   `Custom Expressions`: You can also define custom expressions using a formula editor for advanced transformations.
-        -   `Data Type Conversions`: Automatically convert columns to the right data types (e.g., from string to date).
-
-    -   **Data Profiling**: Data profiling is the process of inspecting a dataset to understand its quality and distribution. AWS Glue DataBrew automatically analyzes the dataset to provide a profile that includes:
-
-        -   `Column statistics`: Counts, averages, min/max values, and unique counts.
-        -   `Data Quality Indicators`: Missing values, duplicates, and outliers.
-        -   `Data Distribution`: Histograms, value distributions, and data patterns.
-
-        -   These insights help you understand the state of your data before performing transformations.
-
-    -   **Schedules**: You can schedule the execution of recipes to run periodically or based on specific events. Scheduling is useful when you need to automate data transformations or refresh datasets regularly. You can set up scheduled jobs to:
-
-        -   Run recipes on a defined frequency (e.g., daily, weekly).
-        -   Execute upon the arrival of new data in an S3 bucket or another source.
-
-    -   **Outputs**: After running a recipe on a dataset, you’ll want to store or output the transformed data. AWS Glue DataBrew supports several output options:
-
-        -   `Amazon S3`: Output data can be stored as CSV, Parquet, JSON, or other formats.
-        -   `Amazon Redshift`: You can write the output directly into a Redshift data warehouse.
-        -   `Amazon RDS`: Results can also be written back to RDS instances.
-        -   `AWS Glue Data Catalog`: The results of transformations can be registered in the AWS Glue Data Catalog, allowing you to use the data in other services like Athena, Redshift Spectrum, or Amazon EMR.
-
-    -   **Job Execution**: Once a recipe has been created, you can turn it into an **AWS Glue Job**. Jobs execute the recipe on a dataset and produce the output. You can monitor the progress of jobs, view logs, and track performance.
-
-    -   **DataBrew Workflow**: The typical workflow in AWS Glue DataBrew involves the following steps:
-
-        -   `Data Ingestion`: First, you connect to your data source (e.g., S3, Redshift, RDS, or Athena) and create a dataset.
-        -   `Data Exploration and Profiling`: Explore the data by inspecting the columns, missing values, and distributions. Use profiling to understand data quality and potential issues.
-        -   `Data Transformation`: Create a project and apply transformations to the dataset using recipes. DataBrew provides visual tools to apply these transformations.
-        -   `Data Output`: After applying transformations, you can output the clean data to Amazon S3, Redshift, or other services.
-        -   `Automation`: Optionally, schedule jobs to automate data processing workflows.
-
-    -   **Security & Access Control**: AWS Glue DataBrew integrates with AWS Identity and Access Management (IAM) to manage user permissions. You can specify which users or roles can access specific datasets, projects, and recipes. Additionally, it integrates with AWS Key Management Service (KMS) for data encryption and ensures that data privacy and access control are enforced.
-
-    -   **Security Features**:
-
-        -   **IAM-based access control** for granular user permissions.
-        -   **Encryption** of data at rest and in transit.
-        -   **Audit logging** through AWS CloudTrail for monitoring user activity.
-
-    -   **Pricing**: AWS Glue DataBrew is priced based on two primary factors:
-        -   `Data Processing`: You are charged for the time that DataBrew spends processing your datasets, typically based on the number of data rows and transformation complexity.
-        -   `Job Execution`: You are also charged for the execution of Glue Jobs based on compute usage.
-
-    #### Glue Job Bookmarks
-
-    **Job bookmarks** in AWS Glue are used to track the processing state of jobs. This allows AWS Glue to process only new or updated data since the last run, making ETL jobs more efficient.
-
-    -   **Features**:
-        -   Tracks previously processed data to avoid reprocessing.
-        -   Can be used to incrementally process data from sources such as S3 or relational databases.
-
-    #### Glue DynamicFrames
-
-    A **DynamicFrame** is an extension of the Apache Spark DataFrame, designed specifically for AWS Glue. It allows for more flexible data transformations by providing support for semi-structured data.
-
-    -   **Features**:
-        -   **Schema flexibility**: Can handle missing or inconsistent data without enforcing a strict schema.
-        -   **Ease of transformation**: Includes built-in functions for transforming and cleaning data.
-
-    #### Glue Partitions
-
-    AWS Glue supports **partitioning** of data to improve query performance. Partitioning splits data into smaller chunks based on specific keys (e.g., date, region).
-
-    -   **Features**:
-        -   Reduces the amount of data scanned for queries or ETL jobs.
-        -   Useful when working with large datasets in Amazon S3 or other distributed storage systems.
-
-    #### Glue Dev Endpoints
-
-    A **Glue Dev Endpoint** allows you to interactively develop and test ETL scripts using **Apache Zeppelin** notebooks or IDEs like **PyCharm**.
-
-    -   **Features**:
-        -   Provides an interactive development environment for testing PySpark scripts.
-        -   Can be used to connect to AWS Glue Data Catalog and run jobs in a development setting before deploying them to production.
-
-    #### AWS Glue Data Lakes
-
-    Glue integrates with **data lakes** for data cataloging, processing, and querying. Data lakes store large amounts of structured and unstructured data.
-
-    -   **Integration with AWS Lake Formation**: AWS Glue works seamlessly with AWS Lake Formation for creating, managing, and securing a data lake.
-
-    #### Glue Transformations
-
-    AWS Glue provides several built-in transformations to clean and prepare data:
-
-    -   **Mapping**: Apply transformations to fields (e.g., renaming, converting data types).
-    -   **Filtering**: Exclude or include rows based on specific conditions.
-    -   **Joining**: Join datasets based on a common key.
-    -   **Aggregating**: Perform aggregate functions (e.g., sum, average) on datasets.
-
-    #### Glue Metrics and Logging
-
-    AWS Glue provides detailed logging and monitoring of ETL jobs:
-
-    -   **Amazon CloudWatch**: Monitor job logs, performance metrics, and failures in real time.
-    -   **Job Metrics**: Provides information on job execution time, processed data volume, and errors.
-
-    Monitoring AWS Glue jobs through AWS CloudWatch is crucial for ensuring data pipelines run efficiently and reliably. Here are some key AWS Glue metrics that can be monitored in CloudWatch:
-
-    1. **Job Metrics**
-
-        - **`Glue.JobRunsSucceeded`**: The number of Glue job runs that have succeeded.
-        - **`Glue.JobRunsFailed`**: The number of Glue job runs that have failed.
-        - **`Glue.JobRunsStopped`**: The number of Glue job runs that have been manually stopped.
-        - **`Glue.JobRunsTimeout`**: The number of Glue job runs that have timed out.
-        - **`Glue.JobRunTime`**: The amount of time a Glue job took to execute (in milliseconds).
-        - **`Glue.ConcurrentRunsExceeded`**: The number of jobs that couldn't start because the concurrent job run limit was exceeded.
-
-    2. **Crawler Metrics**
-
-        - **`Glue.CrawlerSucceeded`**: The number of crawlers that succeeded.
-        - **`Glue.CrawlerFailed`**: The number of crawlers that failed.
-        - **`Glue.CrawlerStopped`**: The number of crawlers that were stopped.
-        - **`Glue.CrawlerRunTime`**: The time taken for the crawler to complete its task (in milliseconds).
-
-    3. **Data Quality Metrics**
-
-        - **`Glue.RowsWritten`**: Number of rows written by a Glue job to a target.
-        - **`Glue.RowsRead`**: Number of rows read by a Glue job from the source.
-        - **`Glue.DPUHours`**: The aggregate DPU (Data Processing Unit) hours used by Glue jobs.
-
-    4. **Partition Metrics**
-
-        - **`Glue.PartitionsCreated`**: The number of partitions that Glue created in the catalog.
-        - **`Glue.PartitionsDeleted`**: The number of partitions deleted in the catalog.
-
-    5. **Error Handling and Exceptions**
-        - **`Glue.Errors`**: The number of errors that occurred during job execution.
-        - **`Glue.ResourceErrors`**: Errors related to insufficient resources (memory, DPUs, etc.).
-        - **`Glue.CodeErrors`**: Errors caused by problems in the job code.
-        - **`Glue.ServiceErrors`**: Errors related to AWS Glue service failures.
-
-    These metrics provide insights into job performance, resource usage, and errors, which help in proactive monitoring and troubleshooting.
+        -   **Notebook Integration**: Supports Jupyter-based notebooks for Spark development.
+        -   **Collaboration**: Multiple users can collaborate on shared notebooks.
+        -   **Job Management**: Enables monitoring and debugging Spark jobs in real time.
+        -   **Interactive UI**: Offers a streamlined interface for data scientists and analysts.
+    -   **Benefits**:
+        -   Simplifies development by eliminating the need for SSH or manual job setup.
+        -   Enhances productivity through direct integration with EMR clusters and AWS Identity and Access Management (IAM).
+
+    #### Security Configurations
+
+    Security configurations in EMR define encryption settings, authentication mechanisms, and authorization policies to ensure data security and compliance with regulatory requirements. They can be applied to EMR clusters to enforce security best practices.
+
+    -   **Purpose**:
+        -   Security configurations define encryption settings, authentication mechanisms, and network policies to safeguard data processed by EMR.
+    -   **Key Elements**:
+        1. **Encryption**:
+            - **At Rest**: Data stored in S3, HDFS, or EBS volumes can be encrypted.
+            - **In Transit**: Secure communication between cluster nodes using TLS.
+        2. **Authentication**:
+            - Kerberos integration can be used for secure authentication and authorization.
+        3. **Access Control**:
+            - IAM roles and policies manage who can access and perform actions on the cluster.
+        4. **Data Governance**:
+            - AWS Lake Formation or AWS Glue Data Catalog can be used to enforce fine-grained access control.
+    -   **Configuration**:
+        -   Defined during cluster setup via the **Security Configuration** feature in the AWS Management Console.
+    -   **Compliance**:
+        -   Helps meet regulatory requirements such as GDPR, HIPAA, or PCI DSS.
 
     </details>
 
@@ -3631,6 +2472,451 @@
         -   **MSK Connect:** A fully managed service for **Kafka Connect**, simplifying the deployment, management, and scaling of connectors to stream data between Kafka topics and other data stores (like S3, Amazon OpenSearch Service, or databases).
         -   **MSK Replicator:** Enables seamless, continuous replication of topics across two different MSK clusters (even across AWS Regions) for disaster recovery, data migration, or creating multi-region architectures.
         -   **AWS Service Integrations:** Works natively with services like **AWS Lambda** for event-driven processing, **Amazon S3** for data archival, **AWS Glue** for schema management, and **Amazon Managed Service for Apache Flink** for stream processing.
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">AWS Glue</summary>
+
+    [AWS Glue ETL scripts in PySpark](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python.html)
+
+    AWS Glue is a fully managed extract, transform, and load (ETL) service provided by Amazon Web Services (AWS). It offers a range of features and components for building and managing data integration workflows. Here's an explanation of the terms and concepts used in AWS Glue:
+    AWS Glue is a fully managed ETL (Extract, Transform, Load) service that simplifies data preparation, transformation, and loading processes for analytics. It automates much of the work involved in data integration, providing a scalable platform for processing large data sets. Here are the main concepts in AWS Glue:
+
+    -   `ETL`: Stands for Extract, Transform, and Load. It refers to the process of extracting data from various sources, transforming it into a desired format, and loading it into a target destination, such as a data warehouse or data lake.
+    -   `Jobs`: In AWS Glue, jobs are ETL workflows that define the data transformation logic to be applied to datasets. Jobs are created using the Glue ETL language, which is based on Apache Spark. Jobs can perform various data processing tasks, such as filtering, aggregating, joining, and transforming data.
+    -   `Development Endpoints`: Development endpoints are AWS Glue resources that provide an environment for developing and testing ETL scripts and jobs. They allow developers to interactively write, debug, and run Glue ETL scripts using tools like Jupyter notebooks or integrated development environments (IDEs).
+    -   `Triggers`: Triggers are AWS Glue components used to schedule the execution of ETL jobs based on time or event triggers. They enable automation of data processing workflows by specifying when jobs should be run, such as hourly, daily, or in response to data arrival events.
+    -   `Schedulers`: Schedulers are AWS Glue components responsible for managing the execution and scheduling of ETL jobs. They ensure that jobs are executed according to the specified schedule, monitor job execution status, and handle job failures or retries.
+    -   `Connections`: Connections are AWS Glue resources used to define and store connection information for accessing external data sources, such as databases, data warehouses, or cloud storage services. They store connection parameters like endpoint URL, port number, authentication credentials, and encryption settings.
+    -   `Security and Access Control`: AWS Glue provides features for managing security and access control to data and resources. It integrates with AWS `IAM` (Identity Access Management) to control user access to Glue resources, enforce permissions, and audit user actions. Glue also supports encryption of data at rest and in transit for enhanced security.
+    -   `Serverless Architecture`: AWS Glue is built on a serverless architecture, which means that users do not need to provision or manage any infrastructure. AWS Glue automatically scales resources up or down based on demand, allowing users to focus on building and managing data integration workflows without worrying about underlying infrastructure.
+
+    #### Data Catalog
+
+    The **AWS Glue Data Catalog** is a centralized metadata repository that stores information about data sources. It is a key component of AWS Glue, providing a catalog of data for discovery, querying, and processing.
+    The AWS Glue Data Catalog is a central metadata repository that stores metadata information about datasets, tables, and schemas. It provides a unified view of the data assets within an organization and enables data discovery, querying, and analysis.
+    Data Catalog is the central metadata repository within AWS Glue. It acts as a unified metadata repository for all your data sources and stores metadata about data structures and schema. Here are its key features and concepts:
+
+    -   `Metadata Storage`: Stores information such as table definitions, schemas, and locations of data in S3, RDS, Redshift, and other sources.
+    -   `Centralized Repository`: Provides a single place to store and access metadata, making it easy to discover and manage data.
+    -   `Automatic Schema Discovery`: Works with Crawlers to automatically infer and catalog the schema of your data.
+    -   `Integration with AWS Services`: Integrates seamlessly with AWS services like Amazon Athena, Amazon Redshift Spectrum, and Amazon EMR for querying and analysis.
+    -   **Features**:
+        -   Stores **table definitions**, schema information, and metadata for data sources (e.g., S3, RDS, Redshift).
+        -   Automatically crawls data sources to extract metadata.
+        -   Provides a unified view of data across different data stores.
+        -   Integrated with services like **Amazon Athena** and **Amazon Redshift Spectrum** for querying.
+
+    #### Crawlers
+
+    A **crawler** in AWS Glue is used to automatically scan data stores and extract metadata to populate the Glue Data Catalog. Crawlers determine the schema of the data and create or update tables in the Data Catalog.
+    Crawlers are AWS Glue components used to automatically discover and catalog data stored in various data sources, such as Amazon S3, Amazon RDS, Amazon Redshift, and databases hosted on-premises or in other cloud platforms. Crawlers analyze data in these sources, infer its schema, and create metadata entries in the Glue Data Catalog.
+    Crawlers are components in AWS Glue that automate the process of discovering and cataloging data. Crawlers traverse your data sources, inspect the data, and infer the schema to populate the Data Catalog. Key aspects include:
+
+    -   `Schema Inference`: Automatically determines the structure of your data, such as tables and columns.
+    -   `Data Source Detection`: Can work with various data sources including S3, RDS, DynamoDB, and more.
+    -   `Scheduled Runs`: Can be scheduled to run at regular intervals to keep the Data Catalog up-to-date with changes in the data.
+    -   `Output`: Creates or updates tables in the Data Catalog with the inferred schema and metadata.
+
+    -   **Features**:
+        -   Can crawl structured and semi-structured data in **Amazon S3**, **RDS**, **DynamoDB**, and other sources.
+        -   Automatically infers the schema, partitions, and formats of the data.
+        -   Supports custom classifiers for non-standard data formats.
+
+    #### Classifiers
+
+    Classifiers are AWS Glue components used to classify the format and structure of data files. They analyze the content of data files and determine their file format, compression type, and schema. Glue provides built-in classifiers for common file formats like CSV, JSON, Parquet, and Avro, as well as custom classifiers for proprietary formats.
+    A **classifier** in AWS Glue is a rule that determines the format and structure of a data source, such as CSV, JSON, or Parquet.
+
+    -   Classifiers in AWS Glue help Crawlers understand the structure of your data. They determine the schema of the data by recognizing patterns in the data files. Classifiers can be predefined or custom:
+
+    -   `Built-in Classifiers`: AWS Glue comes with a set of built-in classifiers for common file types like JSON, CSV, Parquet, Avro, etc.
+    -   `Custom Classifiers`: You can create custom classifiers using grok patterns, JSONPath, or XML tags to handle specific data formats.
+    -   `Pattern Matching`: Classifiers use pattern matching to determine how to parse and structure the data.
+    -   `Integration with Crawlers`: Crawlers use these classifiers to infer the schema of your data and create corresponding tables in the Data Catalog.
+
+    -   **Features**:
+        -   AWS Glue comes with built-in classifiers for common file formats.
+        -   You can create **custom classifiers** to handle non-standard or proprietary data formats.
+
+    #### Glue ETL Jobs
+
+    An **ETL job** in AWS Glue defines the process of extracting data from a source, transforming it based on business logic, and loading it into a destination (e.g., S3, Redshift, RDS).
+
+    -   **Types of Jobs**:
+
+        -   **Python or PySpark Scripts**: Glue jobs typically run Python or PySpark scripts to process and transform data.
+        -   **Spark-based ETL**: AWS Glue runs on **Apache Spark** under the hood for large-scale data processing.
+
+    -   **Job Creation**:
+        -   AWS Glue can automatically generate ETL code using its **Job Wizard**, based on the source and target data schemas.
+        -   Users can write custom transformation logic in **PySpark** or **Python**.
+
+    #### Glue Triggers
+
+    **Triggers** in AWS Glue are used to automate the start of jobs based on a schedule or event.
+
+    -   **What is an AWS Glue Trigger?**
+
+        -   An AWS Glue Trigger is a mechanism to start Glue Jobs or Crawlers automatically based on:
+
+            -   A schedule (time-based)
+            -   A manual action (on-demand)
+            -   Or dependent job/crawler completion status (conditional)
+
+        -   Can be used independently or within Glue Workflows
+
+    -   **Glue Trigger Use Cases**
+
+        -   Start a job when a crawler completes
+        -   Start a job when a previous job succeeds/fails
+        -   Schedule a daily ETL pipeline at midnight
+        -   Launch a pipeline from an external event using an on-demand trigger
+
+    -   **Types of Triggers**
+
+        -   `SCHEDULED`: Runs automatically at a specified cron or rate expression
+        -   `ON_DEMAND`: Runs only when explicitly invoked via console, CLI, or SDK
+        -   `CONDITIONAL`: Fires when specified jobs or crawlers succeed/fail
+
+    -   **Trigger Components**
+
+        -   **Name**: Unique name for the trigger
+        -   **Type**: `SCHEDULED`, `ON_DEMAND`, or `CONDITIONAL`
+        -   **Actions**: List of Jobs or Crawlers to start when trigger fires
+        -   **Predicate**: For `CONDITIONAL` triggers, defines conditions like job success or failure
+        -   **Schedule**: For `SCHEDULED` triggers, uses cron or rate expressions
+        -   **WorkflowName**: Associates the trigger with a Workflow (optional)
+        -   **StartOnCreation**: If `True`, starts trigger right after creation
+        -   **State**: `ACTIVE` or `INACTIVE`
+        -   **Description**: Optional description
+
+    -   **Example: Conditional Trigger**
+
+        ```json
+        {
+            "Name": "trigger-after-job-a",
+            "Type": "CONDITIONAL",
+            "Actions": [{ "JobName": "job-b" }],
+            "Predicate": {
+                "Conditions": [
+                    {
+                        "LogicalOperator": "EQUALS",
+                        "JobName": "job-a",
+                        "State": "SUCCEEDED"
+                    }
+                ]
+            }
+        }
+        ```
+
+    -   **Example: Scheduled Trigger**
+
+        ```json
+        {
+            "Name": "daily-trigger",
+            "Type": "SCHEDULED",
+            "Schedule": "cron(0 0 * * ? *)",
+            "Actions": [{ "JobName": "daily-etl-job" }]
+        }
+        ```
+
+    -   **Lifecycle of a Trigger**
+
+        -   **Create**: Via Console, CLI, or SDK (e.g., `create_trigger()` in boto3)
+        -   **Activate**: Call `start_trigger()` if not `StartOnCreation`
+        -   **Execute**: Trigger fires when condition is met
+        -   **Disable/Delete**: Use `update_trigger()` or `delete_trigger()`
+
+    -   **Trigger Status and Monitoring**
+
+        -   Monitor in AWS Glue Console under Triggers
+        -   Track job logs in CloudWatch Logs
+        -   Use AWS CloudTrail to trace API calls
+
+    -   **IAM Permissions Needed**
+
+        ```json
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:CreateTrigger",
+                "glue:StartTrigger",
+                "glue:GetTrigger",
+                "glue:DeleteTrigger",
+                "glue:UpdateTrigger"
+            ],
+            "Resource": "*"
+        }
+        ```
+
+    -   **Integration with Workflows**
+
+        -   Triggers define orchestration in Glue Workflows
+        -   Each trigger is a node in the visual graph
+        -   Use `Predicate.Conditions` to define dependencies
+
+    -   **Testing Triggers**
+
+        -   **On-demand**: Call `start_trigger()`
+        -   **Conditional**: Manually run dependency and watch behavior
+        -   **Scheduled**: Use `rate(5 minutes)` for quick testing
+
+    -   **Common Issues**
+
+        -   **Trigger not firing**: State is `INACTIVE` or `StartOnCreation` was `False`
+        -   **Conditional trigger not working**: Misconfigured predicate
+        -   **Scheduled trigger not working**: Invalid cron expression
+        -   **IAM permission errors**: Missing required Glue permissions
+
+    -   **Summary Cheat Sheet**
+
+        -   `Trigger`: A mechanism to start jobs/crawlers automatically
+        -   `Type`: ON_DEMAND, SCHEDULED, CONDITIONAL
+        -   `Actions`: Jobs or crawlers to run
+        -   `Predicate`: Dependencies on job/crawler result
+        -   `WorkflowName`: Optional Glue Workflow association
+        -   `State`: ACTIVE or INACTIVE
+
+    #### Glue Workflows
+
+    AWS Glue Workflow is a managed orchestration feature that allows you to define a data pipeline composed of AWS Glue jobs, crawlers, and triggers, and to manage their execution order in a visual, DAG-like (Directed Acyclic Graph) interface.
+    A workflow in AWS Glue is a set of interconnected actions executed in a specified order. It helps automate the orchestration of multiple AWS Glue jobs and crawlers, allowing for a streamlined ETL process.
+    A **workflow** in AWS Glue is a collection of jobs, crawlers, and triggers organized in a directed acyclic graph (DAG) that defines the sequence of tasks.
+
+    -   **Workflow**
+
+        -   A **container** for defining, managing, and monitoring complex ETL pipelines.
+        -   It orchestrates multiple components like Jobs, Crawlers, and Triggers in a **logical sequence**.
+
+    -   **Workflow Graph**
+
+        -   A **visual representation** of your pipeline in the AWS Console.
+        -   It shows the **dependencies** and **execution flow** between different entities (e.g., Job A → Trigger → Job B).
+
+    -   **Workflow Run**
+
+        -   Represents a **single execution instance** of a workflow.
+        -   Every time you start a workflow manually or by trigger, a new **run ID** is generated.
+
+    -   **Workflow Run Properties**
+
+        -   Key-value pairs (e.g., `{"S3_BUCKET": "my-bucket", "JOB_NAME": "etl_job"}`) that can be **passed between nodes** (job/crawler).
+        -   Used to **parameterize Jobs** and **track lineage** across runs.
+
+    -   **Conditional Trigger**
+
+        -   Triggered when **specified conditions are met** (e.g., job succeeded/failed).
+        -   You can chain multiple jobs/crawlers based on previous outcomes.
+
+    -   **Start and End Nodes**
+
+        -   Every workflow begins with a **Start trigger** and ends when **all branches** are completed.
+        -   You can **manually define the Start trigger** or let AWS Glue infer it.
+
+    -   **Error Handling & Monitoring**
+
+        -   Errors during a workflow run can be captured and rerouted.
+        -   Glue integrates with **CloudWatch Logs** and **CloudWatch Events** for logging and monitoring.
+
+    -   **Best Practices**
+
+        -   **Use run properties** to avoid hardcoding values in your scripts.
+        -   **Isolate failed components** with conditional triggers.
+        -   **Combine with Step Functions** for hybrid orchestration if needed.
+        -   **Tag and document each workflow** for observability and cost tracking.
+
+    #### Glue Connection
+
+    A **connection** in AWS Glue is used to define how AWS Glue interacts with external data sources (e.g., relational databases, data warehouses).
+
+    -   **Features**:
+        -   Supports a variety of connection types, such as **JDBC** connections to relational databases (RDS, Redshift).
+        -   Allows for secure access to data sources with VPC-based security configurations.
+
+    #### Glue Studio
+
+    AWS Glue **Studio** is a graphical interface for building, running, and monitoring ETL jobs.
+
+    -   **Features**:
+        -   Provides a drag-and-drop interface for creating ETL workflows without needing to write code.
+        -   Users can visually define the data flow and the transformations required on the data.
+
+    #### Glue DataBrew
+
+    AWS Glue DataBrew is a powerful visual data preparation tool designed to simplify the process of cleaning, transforming, and analyzing data. It is part of the AWS Glue ecosystem, which provides a serverless environment for data integration, ETL (Extract, Transform, Load), and analytics.
+
+    AWS Glue DataBrew is a fully managed, no-code data preparation service that enables users to clean, transform, and visualize data without writing any code. DataBrew provides a simple, interactive interface to work with data from various sources, perform data transformations, and prepare the data for analysis or machine learning (ML).
+
+    -   **Key Features**:
+
+        -   `Visual Interface`: A drag-and-drop interface for data transformation and cleaning.
+        -   `Pre-built transformations`: Over 250 built-in transformations to handle common data preparation tasks such as data cleaning, filtering, grouping, and more.
+        -   `Data Profiling`: Provides insights into your data’s quality, distribution, and patterns.
+        -   `Data Exploration`: Easy data exploration features to inspect and filter datasets interactively.
+        -   `Integrated with AWS Services`: Integrates well with AWS analytics and machine learning services like Amazon S3, Amazon Redshift, Amazon RDS, and AWS Glue.
+
+    -   **Projects**: A DataBrew project allows you to create, manage, and organize data transformation tasks. A project contains the following:
+
+        -   `Dataset`: The data you’re working on.
+        -   `Recipe`: A series of transformations applied to the dataset.
+        -   `Profile and Data Visualizations`: Insights into the dataset, like distributions, missing values, and outliers.
+
+        -   Projects allow users to experiment with and refine transformations before creating a recipe or final output.
+
+    -   **Datasets**: Datasets in DataBrew represent the data you want to transform and prepare for analysis. These datasets can come from a variety of sources such as Amazon S3, Amazon RDS, Amazon Redshift, Amazon Athena, and Amazon DynamoDB
+
+        -   When you create a dataset in DataBrew, you specify the data source, and DataBrew automatically ingests the data into the workspace for transformation.
+
+    -   **Recipes**: Recipes are a set of transformations applied to datasets. You can think of a recipe as a step-by-step guide for cleaning and transforming data. Recipes are reusable, meaning you can apply them to other datasets for similar transformations. Common transformations include:
+
+        -   `Cleaning`: Removing duplicates, handling missing values, or fixing incorrect data types.
+        -   `Normalization`: Scaling or standardizing numerical values.
+        -   `Filtering`: Removing outliers or unnecessary rows based on specified conditions.
+        -   `Column Operations`: Adding new columns, renaming, or dropping columns.
+        -   `Grouping and Aggregation`: Summarizing data by applying functions like sum, average, etc.
+        -   `Joins`: Merging data from different datasets.
+
+    -   **Transformation Steps**: Each recipe consists of multiple **transformation steps**, which can be executed one after another. These steps can be added using the visual interface, and each step is an operation performed on your dataset. Transformation steps include:
+
+        -   `Built-in Functions`: DataBrew provides over 250 predefined functions that cover common operations like filtering, aggregation, string manipulations, and more.
+        -   `Custom Expressions`: You can also define custom expressions using a formula editor for advanced transformations.
+        -   `Data Type Conversions`: Automatically convert columns to the right data types (e.g., from string to date).
+
+    -   **Data Profiling**: Data profiling is the process of inspecting a dataset to understand its quality and distribution. AWS Glue DataBrew automatically analyzes the dataset to provide a profile that includes:
+
+        -   `Column statistics`: Counts, averages, min/max values, and unique counts.
+        -   `Data Quality Indicators`: Missing values, duplicates, and outliers.
+        -   `Data Distribution`: Histograms, value distributions, and data patterns.
+
+        -   These insights help you understand the state of your data before performing transformations.
+
+    -   **Schedules**: You can schedule the execution of recipes to run periodically or based on specific events. Scheduling is useful when you need to automate data transformations or refresh datasets regularly. You can set up scheduled jobs to:
+
+        -   Run recipes on a defined frequency (e.g., daily, weekly).
+        -   Execute upon the arrival of new data in an S3 bucket or another source.
+
+    -   **Outputs**: After running a recipe on a dataset, you’ll want to store or output the transformed data. AWS Glue DataBrew supports several output options:
+
+        -   `Amazon S3`: Output data can be stored as CSV, Parquet, JSON, or other formats.
+        -   `Amazon Redshift`: You can write the output directly into a Redshift data warehouse.
+        -   `Amazon RDS`: Results can also be written back to RDS instances.
+        -   `AWS Glue Data Catalog`: The results of transformations can be registered in the AWS Glue Data Catalog, allowing you to use the data in other services like Athena, Redshift Spectrum, or Amazon EMR.
+
+    -   **Job Execution**: Once a recipe has been created, you can turn it into an **AWS Glue Job**. Jobs execute the recipe on a dataset and produce the output. You can monitor the progress of jobs, view logs, and track performance.
+
+    -   **DataBrew Workflow**: The typical workflow in AWS Glue DataBrew involves the following steps:
+
+        -   `Data Ingestion`: First, you connect to your data source (e.g., S3, Redshift, RDS, or Athena) and create a dataset.
+        -   `Data Exploration and Profiling`: Explore the data by inspecting the columns, missing values, and distributions. Use profiling to understand data quality and potential issues.
+        -   `Data Transformation`: Create a project and apply transformations to the dataset using recipes. DataBrew provides visual tools to apply these transformations.
+        -   `Data Output`: After applying transformations, you can output the clean data to Amazon S3, Redshift, or other services.
+        -   `Automation`: Optionally, schedule jobs to automate data processing workflows.
+
+    -   **Security & Access Control**: AWS Glue DataBrew integrates with AWS Identity and Access Management (IAM) to manage user permissions. You can specify which users or roles can access specific datasets, projects, and recipes. Additionally, it integrates with AWS Key Management Service (KMS) for data encryption and ensures that data privacy and access control are enforced.
+
+    -   **Security Features**:
+
+        -   **IAM-based access control** for granular user permissions.
+        -   **Encryption** of data at rest and in transit.
+        -   **Audit logging** through AWS CloudTrail for monitoring user activity.
+
+    -   **Pricing**: AWS Glue DataBrew is priced based on two primary factors:
+        -   `Data Processing`: You are charged for the time that DataBrew spends processing your datasets, typically based on the number of data rows and transformation complexity.
+        -   `Job Execution`: You are also charged for the execution of Glue Jobs based on compute usage.
+
+    #### Glue Job Bookmarks
+
+    **Job bookmarks** in AWS Glue are used to track the processing state of jobs. This allows AWS Glue to process only new or updated data since the last run, making ETL jobs more efficient.
+
+    -   **Features**:
+        -   Tracks previously processed data to avoid reprocessing.
+        -   Can be used to incrementally process data from sources such as S3 or relational databases.
+
+    #### Glue DynamicFrames
+
+    A **DynamicFrame** is an extension of the Apache Spark DataFrame, designed specifically for AWS Glue. It allows for more flexible data transformations by providing support for semi-structured data.
+
+    -   **Features**:
+        -   **Schema flexibility**: Can handle missing or inconsistent data without enforcing a strict schema.
+        -   **Ease of transformation**: Includes built-in functions for transforming and cleaning data.
+
+    #### Glue Partitions
+
+    AWS Glue supports **partitioning** of data to improve query performance. Partitioning splits data into smaller chunks based on specific keys (e.g., date, region).
+
+    -   **Features**:
+        -   Reduces the amount of data scanned for queries or ETL jobs.
+        -   Useful when working with large datasets in Amazon S3 or other distributed storage systems.
+
+    #### Glue Dev Endpoints
+
+    A **Glue Dev Endpoint** allows you to interactively develop and test ETL scripts using **Apache Zeppelin** notebooks or IDEs like **PyCharm**.
+
+    -   **Features**:
+        -   Provides an interactive development environment for testing PySpark scripts.
+        -   Can be used to connect to AWS Glue Data Catalog and run jobs in a development setting before deploying them to production.
+
+    #### AWS Glue Data Lakes
+
+    Glue integrates with **data lakes** for data cataloging, processing, and querying. Data lakes store large amounts of structured and unstructured data.
+
+    -   **Integration with AWS Lake Formation**: AWS Glue works seamlessly with AWS Lake Formation for creating, managing, and securing a data lake.
+
+    #### Glue Transformations
+
+    AWS Glue provides several built-in transformations to clean and prepare data:
+
+    -   **Mapping**: Apply transformations to fields (e.g., renaming, converting data types).
+    -   **Filtering**: Exclude or include rows based on specific conditions.
+    -   **Joining**: Join datasets based on a common key.
+    -   **Aggregating**: Perform aggregate functions (e.g., sum, average) on datasets.
+
+    #### Glue Metrics and Logging
+
+    AWS Glue provides detailed logging and monitoring of ETL jobs:
+
+    -   **Amazon CloudWatch**: Monitor job logs, performance metrics, and failures in real time.
+    -   **Job Metrics**: Provides information on job execution time, processed data volume, and errors.
+
+    Monitoring AWS Glue jobs through AWS CloudWatch is crucial for ensuring data pipelines run efficiently and reliably. Here are some key AWS Glue metrics that can be monitored in CloudWatch:
+
+    1. **Job Metrics**
+
+        - **`Glue.JobRunsSucceeded`**: The number of Glue job runs that have succeeded.
+        - **`Glue.JobRunsFailed`**: The number of Glue job runs that have failed.
+        - **`Glue.JobRunsStopped`**: The number of Glue job runs that have been manually stopped.
+        - **`Glue.JobRunsTimeout`**: The number of Glue job runs that have timed out.
+        - **`Glue.JobRunTime`**: The amount of time a Glue job took to execute (in milliseconds).
+        - **`Glue.ConcurrentRunsExceeded`**: The number of jobs that couldn't start because the concurrent job run limit was exceeded.
+
+    2. **Crawler Metrics**
+
+        - **`Glue.CrawlerSucceeded`**: The number of crawlers that succeeded.
+        - **`Glue.CrawlerFailed`**: The number of crawlers that failed.
+        - **`Glue.CrawlerStopped`**: The number of crawlers that were stopped.
+        - **`Glue.CrawlerRunTime`**: The time taken for the crawler to complete its task (in milliseconds).
+
+    3. **Data Quality Metrics**
+
+        - **`Glue.RowsWritten`**: Number of rows written by a Glue job to a target.
+        - **`Glue.RowsRead`**: Number of rows read by a Glue job from the source.
+        - **`Glue.DPUHours`**: The aggregate DPU (Data Processing Unit) hours used by Glue jobs.
+
+    4. **Partition Metrics**
+
+        - **`Glue.PartitionsCreated`**: The number of partitions that Glue created in the catalog.
+        - **`Glue.PartitionsDeleted`**: The number of partitions deleted in the catalog.
+
+    5. **Error Handling and Exceptions**
+        - **`Glue.Errors`**: The number of errors that occurred during job execution.
+        - **`Glue.ResourceErrors`**: Errors related to insufficient resources (memory, DPUs, etc.).
+        - **`Glue.CodeErrors`**: Errors caused by problems in the job code.
+        - **`Glue.ServiceErrors`**: Errors related to AWS Glue service failures.
+
+    These metrics provide insights into job performance, resource usage, and errors, which help in proactive monitoring and troubleshooting.
 
     </details>
 
