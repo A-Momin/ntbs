@@ -270,6 +270,8 @@
     -   `$ pip3 help` → Prints out all the availabel commands can be used in conjunction with pip3.
     -   `$ pip3 <comand_name> help | -h` → Apply help command to the specified pip command. Ex. pip3 install -h. NOTE: The vertical var, '|', indicate 'OR'
     -   `$ pip3 help install` → Provide help with pip3 'install' command.
+    -   `$ pip3 index version strawberry-graphql -i https://artifacts.jpmchase.net/artifactory/api/pypi/pypi/simple/` → 
+    -   `$ pip3 index version strawberry-graphql -i https://pypi.org/simple` → 
 
     -   `$ pip3 show <package_name>`
     -   `$ pip3 show numpy`
@@ -767,13 +769,16 @@
     -   [UV for Python… (Almost) All Batteries Included](https://www.youtube.com/watch?v=qh98qOND6MI)
 
     -   `$ brew install uv` → Installs the [`uv`](https://github.com/astral-sh/uv) package manager via Homebrew on macOS. `uv` is a fast Python package manager built in Rust by Astral.
-    -   `$ uv python install 3.11.11` → Downloads and installs **Python 3.11.11** via `uv`’s environment manager.
     -   `$ uv python list --only-installed` → Lists all installed Python versions managed by `uv`.
-    -   `$ uv python pin` →
-    -   `$ uv python pin -h` →
-    -   `$ uv python dir` →
-    -   `$ uv python find` →
-    -   `$ uv python uninstall` →
+    -   `$ uv python list` -> List the available Python installations
+    -   `$ uv python install` -> Download and install Python versions
+    -   `$ uv python install 3.11.11` → Downloads and installs **Python 3.11.11** via `uv`’s environment manager.
+    -   `$ uv python upgrade` -> Upgrade installed Python versions
+    -   `$ uv python find` -> Search for a Python installation
+    -   `$ uv python pin` -> Pin to a specific Python version
+    -   `$ uv python dir` -> Show the uv Python installation directory
+    -   `$ uv python uninstall` -> Uninstall Python versions
+    -   `$ uv python update-shell` -> Ensure that the Python executable directory is on the PATH
 
     -   `$ uv init --no-workspace` → Initializes a new Python project **without a workspace layout**, creating basic project files like `pyproject.toml`.
     -   `$ uv tool dir` → Prints the directory path where `uv` stores tool environments (e.g., virtual environments or tool-specific envs).
@@ -786,8 +791,32 @@
     -   `$ uv sync --upgrade` → upgrade and sync environmnet with any changes.
     -   `$ uv add --dev ipykernel` → Adds `ipykernel` as a **development dependency**, useful for running Jupyter notebooks or using IPython.
 
-    -   `$ uv `
-    -   `$ uv `
+    -   `$ uv sync --upgrade`
+    -   `$ uv sync --dry-run` -> Perform a dry run, without writing the lockfile or modifying the project environment.
+    -   `$ uv sync --dev`
+    -   `$ uv sync --strict`
+    -   `$ uv tree`
+    -   `$ uv lock`
+    -   `$ uv lock --check` -> Check if the lockfile is up-to-date.
+    -   `$ uv cache clean` -> Clear the cache, removing all entries or those linked to specific packages
+    -   `$ uv cache prune` -> Prune dangling cache entries and cached environments
+    -   `$ uv cache dir` -> Show the cache directory
+    -   `$ uv workspace metadata` -> View metadata about the current workspace
+    -   `$ uv workspace dir` -> Display the path of a workspace member
+    -   `$ uv workspace list` -> List the members of a workspace
+
+    -   `$ uv verion --bump bump[=value]` -> Update the project version using the given semantics. Possible values:
+
+        -   `major` -> Increase the major version (e.g., 1.2.3 => 2.0.0)
+        -   `minor` -> Increase the minor version (e.g., 1.2.3 => 1.3.0)
+        -   `patch` -> Increase the patch version (e.g., 1.2.3 => 1.2.4)
+        -   `stable` -> Move from a pre-release to stable version (e.g., 1.2.3b4.post5.dev6 => 1.2.3)
+        -   `alpha` -> Increase the alpha version (e.g., 1.2.3a4 => 1.2.3a5)
+        -   `beta` -> Increase the beta version (e.g., 1.2.3b4 => 1.2.3b5)
+        -   `rc` -> Increase the rc version (e.g., 1.2.3rc4 => 1.2.3rc5)
+        -   `post` -> Increase the post version (e.g., 1.2.3.post5 => 1.2.3.post6)
+        -   `dev` -> Increase the dev version (e.g., 1.2.3a4.dev6 => 1.2.3.dev7)
+
 
     #### Project Initialization
 
@@ -798,7 +827,6 @@
     -   `$ uv pip freeze > requirements.txt` -> create `requirements.txt` file from an activated `uv` environment.(How to integrate packages of a existing `uv` environment)
     -   `$ uv add -r requirements.txt` -> Integrate packages from an `requirements.txt` file into current project.
     -   `$ uv export --format requirements.txt --no-hashes --no-emit-project -o requirements.txt`
-    -   `$ uv export --format requirements-txt --no-hashes --no-emit-project -o requirements.txt`
     -   `$ uv `
 
     #### Creating & Using a virtual environment
@@ -815,8 +843,7 @@
     -   `$ uv pip list` → Lists all packages currently installed in the `uv` virtual environment along with their versions.
     -   `$ uv pip uninstall pandas` → Uninstalls the `pandas` package from the `uv` virtual environment.
     -   `$ uv pip freeze > requirements.txt` → Outputs all currently installed packages (with exact versions) in `requirements.txt` format and writes them to a `requirements.txt` file.
-    -   `$ uv sync --dev`
-    -   `$ uv sync --strict`
+    -   `$ uv sync --refresh`
     -   `$ rm -fr $UV/myvenv` -> Remove `myvenv` virtual environment.
     -   `$ `
 
@@ -832,8 +859,8 @@
         -   `$ uv pip install requests`
         -   `$ uv sync`
         -   `$ uv add --dev pytest`
-        -   `$ `
         -   `$ uv pip freeze | xargs uv pip uninstall`
+        -   `$ `
 
     -   **how to create `uv` venv from `uv.lock` or `pyproject.toml` file?**
 
