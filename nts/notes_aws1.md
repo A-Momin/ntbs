@@ -2239,7 +2239,6 @@
     > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
 
 
-
     <div align="center">
 
     ```mermaid
@@ -2248,14 +2247,22 @@
         LISTENER ||--o{ LISTENER_RULE : "has"
         LISTENER_RULE }o--|| TARGET_GROUP : "forwards to"
 
+        ECS_SERVICE ||--o{ SERVICE_TARGET_GROUP : "configures"
+        SERVICE_TARGET_GROUP }o--|| TARGET_GROUP : "references"
+        TARGET_GROUP ||--o{ ECS_TASK : "has registered target"
         ECS_SERVICE ||--o{ ECS_TASK : "manages"
-        TARGET_GROUP ||--o{ ECS_TASK : "registers"
 
         ECS_CLUSTER ||--o{ ECS_SERVICE : "contains"
         ECS_CLUSTER ||--o{ ECS_TASK : "runs"
     ```
     </div>
 
+    -   **NOTES**:
+        - The biggest thing to understand is that `SERVICE_TARGET_GROUP` is your own modeling entity, representing the ECS service's load-balancer configuration. It isn't an AWS resource with that literal name.
+        - one TARGET_GROUP can be destination of zero or many LISTENER_RULEs
+        - A task can be associated with a service (`ECS_SERVICE` ──► `ECS_TASK`).
+        - There can be standalone ECS tasks that aren't part of a service.
+            - That's why (`ECS_CLUSTER` → `ECS_TASK`) is useful independently of (`ECS_SERVICE` → `ECS_TASK`)
 
     -   <details><summary style="font-size: 25px;color:#C71585">Cluster</summary>
 
