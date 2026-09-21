@@ -435,25 +435,29 @@
         -   **Defining Types from Django Models in Strawberry**: When using `strawberry-django`, you can automatically map Django models to GraphQL types, saving significant boilerplate.
 
             ```python
-            from strawberry_django import type as django_type
+            import strawberry_django
             from .models import Book
 
-            @django_type(Book)
-            class BookType:
-                id: strawberry.ID
-                title: str
-                author: str
+            @strawberry_django.type(Comment)
+            class CommentType:
+                @strawberry_django.field
+                def clean_text(self) -> Optional[str]:
+                    if not self.text:
+                        return None
+
+                    value = self.text.strip()
+                    return value or None
             ```
 
         -   **Field-Level Resolvers with Django Model Auto-Types**: Even when using auto-types, you can override specific fields with custom logic. This is useful for calculated fields that don't exist in the database (e.g., a "full name" field).
 
             ```python
-            @django_type(Author)
+            @strawberry_django.type(Author)
             class AuthorType:
                 first_name: str
                 last_name: str
 
-                @strawberry.field
+                @strawberry_django.field
                 def full_name(self) -> str:
                     return f"{self.first_name} {self.last_name}"
             ```

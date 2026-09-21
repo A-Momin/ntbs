@@ -353,9 +353,10 @@
 
 -   <details><summary style="font-size:25px;color:Orange">VS Code Agentic Development Shortcuts</summary>
 
-    -   `/` -> Commands
+    -   `@ deva` -> Select Agent (`deva` in this case)
+    -   `/instruction_name` -> Commands
     -   `#` -> Add Context
-    -   `@` -> Extensions
+    -   `#attachment:text_file_name.txt` -> attach context to current chat
 
     -   Participents
     -   Agent Session

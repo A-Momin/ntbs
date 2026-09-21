@@ -2239,6 +2239,24 @@
     > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
 
 
+
+    <div align="center">
+
+    ```mermaid
+    erDiagram
+        LOAD_BALANCER ||--|{ LISTENER : "has"
+        LISTENER ||--o{ LISTENER_RULE : "has"
+        LISTENER_RULE }o--|| TARGET_GROUP : "forwards to"
+
+        ECS_SERVICE ||--o{ ECS_TASK : "manages"
+        TARGET_GROUP ||--o{ ECS_TASK : "registers"
+
+        ECS_CLUSTER ||--o{ ECS_SERVICE : "contains"
+        ECS_CLUSTER ||--o{ ECS_TASK : "runs"
+    ```
+    </div>
+
+
     -   <details><summary style="font-size: 25px;color:#C71585">Cluster</summary>
 
         > A **Cluster** is a logical grouping of the resources that run your containerized applications. It acts as the organizational boundary for your ECS components.
@@ -2252,6 +2270,20 @@
     -   <details><summary style="font-size: 25px;color:#C71585">Service (The Manager) </summary>
 
         > An **ECS Service** is a mechanism used to manage and ensures that a specified number of Tasks (instances of a Task Definition) are always running in the cluster.
+
+        <div align="center">
+
+        ```mermaid
+        erDiagram
+            ECS_SERVICE ||--o{ SERVICE_TARGET_GROUP : "configures"
+
+            SERVICE_TARGET_GROUP }o--|| TARGET_GROUP : "references"
+
+            TARGET_GROUP ||--o{ ECS_TASK : "registers"
+
+            ECS_SERVICE ||--o{ ECS_TASK : "manages"
+        ```
+        </div>
 
         -   **Core Responsibilities:**
             -   **Maintenance and Self-Healing:** The Service acts as a scheduler and manager. If a Task fails, stops, or becomes unhealthy for any reason, the Service automatically replaces it to maintain the **Desired Count** of running Tasks.
@@ -3055,8 +3087,8 @@
                 - `Example`: In ALB, rules can include host-based routing (e.g., `www.example.com`) or path-based routing (e.g., `/api`).
 
             - **Use Cases**:
-                - For ALB: You can configure a listener to route traffic for multiple services running on different paths or domains.
-                - For NLB: Use listeners to route traffic at a network level for high-throughput applications.
+                - **For ALB**: You can configure a listener to route traffic for multiple services running on different paths or domains.
+                - **For NLB**: Use listeners to route traffic at a network level for high-throughput applications.
 
         3. **Target Groups**: A Target Group is a configuration object used by Elastic Load Balancing (ELB) to route requests to one or more registered targets (e.g., `EC2 instances`, `Lambda functions`, `IP addresses`, or `ALB/NLB`). Target groups are central to how Application Load Balancers (ALBs) and Network Load Balancers (NLBs) direct traffic.
 
