@@ -817,9 +817,7 @@
 
     -   <details><summary style="font-size:20px;color:Magenta">Looping Techinque</summary>
 
-        In Terraform, multi-level looping requires combining a **flattening expression** (`flatten` with nested `for` loops) with `for_each`, or using **nested `dynamic` blocks** inside a resource. Below are two complete implementations demonstrating 2-level and 3-level looping using diverse collections (`map(object)`, `list(object)`, and `set`).
-
-        -   **Technique 1: 2-Level Looping (Flattening + `for_each`)**
+        1. **2-Level Looping (Flattening + `for_each`)**
 
             -   **Scenario:** You have a `map(object)` representing AWS VPCs, and inside each VPC is a `list(object)` of subnets. You need to flatten this structure so `for_each` can build individual `aws_subnet` resources.
             -   **Data Types Used:** `map(object)` parent containing a `list(object)` child.
@@ -892,7 +890,7 @@
 
             ```
 
-        -   **Technique 2: 3-Level Looping (Deep Flattening across 3 Data Types)**
+        2. **3-Level Looping (Deep Flattening across 3 Data Types)**
 
             -   **Scenario:** Deploy S3 Bucket Lifecycle Rules. You have a `list` of application configurations, where each app has a `map` of environments, and each environment contains a `set` of lifecycle rule types.
             -   **Data Types Used:** `list(object)` $\rightarrow$ `map(object)` $\rightarrow$ `set(string)`.
@@ -953,7 +951,7 @@
 
             ```
 
-        -   **Technique 3: 2-Level Nested `dynamic` Blocks**
+        3. **2-Level Nested `dynamic` Blocks**
 
             -   **Scenario:** Configure AWS WAFv2 Web ACLs or Security Groups where resources have nested block parameters. Here, an `aws_security_group` resource requires dynamic `ingress` blocks, and inside each `ingress` block, an optional nested `grant` block can be processed.
             -   **Data Types Used:** `map(object)` parent containing a `list(object)` nested parameter.
@@ -1002,15 +1000,15 @@
 
             ```
 
-        -   **Key Takeaways**
+        4. [`For Each`](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each):
 
-            1. **Unique Map Keys:** `for_each` requires a map or set with known, unique keys. When flattening multi-level collections, construct a composite key (e.g., `"${parent_key}-${child_key}"`).
-            2. **`flatten()` Function:** Use `flatten()` whenever you nest `for` expressions `[...]` inside each other.
-            3. **`dynamic` Blocks:** Reserve nested dynamic blocks for resources that native schema hierarchy calls for (like CloudFront Origins, WAF Rules, or Security Groups). Avoid overusing them if flattening into separate resources is cleaner.
+            -   The for_each meta-argument accepts a **map** or a **set of strings** and creates an instance for each item in that map or set.
+            -   Terraform creates an additional `each` object that you can use in expressions to modify the configuration of each instance. This object has the following attributes:
 
-        3. `For Each`:
+                -   `each.key` -> The `map key` or `set member` corresponding to this instance.
+                -   `each.value` -> The map value corresponding to this instance. **If a set is provided, this is the same as `each.key`**.
 
-            - The for_each expression is used for resource iteration. Example:
+
 
             ```ini
             # Use for_each to create multiple instances of an AWS EC2 instance
@@ -1090,6 +1088,24 @@
                 }
             }
             ```
+
+        5. [`count`](https://developer.hashicorp.com/terraform/language/meta-arguments/count):
+
+            -   You can add the count argument to resource, module, and ephemeral blocks to create and manage multiple instances of each without writing a separate block for each instance.
+            -   When a resource or module block includes a count argument whose value is a whole number, Terraform creates that many instances.
+            -   When count appears in an action block, Terraform invokes the action the number of specified times.
+            -   The count meta-argument accepts a whole number and either creates as many instances of the resource or module or invokes an action as many times. Terraform identifies instances **index number starting at 0**.
+            -   In blocks where count is set, Terraform creates an additional count object that you can use in expressions to modify the configuration of each instance. This object has the following attribute:
+                -   `count.index` -> The distinct index number starting with 0 corresponding to this instance.
+
+        -   **Key Takeaways**:
+
+            1. **Unique Map Keys**: `for_each` requires a map or set with known, unique keys. When flattening multi-level collections, construct a composite key (e.g., `"${parent_key}-${child_key}"`).
+            2. **`flatten()` Function**: Use `flatten()` whenever you nest `for` expressions `[...]` inside each other.
+            3. **`dynamic` Blocks**: Reserve nested dynamic blocks for resources that native schema hierarchy calls for (like CloudFront Origins, WAF Rules, or Security Groups). Avoid overusing them if flattening into separate resources is cleaner.
+            4 **Choose between `count` and `for_each`**: `count` and `for_each` perform a similar function. Use the `count` argument when you want to create nearly identical instances. Use `for_each` when some instance arguments must have distinct values that can't be directly derived from an integer index. 
+
+
         </details>
 
     -   <details><summary style="font-size:20px;color:Magenta">Control Flow</summary>

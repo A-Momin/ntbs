@@ -2249,7 +2249,7 @@
 
         ECS_SERVICE ||--o{ SERVICE_TARGET_GROUP : "configures"
         SERVICE_TARGET_GROUP }o--|| TARGET_GROUP : "references"
-        TARGET_GROUP ||--o{ ECS_TASK : "has registered target"
+        TARGET_GROUP ||--o{ ECS_TASK : "has registered"
         ECS_SERVICE ||--o{ ECS_TASK : "manages"
 
         ECS_CLUSTER ||--o{ ECS_SERVICE : "contains"
@@ -2258,8 +2258,8 @@
     </div>
 
     -   **NOTES**:
-        - The biggest thing to understand is that `SERVICE_TARGET_GROUP` is your own modeling entity, representing the ECS service's load-balancer configuration. It isn't an AWS resource with that literal name.
-        - one TARGET_GROUP can be destination of zero or many LISTENER_RULEs
+        - `SERVICE_TARGET_GROUP` is my custom modeling entity, representing the ECS service's load-balancer configuration. It isn't an AWS resource with that literal name.
+        - one `TARGET_GROUP` can be destination of zero or many `LISTENER_RULE`s
         - A task can be associated with a service (`ECS_SERVICE` ──► `ECS_TASK`).
         - There can be standalone ECS tasks that aren't part of a service.
             - That's why (`ECS_CLUSTER` → `ECS_TASK`) is useful independently of (`ECS_SERVICE` → `ECS_TASK`)
@@ -2346,37 +2346,127 @@
 
     -   <details><summary style="font-size: 25px;color:#C71585">Task Placement Constraints & Task Placement Strategies</summary>
 
-        ##### Task Placement Constraints
+        -   **NOTE**: ECS task **placement constraints** and **placement strategies** are primarily an **EC2 launch type**/**ECS on EC2** placement concept. AWS explicitly says **they are not supported for Fargate** tasks.
 
-        > **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement.
+        ```mermaid
+        flowchart TD
+            A[ECS Service] --> B{Is it Fargate?}
 
-        | Constraint             | Description                                                                        | Use Case                                                                                   |
-        | :--------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-        | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
-        | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
+            B -->|YES| C[Don't use placement<br/>strategies or constraints]
 
-        ##### Task Placement Strategies
+            B -->|NO| D[EC2 / Managed Instances]
 
-        > **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
+            D --> E{Do you have a hard<br/>placement requirement?}
 
-        | Strategy      | Goal                                                                                                             | Use Case                                                                                                   |
-        | :------------ | :--------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
-        | **`binpack`** | Maximize resource utilization by placing tasks on the instance with the least available memory or CPU.           | Cost optimization: Consolidate tasks to minimize the number of running instances.                          |
-        | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
-        | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
+            E -->|YES| F[Use Placement Constraint]
+
+            E -->|NO| G[Use Placement Strategy]
+
+            F --> H{Constraint type}
+
+            H -->|memberOf| I[memberOf<br/>Restrict to matching<br/>container instances]
+
+            H -->|distinctInstance| J[distinctInstance<br/>Place each task on a<br/>different instance]
+
+            G --> K{Strategy type}
+
+            K -->|spread| L[spread<br/>Distribute tasks evenly]
+
+            K -->|binpack| M[binpack<br/>Pack tasks using<br/>CPU or memory]
+
+            K -->|random| N[random<br/>Random placement]
+
+            L --> O[Example:<br/>attribute:ecs.availability-zone]
+
+            M --> P[Example:<br/>cpu or memory]
+        ```
+
+        -   **The mental model**: When ECS needs to place a task on EC2 capacity, think of the process as:
+
+            ```txt
+            ECS Service
+                │
+                │ desired_count = 6
+                ▼
+            "Where can I put these tasks?"
+                │
+                ├── 1. Task requirements
+                │      CPU / memory / ports / etc.
+                │
+                ├── 2. Placement constraints
+                │      "WHERE am I ALLOWED to place it?"
+                │
+                └── 3. Placement strategies
+                    "AMONG the allowed instances,
+                        HOW should I distribute them?"
+            ```
+
+            -   AWS describes essentially this sequence: ECS first identifies instances satisfying task resource requirements, then constraints, then placement strategies, and finally selects the instance.
+            -   **Useful distinction**: AWS calls constraints binding, while strategies are best-effort. A constraint can prevent placement entirely; a strategy does not necessarily prevent placement if the ideal placement isn't available.
+                -   **Constraint** -> **Must be true**.
+                -   **Strategy** -> **Prefer this placement pattern**.
+
+        -   **Task Placement Constraints**: **Constraints** are _hard-and-fast rules_ used to filter the list of eligible Container Instances. An instance must meet all specified constraints to be considered for task placement. If no container satisfy them, the task cannot be placed (remain pendding)
+
+            | Constraint             | Description                                                                        | Use Case                                                                                   |
+            | :--------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+            | **`distinctInstance`** | Ensures that each running copy of a task is placed on a unique Container Instance. | Achieve high availability by preventing two tasks from failing due to a single host issue. |
+            | **`memberOf`**         | Places tasks only on instances that satisfy an expression.                         | Run tasks only on instances with a specific instance type (`t2.*`) or custom attribute.    |
+
+        -   **Task Placement Strategies**: **Strategies** are _algorithms_ used to select the final instance from the list of eligible instances remaining after the constraints have been applied. They define _how_ tasks are distributed.
+
+            -   AWS explicitly **supports multiple strategies** and evaluates them in the specified order.
+                1. First, distribute tasks across AZs.
+                2. Within that distribution, pack tasks efficiently based on memory.
+
+            | Strategy      | Goal                                                                                                             | Use Case                                                                                                   |
+            | :------------ | :--------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+            | **`binpack`** | Maximize resource utilization by placing tasks on the instance with the least available memory or CPU.           | Cost optimization: Consolidate tasks to minimize the number of running instances.                          |
+            | **`spread`**  | Distribute tasks evenly across a specified attribute (e.g., Availability Zone, instanceId, or custom attribute). | High availability and fault tolerance: Ensure that a failure in one area doesn't take down multiple tasks. |
+            | **`random`**  | Places tasks on instances randomly.                                                                              | Used when placement does not matter or for one-off jobs.                                                   |
+
+        -   **Where do they go in Terraform?**: For an ECS service, both are blocks inside `aws_ecs_service`.
+
+            -   The current Terraform AWS provider supports up to `10 placement constraints` and `5 ordered placement strategies` on `aws_ecs_service`.
+
+            ```ini
+            resource "aws_ecs_service" "api" {
+                name            = "api"
+                cluster         = aws_ecs_cluster.main.id
+                task_definition = aws_ecs_task_definition.api.arn
+
+                desired_count = 6
+
+                placement_constraints {
+                    type       = "memberOf"
+                    expression = "attribute:ecs.instance-type =~ t3.*"
+                }
+
+                ordered_placement_strategy {
+                    type  = "spread"
+                    field = "attribute:ecs.availability-zone"
+                }
+
+                ordered_placement_strategy {
+                    type  = "binpack"
+                    field = "memory"
+                }
+            }
+            ```
 
 
         </details>
 
     -   <details><summary style="font-size: 25px;color:#C71585">Auto Scalling for ECS: Launch Types and Capacity Providers</summary>
 
-        -   **Service Auto Scalling**: **Service Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **number of running tasks** in an ECS service based on application demand. It can scale based on metrics such as **CPU utilization, memory utilization, or ALB request count**.
-            > **Service Auto Scaling = How many application tasks should be running?**
-
-        -   **Cluster Auto Scalling**: **Cluster Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **compute capacity available in an ECS cluster**, typically by adding or removing EC2 instances through an ECS Capacity Provider and Auto Scaling Group.
-            > **Cluster Auto Scaling = How many EC2 machines are needed to run those tasks?**
-
         -   <details><summary style="font-size: 18px;color:#C71585">Launch Type Abstraction</summary>
+
+            -   **Service Auto Scalling**: **Service Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **number of running tasks** in an ECS service based on application demand. It can scale based on metrics such as **CPU utilization, memory utilization, or ALB request count**.
+                > **Service Auto Scaling = How many application tasks should be running?**
+
+            -   **Cluster Auto Scalling**: **Cluster Auto Scaling in AWS ECS** is the process of automatically increasing or decreasing the **compute capacity available in an ECS cluster**, typically by adding or removing EC2 instances through an ECS Capacity Provider and Auto Scaling Group.
+                > **Cluster Auto Scaling = How many EC2 machines are needed to run those tasks?**
+
 
             > **Launch Type** define the compute model used to run ECS Tasks.
 
@@ -2429,7 +2519,461 @@
 
             </details>
 
-        -   <details><summary style="font-size: 18px;color:#C71585">Capacity Providers</summary>
+        -   <details><summary style="font-size: 18px;color:#C71585">Capacity Providers and It's Strategy</summary>
+
+
+            ```text
+            ECS Cluster
+                │
+                ├── associates capacity providers
+                │
+                └── ECS Service
+                        │
+                        └── capacity_provider_strategy
+                                │
+                                ├── FARGATE
+                                ├── FARGATE_SPOT
+                                ├── my-ec2-cp
+                                └── my-ec2-spot-cp
+            ```
+
+            -   A single capacity provider strategy can contain **Fargate capacity providers** OR **Auto Scaling Group capacity providers**, but **not both**.
+            -   A cluster itself can contain both types of capacity provider
+
+            -   `resource "aws_ecs_cluster_capacity_providers" "this" { ... }` ->  associate capacity providers with the cluster
+            -   `resource "aws_ecs_service" "this" {capacity_provider_strategy {...}}` ->  tell a particular service how to use them.
+            -   The `capacity_provider_strategy` block belongs directly to `aws_ecs_service`
+            -   `base`, `capacity_provider`, and `weight` as its three fields. It conflicts with `launch_type`.
+
+
+            -   <details><summary style="font-size:25px;color:#C71585">Fargate and Fargate Spot</summary>
+
+                -   AWS's built-in `FARGATE` and `FARGATE_SPOT` capacity providers require no custom capacity-provider resource. 
+
+                ```ini
+                resource "aws_ecs_cluster" "main" {
+                    name = "main"
+                }
+
+                resource "aws_ecs_cluster_capacity_providers" "main" {
+                    cluster_name = aws_ecs_cluster.main.name
+
+                    capacity_providers = [
+                        "FARGATE",
+                        "FARGATE_SPOT",
+                    ]
+                }
+                ```
+
+                ```ini
+                resource "aws_ecs_service" "api" {
+                    name            = "api"
+                    cluster         = aws_ecs_cluster.main.id
+                    task_definition = aws_ecs_task_definition.api.arn
+
+                    desired_count = 10
+
+                    capacity_provider_strategy {
+                        capacity_provider = "FARGATE"
+                        weight            = 3
+                    }
+
+                    capacity_provider_strategy {
+                        capacity_provider = "FARGATE_SPOT"
+                        weight            = 7
+                    }
+                }
+                ```
+
+                ```text
+                10 desired tasks
+
+                FARGATE       weight = 3
+                FARGATE_SPOT  weight = 7
+
+                            ↓
+
+                roughly
+
+                FARGATE       ≈ 30%
+                FARGATE_SPOT  ≈ 70%
+                ```
+
+                -   The `weight` is a **relative weight**, not a strict percentage guarantee.
+                -   `base` can guarantee a minimum number of tasks on one capacity provider before weights are applied. 
+                -   Only one provider in a strategy can specify `base`.
+
+                -   **What does `base` mean?**
+
+                    ```ini
+                    capacity_provider_strategy {
+                        capacity_provider = "FARGATE"
+                        base              = 2
+                        weight            = 1
+                    }
+
+                    capacity_provider_strategy {
+                        capacity_provider = "FARGATE_SPOT"
+                        weight            = 3
+                    }
+                    ```
+
+                    ```ini
+                    desired_count = 10
+                    ```
+
+                    ```text
+                    First:
+                        2 tasks → FARGATE
+
+                    Remaining:
+                        8 tasks
+
+                        FARGATE       weight 1
+                        FARGATE_SPOT  weight 3
+
+                        approximately:
+                            2 → FARGATE
+                            6 → FARGATE_SPOT
+                    ```
+
+                -   `base` answers **"How many tasks must start on this capacity provider before the weighting takes over?"**
+                -   `weight` answers **"How should the remaining tasks be distributed?"**
+                -   AWS defines `base` as the minimum number of tasks for that capacity provider, while `weight` determines the relative distribution after the base requirement is satisfied.
+
+                </details>
+
+            -   <details><summary style="font-size:25px;color:#C71585">EC2 capacity providers</summary>
+
+                -   The important thing is that an EC2 capacity provider represents **a particular pool of EC2 capacity**, normally an Auto Scaling Group. EC2 capacity providers is Auto Scaling group capacity providers.
+                -   EC2 is different. You don't specify `capacity_provider = "EC2"`. Instead, you create an **Auto Scaling Group**, then create an ECS capacity provider associated with that ASG.
+
+
+                ```text
+                Auto Scaling Group
+                    │
+                    ▼
+                ECS Capacity Provider
+                    │
+                    ▼
+                ECS Cluster
+                    │
+                    ▼
+                ECS Service
+                    │
+                    ▼
+                capacity_provider_strategy
+                ```
+
+
+                ```ini
+                resource "aws_ecs_capacity_provider" "ec2" {
+                    name = "ec2"
+
+                    auto_scaling_group_provider {
+                        auto_scaling_group_arn = aws_autoscaling_group.ecs.arn
+
+                        managed_scaling {
+                        status = "ENABLED"
+                        }
+
+                        managed_termination_protection = "ENABLED"
+                    }
+                }
+                ```
+
+                ```ini
+                resource "aws_ecs_cluster_capacity_providers" "main" {
+                cluster_name = aws_ecs_cluster.main.name
+
+                capacity_providers = [
+                    aws_ecs_capacity_provider.ec2.name
+                ]
+                }
+                ```
+
+                ```ini
+                resource "aws_ecs_service" "api" {
+                name            = "api"
+                cluster         = aws_ecs_cluster.main.id
+                task_definition = aws_ecs_task_definition.api.arn
+                desired_count   = 10
+
+                capacity_provider_strategy {
+                    capacity_provider = aws_ecs_capacity_provider.ec2.name
+                    weight            = 1
+                }
+                }
+                ```
+
+                -   **EC2 On-Demand + EC2 Spot**: This is where capacity providers become particularly useful. You can create two separate ASGs:
+
+                    ```text
+                                        ECS Cluster
+                                            │
+                                ┌───────────┴───────────┐
+                                │                       │
+                        EC2 On-Demand            EC2 Spot
+                                │                       │
+                            ASG #1                   ASG #2
+                                │                       │
+                        Capacity Provider       Capacity Provider
+                            "ec2"                  "ec2-spot"
+                                │                       │
+                                └───────────┬───────────┘
+                                            │
+                                    ECS Service
+                                            │
+                                capacity_provider_strategy
+                    ```
+
+                    ```ini
+                    resource "aws_ecs_capacity_provider" "ec2" {
+                    name = "ec2"
+
+                    auto_scaling_group_provider {
+                        auto_scaling_group_arn = aws_autoscaling_group.ec2.arn
+
+                        managed_scaling {
+                        status = "ENABLED"
+                        }
+                    }
+                    }
+                    ```
+
+                    ```ini
+                    resource "aws_ecs_capacity_provider" "ec2_spot" {
+                        name = "ec2-spot"
+
+                        auto_scaling_group_provider {
+                            auto_scaling_group_arn = aws_autoscaling_group.ec2_spot.arn
+
+                            managed_scaling {
+                            status = "ENABLED"
+                            }
+                        }
+                    }
+                    ```
+
+                    ```ini
+                    resource "aws_ecs_cluster_capacity_providers" "main" {
+                        cluster_name = aws_ecs_cluster.main.name
+
+                        capacity_providers = [
+                            aws_ecs_capacity_provider.ec2.name,
+                            aws_ecs_capacity_provider.ec2_spot.name
+                        ]
+                    }
+                    ```
+
+                    ```ini
+                    resource "aws_ecs_service" "api" {
+                    name            = "api"
+                    cluster         = aws_ecs_cluster.main.id
+                    task_definition = aws_ecs_task_definition.api.arn
+
+                    desired_count = 10
+
+                    capacity_provider_strategy {
+                        capacity_provider = aws_ecs_capacity_provider.ec2.name
+                        base              = 2
+                        weight            = 3
+                    }
+
+                    capacity_provider_strategy {
+                        capacity_provider = aws_ecs_capacity_provider.ec2_spot.name
+                        weight            = 7
+                    }
+                    }
+                    ```
+
+                    ```text
+                                            10 tasks
+                                                │
+                                    ┌───────────┴───────────┐
+                                    │                       │
+                            EC2 On-Demand             EC2 Spot
+                            base = 2                  weight = 7
+                            weight = 3                    │
+                                    │                       │
+                                    └───────────┬───────────┘
+                                                ▼
+                                    ECS distributes tasks
+                    ```
+
+                </details>
+
+            -   <details><summary style="font-size:25px;color:#C71585">Cluster & Service Level Association of Capacity</summary>
+
+                > **Cluster level = which capacity providers are available to this cluster.**
+                > **Service level = which available providers this particular service actually uses, and how.**
+
+                -   AWS explicitly requires a capacity provider to be associated with the cluster before it can be referenced by a service's capacity-provider strategy.
+                -   The cluster says: `"This cluster permits these capacity providers."`
+                -   The service says: `"For MY tasks, use these providers with this base/weight."`
+                -   **capacity providers are cluster-scoped availability**, while the strategy is workload/service-specific.
+                -   The cluster establishes the **set of providers that services/tasks on that cluster can use**. Then each service can select a subset and specify its own strategy.
+                -   AWS explicitly states that only capacity providers already associated with the cluster can be used in a capacity-provider strategy.
+                -   A single capacity provider strategy can contain **Fargate capacity providers** OR **Auto Scaling Group capacity providers**, but **not both**.
+                -   A cluster itself can contain both types of capacity provider
+
+
+                ```mermaid
+                flowchart TD
+                    A[ECS Cluster] --> B[Associated Capacity Providers]
+
+                    B --> C[FARGATE]
+                    B --> D[FARGATE_SPOT]
+                    B --> E[EC2 Capacity Provider]
+                    B --> F[EC2 Spot Capacity Provider]
+
+                    C --> G[ECS Service A]
+                    D --> G
+
+                    E --> H[ECS Service B]
+                    F --> H
+
+                    G --> I[Service Capacity Provider Strategy]
+                    H --> J[Service Capacity Provider Strategy]
+                ```
+                ---
+
+                -   The cluster can define a DEFAULT strategy; this is the part that makes cluster-level configuration more than just an allow-list.
+                -   Then a service **doesn't necessarily need to specify its own strategy**. If the service doesn't specify either `capacity_provider_strategy` or `launch_type`, ECS uses the cluster's default capacity provider strategy.
+                -   AWS describes the service-level strategy as an override of the cluster default.
+
+                ```ini
+                resource "aws_ecs_cluster_capacity_providers" "main" {
+                    cluster_name = aws_ecs_cluster.main.name
+
+                    capacity_providers = ["FARGATE","FARGATE_SPOT"]
+
+                    default_capacity_provider_strategy {
+                        capacity_provider = "FARGATE"
+                        base              = 1
+                        weight            = 1
+                    }
+
+                    default_capacity_provider_strategy {
+                        capacity_provider = "FARGATE_SPOT"
+                        weight            = 3
+                    }
+                }
+                ```
+
+                ---
+
+
+                ```mermaid
+                flowchart TD
+                    A[ECS Cluster]
+
+                    A --> B[Available Capacity Providers]
+
+                    B --> C[FARGATE]
+                    B --> D[FARGATE_SPOT]
+                    B --> E[EC2 Capacity Provider]
+                    B --> F[EC2 Spot Capacity Provider]
+
+                    A --> G[Default Capacity Provider Strategy]
+
+                    G --> H[FARGATE<br/>weight = 1]
+                    G --> I[FARGATE_SPOT<br/>weight = 3]
+
+                    A --> J[ECS Service]
+
+                    J --> K{Service specifies<br/>its own strategy?}
+
+                    K -->|NO| L[Use cluster default strategy]
+                    K -->|YES| M[Use service strategy]
+
+                    M --> N[Service-specific<br/>base + weight]
+                ```
+
+                | Level                                  | Question it answers                                                    |
+                | -------------------------------------- | ---------------------------------------------------------------------- |
+                | **Cluster capacity providers**         | What capacity providers are available to this cluster?                 |
+                | **Cluster default strategy**           | What should happen if a service/task doesn't specify its own strategy? |
+                | **Service capacity provider strategy** | What capacity should *this service* use and in what proportions?       |
+
+                ---
+
+                You also **don't have to put every associated provider into every service's strategy**.
+
+                **Cluster = capacity-provider universe.**
+                **Service = workload's choice within that universe.**
+
+                > A single capacity-provider strategy can contain **Fargate providers or Auto Scaling Group providers, but not both**. A cluster itself can contain both types.
+
+                </details>
+
+            -   <details><summary style="font-size:25px;color:#C71585">Capacity Provider vs Placement Strategy</summary>
+
+                > **Capacity Provider Strategy decides *which compute capacity* ECS should use.**
+                > **Task Placement Strategy decides *where within that capacity* a task should run.**
+                > **Capacity Provider Strategy → chooses the compute pool.**
+                > **Placement Constraints → restrict which hosts are eligible.**
+                > **Placement Strategy → determines the preferred distribution among eligible hosts.**
+
+
+                ```text
+                                    ECS Service
+                                        │
+                            ┌───────────┴───────────┐
+                            │                       │
+                            ▼                       ▼
+                    Capacity Provider          Task Placement
+                        Strategy                  Strategy
+                            │                       │
+                            ▼                       ▼
+                    "WHAT compute pool?"       "WHERE within it?"
+                            │                       │
+                    ┌──────┴──────┐          ┌─────┴─────┐
+                    │             │          │           │
+                    Fargate         EC2       spread     binpack
+                    │             │          │           │
+                Spot/etc.      ASG/etc.     AZ       CPU/memory
+                ```
+
+
+                ```ini
+                resource "aws_ecs_service" "api" {
+                    name            = "api"
+                    cluster         = aws_ecs_cluster.main.id
+                    task_definition = aws_ecs_task_definition.api.arn
+
+                    desired_count = 10
+
+                    # WHAT compute capacity?
+                    capacity_provider_strategy {
+                        capacity_provider = aws_ecs_capacity_provider.ec2.name
+                        base              = 2
+                        weight            = 3
+                    }
+
+                    capacity_provider_strategy {
+                        capacity_provider = aws_ecs_capacity_provider.ec2_spot.name
+                        weight            = 7
+                    }
+
+                    # WHERE within the EC2 capacity?
+                    ordered_placement_strategy {
+                        type  = "spread"
+                        field = "attribute:ecs.availability-zone"
+                    }
+
+                    ordered_placement_strategy {
+                        type  = "binpack"
+                        field = "memory"
+                    }
+                }
+                ```
+
+                </details>
+
+
+            ---
+            ---
 
             > **Capacity Providers** simplify the management and scaling of the compute capacity that your ECS tasks use. They automate the process of provisioning and scaling the underlying infrastructure (EC2 instances or Fargate).
 
@@ -2441,34 +2985,31 @@
 
             -   **Capacity Providers** (Modern Approch): AWS recommends using **Capacity Providers** as the modern way to manage compute in an ECS cluster, allowing you to define the infrastructure capacity in a flexible way and use both **Fargate** and **EC2** capacity within the same cluster.
 
-                -   Capacity Providers enable **automatic managed scaling** for EC2, and allow ECS to use a **capacity provider strategy** to determine which capacity type (Fargate or EC2) to use when placing a new task.
                 -   **Fargate Capacity Provider:** Points to the AWS Fargate infrastructure.
                 -   **EC2 Capacity Provider:** Points to an Auto Scaling Group (ASG) of EC2 instances that you manage. ECS automatically manages the scaling of the ASG and the registration of instances into the cluster.
 
-                - **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling**. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** (i.e., when a task is pending but there is no room) and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
                 - **Capacity Provider Strategies:** This is the most powerful feature. It allows you to define **how ECS should spread tasks** across multiple, heterogeneous capacity pools.
                     - You can assign **weights** (to determine the ratio of tasks) and **base** (to define the minimum tasks) to different providers.
                     - **Example:** A strategy might be: "Run 5 minimum tasks on `FARGATE` (base), and then distribute all remaining tasks 80% to `EC2_Spot` and 20% to `EC2_OnDemand` (weights)."
                 - **Fargate and Fargate Spot:** Dedicated capacity providers exist for Fargate and Fargate Spot, enabling the use of strategies to easily mix and match these options.
 
-                -   If you use a **Capacity Provider Strategy** when creating an ECS service, you do not specify a Launch Type; the Capacity Provider effectively handles that designation as part of its definition.
-
-                -   The modern best practice is to **always use Capacity Providers** instead of explicitly setting a **Launch Type** on a service or task.
-
-                    | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
-                    | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
-                    | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
-                    | **Configuration** | Set directly on the **service** or **task** (**old way**).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
-                    | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
-                    | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
-                    | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
-
-                -   **Launch Types** vs **Capacity Providers**: The relationship between **Launch Types** and **Capacity Providers** in AWS ECS is one of an older and foundational concept (**Launch Types**) being largely superseded and enhanced by a newer, more flexible, and automated concept (**Capacity Providers**). **Launch Types define _what kind of_ infrastructure your tasks run on**, while **Capacity Providers define not only _whatkind of_ but also _how that_ infrastructure is managed, scaled, and distributed**.
-
-                -   **Capacity Providers** were introduced to decouple the task placement logic from the capacity management logic. They are attached to an ECS Cluster and represent the available infrastructure pools.
 
             </details>
 
+        -   **Capacity Provider** vs **Launch Type**:
+
+            -   AWS recommends using **Capacity Providers**  in an ECS cluster as the modern way to manage compute, allowing you to define the infrastructure (**Fargate** and/or **EC2**) capacity within the same cluster.
+            -   If you use a **Capacity Provider Strategy** when creating an ECS service, you do not specify a Launch Type; the Capacity Provider effectively handles that designation as part of its definition.
+            -   The modern best practice is to **always use Capacity Providers** instead of explicitly setting a Launch Type on a service or task.
+            -   **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling** for EC2. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
+
+                | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
+                | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+                | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
+                | **Configuration** | Set directly on the **service** or **task** (**old way**).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
+                | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
+                | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
+                | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
 
         </details>
 
