@@ -1,104 +1,315 @@
 
 -   <details><summary style="font-size:25px;color:Orange">RDS</summary>
 
-    Amazon Relational Database Service (RDS) is a managed service that makes it easy to set up, operate, and scale a relational database in the AWS Cloud. It removes the "undifferentiated heavy lifting" of database management, such as hardware provisioning, patching, and backups.
+    AWS RDS (Relational Database Service) is a fully managed cloud service that runs standard database engines (like **MySQL**, **PostgreSQL**, **SQL** **Server**, **Oracle**, and **MariaDB**) while automating administrative tasks like backups, patching, scaling, and high availability.
 
-    1. **Core Components**: These are the fundamental building blocks of any RDS setup.
+    -   <details><summary style="font-size:25px;color:#C71585">Core Compute & Data Engine</summary>
 
-        *   **DB Instance:** An isolated database environment in the cloud. It is the basic building block of RDS. You select the CPU, memory, and storage capacity based on your needs.
-        *   **DB Engine:** The specific relational database software running on the instance. RDS currently supports:
-            *   **Amazon Aurora** (AWS-native, MySQL/PostgreSQL compatible)
-            *   **PostgreSQL**
-            *   **MySQL**
-            *   **MariaDB**
-            *   **Oracle**
-            *   **Microsoft SQL Server**
-        *   **DB Instance Class:** Determines the computation and memory capacity of the instance (e.g., `db.t3.micro`, `db.m5.large`).
+        * **DB Instance:** The basic building block of RDS. It is an isolated database environment running in the cloud on **EC2** with assigned CPU, RAM, and network capabilities.
+        * **Database Engines:** The underlying database software running on the instance. RDS supports six major engines: **Amazon Aurora**, **PostgreSQL**, **MySQL**, **MariaDB**, **Oracle**, **Microsoft SQL Server**
+        * **DB Instance Classes:** Pre-configured hardware combinations optimized for different workloads:
+            * **Standard (General Purpose):** Balanced CPU and memory (e.g., `db.m` classes).
+            * **Memory-Optimized:** High memory-to-CPU ratio for large datasets and heavy caching (e.g., `db.r` classes).
+            * **Burstable Performance:** Cost-effective for low baseline workloads with temporary traffic spikes (e.g., `db.t` classes).
 
-    2. **High Availability & Scalability**: AWS uses specific architectures to ensure your database stays online and can handle growth.
+        </details>
 
-        *   **Multi-AZ Deployment:** RDS automatically provisions and maintains a synchronous "standby" replica in a different Availability Zone. If the primary instance fails, RDS automatically fails over to the standby.
-        *   **Read Replicas:** These are "read-only" copies of your database. They are used to offload read traffic from the primary instance, increasing the application's overall performance. Unlike Multi-AZ, these use *asynchronous* replication.
-        *   **Storage Autoscaling:** When enabled, RDS automatically increases storage capacity when it detects you are running out of space, preventing downtime.
+    -   <details><summary style="font-size:25px;color:#C71585">Maintenance & Backup</summary>
 
-    3. **Storage Types**: The performance of your database is heavily tied to the underlying storage volume.
+        > One of the primary benefits of a managed service is automated data protection.
 
-        *   **General Purpose SSD (gp2/gp3):** Cost-effective storage suitable for a broad range of workloads.
-        *   **Provisioned IOPS SSD (io1):** Designed for I/O-intensive workloads (like large production databases) that require low latency and consistent throughput.
-        *   **Magnetic:** A legacy option for small, infrequent-access workloads.
+        *   **Automated Backups:** RDS takes a daily full snapshot of your data and captures transaction logs. This allows for **Point-in-Time Recovery (PITR)** to any second within your retention period (up to 35 days).
+            -   Restored DB instances are associated with the default DB parameter and option groups
+            -   RDS uploads transaction logs for DB instances to Amazon S3 every five minutes
+            -   Automated backups can be replicated to any AWS Region
+            -   The DB instance must be in the available state for backups to occur
 
-    4. **Connectivity & Security**: RDS is designed to be secure by default, living inside your Virtual Private Cloud (VPC).
+        *   **DB Snapshots:** These are user-initiated backups. Unlike automated backups, snapshots are kept until you explicitly delete them.
+            -   Backs up the entire DB instance, not just individual databases.
+            -   For single-AZ DB instances there is a brief suspension of I/O.
+            -   For Multi-AZ SQL Server, I/O activity is briefly suspended on primary.
+            -   For Multi-AZ MariaDB, MySQL, Oracle and PostgreSQL the snapshot is taken from the standby.
+            -   Snapshots do not expire (no retention period).
 
-        *   **DB Subnet Group:** A collection of subnets (usually private) that you designate for your clusters in a VPC.
+        *   **Maintenance Window:** A weekly time block during which AWS performs system changes, such as OS patching or DB engine upgrades.
+            -   Operating system and DB patching can require taking the database offline
+            -   These tasks take place during a maintenance window
+            -   By default, a weekly maintenance window is configured
+            -   You can choose your own maintenance window
+
+        </details>
+
+    -   <details><summary style="font-size:25px;color:#C71585">Security, Connectivity & Access Controls</summary>
+
+
+        > RDS is designed to be secure by default, living inside your Virtual Private Cloud (VPC).
+
+        </div align="center">
+
+        ```mermaid
+        flowchart TD
+            subgraph VPC["Virtual Private Cloud (VPC)"]
+                subgraph Ingress["Network Ingress & Access Control"]
+                    IP["Public IP<br/>(Optional Internet Access)"]
+                    RDSSG["RDS Security Group (RDS SG)"]
+                end
+
+                subgraph Database["RDS Database Layer"]
+                    RDS[("Amazon RDS Instance")]
+                    SSL["SSL/TLS Encryption<br/>(In-Transit Protection)"]
+                end
+
+                subgraph Storage["Storage Layer - Encryption at Rest (AES 256)"]
+                    DBVol[("DB Volume")]
+                    DBSnap[("DB Snapshot")]
+                end
+
+                IP --> RDS
+                RDSSG -.->|Allow Port 3306| RDS
+                RDS --- DBVol
+                DBVol --- DBSnap
+            end
+
+            WWW["Internet (WWW)"] -->|Optional Access| IP
+
+            subgraph AppTier["Application Tier"]
+                APPSG["APP Security Group (APP SG)"]
+                APP["Application / Compute"]
+            end
+
+            APP -->|Encrypted Traffic SSL/TLS| SSL
+            SSL --> RDS
+            APPSG ==>|Allow Port 3306| RDSSG
+        ```
+        </div>
+
+        -   **Key Security Components in the Diagram**:
+            1. **Encryption in Transit**: Data moving between the application compute layer and the Amazon RDS instance is encrypted using **SSL/TLS**.
+            2. **Encryption at Rest (AES-256)**: Both the active **DB Volume** and automated/manual **DB Snapshots** are encrypted at rest using industry-standard **AES-256** encryption.
+            3. **Network Isolation & Firewalls (Security Groups)**: Access to the database is restricted at the network layer via the **RDS Security Group (RDS SG)**, which explicitly allows inbound database traffic (e.g., **Port 3306** for MySQL/Aurora) specifically from the **APP Security Group (APP SG)**.
+            4. **Public Exposure Options**: By default, the database resides inside the **VPC**. An optional **Public IP** can be assigned to enable direct connectivity from the public Internet (**WWW**) if needed.
+
+
+        -   Encryption at rest can be enabled – includes DB storage, backups, read replicas and snapshots
+        -   You can only enable encryption for an Amazon RDS DB instance when you create it, not after the DB instance is created
+        -   DB instances that are encrypted can't be modified to disable encryption
+        -   Uses AES 256 encryption and encryption is transparent with minimal performance impact
+        -   RDS for Oracle and SQL Server is also supported using Transparent Data Encryption (TDE) (may have performance impact)
+        -   AWS KMS is used for managing encryption keys
+        -   You can't have:
+            -   An encrypted read replica of an unencrypted DB instance • An unencrypted read replica of an encrypted DB instance
+            -   Read replicas of encrypted primary instances are encrypted
+        -   The same KMS key is used if in the same Region as the primary
+        -   If the read replica is in a different Region, a different KMS key is used
+        -   You can't restore an unencrypted backup or snapshot to an encrypted DB instance
+
+
+        *   **VPC Integration (Subnets):** RDS instances are deployed inside an Amazon Virtual Private Cloud (VPC), typically in private subnets to isolate them from the public internet.
+        *   **DB Subnet Group:** A collection of subnets (usually private) spanning multiple AZs inside a VPC that RDS uses to designate target network locations for DB instances.
         *   **Security Groups:** Act as a virtual firewall, controlling which IP addresses or EC2 instances are allowed to connect to the database port (e.g., 3306 for MySQL or 5432 for PostgreSQL).
         *   **KMS Encryption:** RDS can encrypt your databases "at rest" using keys managed through the AWS Key Management Service (KMS).
         *   **IAM Database Authentication:** Instead of using a password, you can authenticate to your DB instance using AWS IAM users or roles.
-
-    5. **Maintenance & Backup**: One of the primary benefits of a managed service is automated data protection.
-
-        *   **Automated Backups:** RDS takes a daily full snapshot of your data and captures transaction logs. This allows for **Point-in-Time Recovery (PITR)** to any second within your retention period (up to 35 days).
-        *   **DB Snapshots:** These are user-initiated backups. Unlike automated backups, snapshots are kept until you explicitly delete them.
-        *   **Maintenance Window:** A weekly time block during which AWS performs system changes, such as OS patching or DB engine upgrades.
-
-    6. **Option Groups:** Used to enable extra features provided by the specific DB engine, allowing you to add functionality like caching, auditing, or encryption without modifying the core database software. Option groups are associated with DB instances and can be shared across multiple instances. Key aspects include:
-        - **Engine-Specific Options:** Examples include Memcached for MySQL (query caching), Oracle Application Express (APEX), Transparent Data Encryption (TDE) for Oracle and SQL Server, and SQL Server Reporting Services (SSRS).
-        - **Persistence:** Options persist across DB instance restarts and are applied when the instance is launched or modified.
-        - **Licensing:** Some options require additional licensing fees or specific DB engine versions.
-        - **Compatibility:** Option groups are engine-specific (e.g., MySQL options can't be used with PostgreSQL).
-        - **Management:** Can be created, modified, and associated with DB instances via the AWS Management Console, CLI, or API.
-        - **Backup and Restore:** Options are included in DB snapshots and restored with the instance
-        - **Limitations:** Not all options are available for all DB engines or instance classes; some may require specific configurations.
-
-    7. **Parameter Groups:** Act as a "container" for engine configuration values, allowing you to customize database behavior without directly editing configuration files like `my.cnf` or `postgresql.conf`. Instead, you modify parameters in the Parameter Group, which are then applied to the DB instance. Key details include:
-        - **Types:** Default parameter groups are provided by AWS, but you can create custom parameter groups for fine-tuning.
-        - **Dynamic vs. Static Parameters:** Dynamic parameters can be changed without restarting the DB instance, while static parameters require a restart.
-        - **Scope:** Can be applied at the DB instance level or cluster level (for Aurora).
-        - **Common Parameters:** Include settings like `max_connections`, `innodb_buffer_pool_size`, `shared_buffers` (PostgreSQL), and `query_cache_size` (MySQL).
-        - **Validation:** AWS validates parameter values to ensure they are within acceptable ranges and compatible with the DB engine version.
-        - **Inheritance:** Custom parameter groups inherit default values and allow overrides.
-        - **Backup and Restore:** Parameter settings are preserved in DB snapshots.
-        - **Best Practices:** Test parameter changes in a staging environment before applying to production, as incorrect values can impact performance or stability.
-
-    8. **Amazon RDS Proxy**: It is a highly available, fully managed database proxy that sits between your application and your RDS (or Aurora) database. Its primary job is to handle **connection pooling**, making your application more scalable, resilient to database failures, and secure.
-
-       -    **The Problem** (Connection Exhaustion): Relational databases like MySQL and PostgreSQL have a limited number of connections they can handle at once. Every time a connection is opened, it consumes memory and CPU on the database server.
-
-           *   **Serverless/Lambda Issues:** In modern architectures (like AWS Lambda), hundreds or thousands of "short-lived" functions might spin up simultaneously. Each one tries to open its own database connection, which can quickly overwhelm the database and cause it to crash or reject new requests.
-           *   **The "Zombie" Connection:** Applications often keep connections open even when they aren't actively sending queries, wasting valuable database resources.
-
-       -    **How RDS Proxy Solves It**: Instead of your application connecting directly to the database, it connects to the **Proxy**.
-
-           *   **Connection Pooling:** The Proxy maintains a "pool" of established connections to the database. When your application needs to run a query, the Proxy assigns it an existing connection from the pool and then takes it back immediately after the query is finished. 
-           *   **Multiplexing:** This allows many application connections to share a much smaller number of database connections, significantly reducing the load on the DB instance.
-
-       -    **Key Benefits**
-
-           -   **Improved Failover Times**: If your database has a failure (especially in a Multi-AZ setup), the RDS Proxy can automatically connect to the new standby instance without dropping the connection from your application. 
-               *   **Result:** Failover times can be reduced by up to **66%**, and your application doesn't need complex "retry" logic because it stays connected to the Proxy the whole time.
-
-           -   **Enhanced Security**:
-               *   **IAM Authentication:** You can enforce IAM authentication for the application-to-Proxy connection, even if the underlying database uses traditional passwords.
-               *   **Secrets Manager Integration:** The Proxy retrieves database credentials from **AWS Secrets Manager**, meaning you don't have to hardcode passwords in your application code or environment variables.
-
-           -   **Zero Application Management**: Because it is a managed service, you don't have to provision servers, patch software, or worry about the Proxy's own availability—AWS handles that across multiple Availability Zones automatically.
-
-       -    **When to Use It**:
-
-           | Use Case                | Why Use RDS Proxy?                                                     |
-           | :---------------------- | :--------------------------------------------------------------------- |
-           | **AWS Lambda**          | To prevent thousands of concurrent functions from overwhelming the DB. |
-           | **SaaS Applications**   | To manage unpredictable bursts of user traffic.                        |
-           | **High Availability**   | To minimize downtime during database maintenance or failover.          |
-           | **Security Compliance** | To centralize credential management via Secrets Manager and IAM.       |
-
-       -    **Implementation Detail**: The Endpoint
-
-            -   When you create an RDS Proxy, it provides you with a **new hostname (Endpoint)**. You simply update your application's database connection string to point to the Proxy endpoint instead of the original RDS instance endpoint.
-
-       > **Technical Note:** RDS Proxy is "engine-aware." It understands the specific database protocol (MySQL or PostgreSQL) to efficiently manage the transaction state and ensure that sessions are handled correctly during multiplexing.
+        *   **Endpoints:** DNS names assigned to instances and replicas that applications use to connect to the database (eliminating the need to hardcode dynamic IP addresses).
 
 
+        </details>
 
+    -   **Storage Layer**: RDS separates compute from underlying block storage (backed by Amazon EBS):
+
+        * **General Purpose SSD (gp2 / gp3):** Cost-effective default storage providing a balance of price and performance.
+        * **Provisioned IOPS SSD (io1 / io2):** Dedicated, predictable I/O performance designed for enterprise, I/O-intensive database workloads.
+        * **Storage Auto-Scaling:** Automatically expands the underlying storage volume when available space runs low, preventing database outages.
+
+    -   **High Availability & Replication Architectures**
+
+        * **Multi-AZ Deployments:** Synchronously replicates data to a standby instance located in a second Availability Zone (AZ) within the same region. If the primary instance fails, RDS automatically fails over to the standby with zero data loss.
+        * **Read Replicas:** Asynchronous copies of the primary instance used to offload read-heavy traffic or serve analytics queries. Can be created in the same AZ, across different AZs, or across different AWS Regions.
+
+    -   **Configuration & Governance**
+
+        -   **Option Groups:** Used to enable extra features provided by the specific DB engine, allowing you to add functionality like caching, auditing, or encryption without modifying the core database software. Option groups are associated with DB instances and can be shared across multiple instances. Key aspects include:
+            - **Engine-Specific Options:** Examples include Memcached for MySQL (query caching), Oracle Application Express (APEX), Transparent Data Encryption (TDE) for Oracle and SQL Server, and SQL Server Reporting Services (SSRS).
+            - **Persistence:** Options persist across DB instance restarts and are applied when the instance is launched or modified.
+            - **Licensing:** Some options require additional licensing fees or specific DB engine versions.
+            - **Compatibility:** Option groups are engine-specific (e.g., MySQL options can't be used with PostgreSQL).
+            - **Management:** Can be created, modified, and associated with DB instances via the AWS Management Console, CLI, or API.
+            - **Backup and Restore:** Options are included in DB snapshots and restored with the instance
+            - **Limitations:** Not all options are available for all DB engines or instance classes; some may require specific configurations.
+
+        -   **Parameter Groups:** Act as a "container" for engine configuration values, allowing you to customize database behavior without directly editing configuration files like `my.cnf` or `postgresql.conf`. Instead, you modify parameters in the Parameter Group, which are then applied to the DB instance. Key details include:
+            - **Types:** Default parameter groups are provided by AWS, but you can create custom parameter groups for fine-tuning.
+            - **Dynamic vs. Static Parameters:** Dynamic parameters can be changed without restarting the DB instance, while static parameters require a restart.
+            - **Scope:** Can be applied at the DB instance level or cluster level (for Aurora).
+            - **Common Parameters:** Include settings like `max_connections`, `innodb_buffer_pool_size`, `shared_buffers` (PostgreSQL), and `query_cache_size` (MySQL).
+            - **Validation:** AWS validates parameter values to ensure they are within acceptable ranges and compatible with the DB engine version.
+            - **Inheritance:** Custom parameter groups inherit default values and allow overrides.
+            - **Backup and Restore:** Parameter settings are preserved in DB snapshots.
+            - **Best Practices:** Test parameter changes in a staging environment before applying to production, as incorrect values can impact performance or stability.
+
+        -   **KMS & IAM Policies:** Integrates with AWS Key Management Service (KMS) for data-at-rest encryption and IAM for user access control and database authentication.
+
+    -   **Auxiliary Managed Services**
+
+        -   **Amazon RDS Proxy**: It is a highly available, fully managed database proxy that sits between your application and your RDS (or Aurora) database. Its primary job is to handle **connection pooling**, making your application more scalable, resilient to database failures, and secure.
+
+            -   **The Problem** (Connection Exhaustion): Relational databases like MySQL and PostgreSQL have a limited number of connections they can handle at once. Every time a connection is opened, it consumes memory and CPU on the database server.
+
+                -   **Serverless/Lambda Issues:** In modern architectures (like AWS Lambda), hundreds or thousands of "short-lived" functions might spin up simultaneously. Each one tries to open its own database connection, which can quickly overwhelm the database and cause it to crash or reject new requests.
+                -   **The "Zombie" Connection:** Applications often keep connections open even when they aren't actively sending queries, wasting valuable database resources.
+
+            -   **How RDS Proxy Solves It**: Instead of your application connecting directly to the database, it connects to the **Proxy**.
+
+                -   **Connection Pooling:** The Proxy maintains a "pool" of established connections to the database. When your application needs to run a query, the Proxy assigns it an existing connection from the pool and then takes it back immediately after the query is finished. 
+                -   **Multiplexing:** This allows many application connections to share a much smaller number of database connections, significantly reducing the load on the DB instance.
+
+            -   **Key Benefits**
+
+                -   **Improved Failover Times**: If your database has a failure (especially in a Multi-AZ setup), the RDS Proxy can automatically connect to the new standby instance without dropping the connection from your application. 
+                    -   **Result:** Failover times can be reduced by up to **66%**, and your application doesn't need complex "retry" logic because it stays connected to the Proxy the whole time.
+
+                -   **Enhanced Security**:
+                    -   **IAM Authentication:** You can enforce IAM authentication for the application-to-Proxy connection, even if the underlying database uses traditional passwords.
+                    -   **Secrets Manager Integration:** The Proxy retrieves database credentials from **AWS Secrets Manager**, meaning you don't have to hardcode passwords in your application code or environment variables.
+
+                -   **Zero Application Management**: Because it is a managed service, you don't have to provision servers, patch software, or worry about the Proxy's own availability—AWS handles that across multiple Availability Zones automatically.
+
+            -   **When to Use It**:
+
+                | Use Case                | Why Use RDS Proxy?                                                     |
+                | :---------------------- | :--------------------------------------------------------------------- |
+                | **AWS Lambda**          | To prevent thousands of concurrent functions from overwhelming the DB. |
+                | **SaaS Applications**   | To manage unpredictable bursts of user traffic.                        |
+                | **High Availability**   | To minimize downtime during database maintenance or failover.          |
+                | **Security Compliance** | To centralize credential management via Secrets Manager and IAM.       |
+
+            -    **The Endpoint**: When you create an RDS Proxy, it provides you with a **new hostname (Endpoint)**. You simply update your application's database connection string to point to the Proxy endpoint instead of the original RDS instance endpoint.
+
+            -   **Technical Note:** RDS Proxy is "engine-aware." It understands the specific database protocol (MySQL or PostgreSQL) to efficiently manage the transaction state and ensure that sessions are handled correctly during multiplexing.
+        -   **Automated Backups & Snapshots:** Automatically records point-in-time backups (retaining continuous transaction logs) alongside manual point-in-time user snapshots.
+        -   **CloudWatch Integration:** Streams metrics (CPU usage, DB connections, available storage, IOPS) and database engine logs directly into Amazon CloudWatch for monitoring and alerts.
+
+    #### RDS Architecture
+
+    Amazon RDS supports four main architectural deployment patterns depending on your requirements for availability, performance, and global reach.
+
+    -   **Single-AZ Deployment (Standard Architecture)**: In a **Single-AZ deployment**, the primary DB instance is deployed in a single Availability Zone (AZ) within an Amazon VPC. Data is stored on an Amazon EBS block storage volume that automatically replicates across multiple physical hardware racks *within that same single AZ* to protect against local component failure.
+
+        * **Cost:** Most economical option; zero cross-AZ data transfer fees.
+        * **Availability:** Vulnerable to an AZ outage or underlying physical host hardware failure.
+        * **Failover & Backups:** Restores require manual intervention or spinning up an automated snapshot in a new AZ (causing downtime).
+
+        <div align="center">
+
+        ```mermaid
+        flowchart TD
+            subgraph VPC ["Amazon VPC (Region: us-east-1)"]
+                subgraph AZ1 ["Availability Zone A (us-east-1a)"]
+                    subgraph PrivateSubnet ["Private Subnet"]
+                        APP[EC2 / Application] -->|Read/Write Queries| DB[("Primary DB Instance\n(Master Node)")]
+                        DB <-->|Synchronous IO| EBS[("EBS Storage Volume\n(Local Redundancy)")]
+                    end
+                end
+            end
+
+            classDef primary fill:#232F3E,stroke:#FF9900,stroke-width:2px,color:#fff;
+            classDef storage fill:#3B4859,stroke:#232F3E,stroke-width:1px,color:#fff;
+            classDef app fill:#E76F51,stroke:#232F3E,stroke-width:1px,color:#fff;
+            
+            class DB primary;
+            class EBS storage;
+            class APP app;
+        ```
+        </div>
+
+    -   **Multi-AZ Deployment (High Availability & Failover)**: In a **Multi-AZ deployment**, RDS automatically provisions and maintains a synchronous **standby replica** in a different Availability Zone within the same Region.
+
+        * **Synchronous Replication:** Writes are committed to both the primary and standby nodes before returning a success response to the application.
+        * **Zero-Downtime Failover:** If the primary host fails or the AZ goes down, RDS automatically flips the DNS endpoint to point to the Standby instance (failover takes ~60–120 seconds).
+        * **Standby Node:** The standby instance cannot accept direct read queries; it exists strictly for high availability and automated back-ups.
+
+        <div align="center">
+
+        ```mermaid
+        flowchart TD
+            APP[Application Cluster] -->|Read/Write via Endpoint DNS| CNAME["RDS Endpoint CNAME\n(db.xxxx.rds.amazonaws.com)"]
+
+            subgraph VPC ["Amazon VPC (Region: us-east-1)"]
+                direction LR
+                
+                subgraph AZ_A ["Availability Zone A"]
+                    CNAME ==>|Resolves to Primary IP| DB_PRI[("Primary DB Instance\n(Read/Write)")]
+                    DB_PRI --- EBS_A[("EBS Storage")]
+                end
+
+                subgraph AZ_B ["Availability Zone B"]
+                    DB_SEC[("Standby DB Instance\n(Passive / No Direct Access)")]
+                    DB_SEC --- EBS_B[("EBS Storage")]
+                end
+
+                DB_PRI == Synchronous Storage Replication ==> DB_SEC
+            end
+
+            classDef active fill:#232F3E,stroke:#FF9900,stroke-width:2px,color:#fff;
+            classDef standby fill:#555,stroke:#999,stroke-dasharray: 5 5,stroke-width:2px,color:#fff;
+            classDef dns fill:#2A9D8F,stroke:#232F3E,stroke-width:1px,color:#fff;
+            
+            class DB_PRI active;
+            class DB_SEC standby;
+            class CNAME dns;
+        ```
+        </div>
+
+    -   **Read Replica Architecture (Horizontal Scaling)**: **Read Replicas** use engine-native **asynchronous replication** to offload read-heavy traffic from the primary instance. You can create up to 5 Read Replicas per database instance in the same AZ, across AZs, or across AWS Regions.
+
+        * **Asynchronous Replication:** The primary writes data and immediately returns success to the client without waiting for replicas to update. This leads to a slight delay known as **Replication Lag**.
+        * **Direct Access:** Each replica has its own unique connection endpoint that applications use to execute `SELECT` queries.
+        * **Promotion:** A Read Replica can be promoted to become an independent standalone database if needed.
+
+        <div align="center">
+
+        ```mermaid
+        flowchart TD
+            subgraph Clients ["Application Layer"]
+                WRITER["App (Write Traffic)"]
+                READER["App (Read Traffic / Analytics)"]
+            end
+
+            subgraph VPC ["Amazon VPC"]
+                subgraph AZ_1 ["AZ-A"]
+                    PRIMARY[("Primary DB Instance\n(Master Read/Write)")]
+                end
+
+                subgraph AZ_2 ["AZ-B"]
+                    RR1[("Read Replica 1\n(Read-Only Endpoint)")]
+                end
+
+                subgraph AZ_3 ["AZ-C"]
+                    RR2[("Read Replica 2\n(Read-Only Endpoint)")]
+                end
+
+                PRIMARY == Async Replication ==> RR1
+                PRIMARY == Async Replication ==> RR2
+            end
+
+            WRITER -->|SQL INSERT/UPDATE/DELETE| PRIMARY
+            READER -->|SQL SELECT| RR1
+            READER -->|SQL SELECT| RR2
+
+            classDef master fill:#232F3E,stroke:#FF9900,stroke-width:2px,color:#fff;
+            classDef replica fill:#1F77B4,stroke:#232F3E,stroke-width:1px,color:#fff;
+            
+            class PRIMARY master;
+            class RR1,RR2 replica;
+        ```
+        </div>
+
+    -   **Architecture Selection Criteria**:
+
+        | Architecture Pattern | Availability Level | Replication Type | RPO / RTO Target | Primary Use Case |
+        | --- | --- | --- | --- | --- |
+        | **Single-AZ** | Low (Single Point of Failure) | None | High RPO/RTO | Development, testing, non-critical internal apps |
+        | **Multi-AZ** | High (Multi-AZ Failover) | Synchronous | RPO ≈ 0 / RTO < 2 mins | Production applications needing disaster recovery |
+        | **Read Replicas** | High (Horizontal Scale) | Asynchronous | Dependent on Lag | Reporting, BI queries, heavy read-traffic offloading |
 
     </details>
 
@@ -119,27 +330,60 @@
 
     ![Image](https://images.openai.com/static-rsc-4/k2Bm6DutklFriR_PhGcFZQzdaGThm3XpuO8tAx_w0e9AyOFRtWHlcACJ6wZqOiqoXXMisCnoYXjcm7fzsNwqtq2Hn9q2tA4JwDj7YEHQGo04gnVq28v21sTJMd2-9h6kNYpNYMNxb_p19KdcrokO1WiGl6Whe61mXS7j5nEeRBNcejktBXNjDyT1rNDLsGAN?purpose=fullsize)
 
+
+    -   **Amazon Aurora Architecture (Storage-Decoupled)**: **Amazon Aurora** is AWS's proprietary cloud-native relational engine (compatible with PostgreSQL and MySQL). Unlike standard RDS, Aurora decouples compute from storage completely using a purpose-built, highly distributed virtualized storage pool.
+
+        * **6-Way Distributed Storage:** Aurora automatically mirrors every write 6 ways across 3 Availability Zones (2 copies per AZ).
+        * **Shared Storage Volume:** Up to 15 Aurora Replicas share the *exact same physical storage cluster* as the primary instance, resulting in virtually **zero replication lag**.
+        * **Auto-Healing Storage:** Storage self-heals in the background and scales automatically up to 128 TiB without manual disk management.
+
+        ```mermaid
+        flowchart TD
+            subgraph ComputeLayer ["Compute Layer (VPC)"]
+                PRIMARY[("Aurora Primary Node\n(Writes & Reads)")]
+                REP1[("Aurora Replica 1\n(Read-Only)")]
+                REP2[("Aurora Replica 2\n(Read-Only)")]
+            end
+
+            subgraph DistributedStorage ["Shared Storage Cluster (Auto-Scaling up to 128 TiB)"]
+                subgraph AZ1 ["Availability Zone 1"]
+                    S1[("Chunk A1")]
+                    S2[("Chunk B1")]
+                end
+                subgraph AZ2 ["Availability Zone 2"]
+                    S3[("Chunk A2")]
+                    S4[("Chunk B2")]
+                end
+                subgraph AZ3 ["Availability Zone 3"]
+                    S5[("Chunk A3")]
+                    S6[("Chunk B3")]
+                end
+            end
+
+            PRIMARY == 1 Write Request generates 6 Storage Copies ==> S1 & S2 & S3 & S4 & S5 & S6
+            
+            REP1 -. Read Shared Storage .-> DistributedStorage
+            REP2 -. Read Shared Storage .-> DistributedStorage
+
+            classDef primaryNode fill:#232F3E,stroke:#FF9900,stroke-width:2px,color:#fff;
+            classDef replicaNode fill:#1F77B4,stroke:#232F3E,stroke-width:1px,color:#fff;
+            classDef storageChunk fill:#2A9D8F,stroke:#232F3E,stroke-width:1px,color:#fff;
+
+            class PRIMARY primaryNode;
+            class REP1,REP2 replicaNode;
+            class S1,S2,S3,S4,S5,S6 storageChunk;
+        ```
+
+
     ---
 
     # 1. What Is Amazon Aurora?
 
-    **Amazon Aurora** is a fully managed, cloud-native relational database engine provided by AWS.
+    **Amazon Aurora** is a fully managed, cloud-native relational database engine provided by AWS. It is compatible with: **MySQL** and **PostgreSQL**.
 
-    It is compatible with: **MySQL**, **PostgreSQL**
+    > **A relational database engine with a purpose-built distributed storage architecture designed for high availability, durability, performance, and scalability**.
 
-    > **A relational database engine with a purpose-built distributed storage architecture designed for high availability, durability, performance, and scalability.**
-
-    Aurora provides many capabilities you expect from a traditional relational database: SQL, ACID transactions, Joins, Indexes, Foreign keys, Stored procedures, Transactions, Relational data modeling
-
-    But its underlying architecture is optimized for the AWS cloud. The two main Aurora-compatible database engines are:
-
-    ```text
-    Amazon Aurora
-    │
-    ├── Aurora MySQL-Compatible Edition
-    │
-    └── Aurora PostgreSQL-Compatible Edition
-    ```
+    Aurora provides many capabilities you expect from a traditional relational database: SQL, ACID transactions, Joins, Indexes, Foreign keys, Stored procedures, Transactions, Relational data modeling.
 
     ---
 
@@ -225,9 +469,7 @@
                     AZ-1             AZ-2             AZ-3
     ```
 
-    The important architectural concept is:
-
-    > **The database instances are compute nodes, while the data is stored in Aurora's distributed storage layer.**
+    The important architectural concept is the database instances are **compute nodes**, while the data is stored in **Aurora's distributed storage** layer.
 
     This is different from the traditional model where each DB instance has its own independent storage volume.
 
