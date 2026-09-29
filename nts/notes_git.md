@@ -1,5 +1,4 @@
 -   `$ brew install git-lfs`
-
 -   **GIT TUTORIALS**:
     -   [Git MERGE vs REBASE: Everything You Need to Know](https://www.youtube.com/watch?v=0chZFIZLR_0)
     -   [Learn Git with Bitbucket Cloud](https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud)
@@ -603,7 +602,7 @@
             -   `$ git reset HEAD~3` → Discard the LAST THREE commit from Local Repository (Committing Area). Discarted file kept in Working Area
             -   `$ git reset --soft HEAD~3` → Discard the first three commit from Local Repository (Committing Area). Discarted file kept in Staging Area
             -   **$ git reset --hard** → It is used to reset the current commit or branch and the staging area to it's initial state or to a given commit. It moves the HEAD and the current branch pointer to the specified commit if given any.
-            -   `$ git reset --hard HEAD~2`
+            -   `$ git reset --hard HEAD~1` -> Move your current branch pointer back to one commit and make your index+working tree match that older commit.
             -   `$ git revert` → it's better to use `git revert` to create a new commit that undoes the changes made in the previous commit.
             -   <span style="color:orange">How to remove a commit from remote repository:</span>
                 1. git reset <commit_id>

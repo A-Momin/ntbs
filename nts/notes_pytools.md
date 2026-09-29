@@ -40,7 +40,7 @@
         ENABLE_USER_SITE: True
         ```
 
-    -   **PyPI**: It is stand for **Python Package Index** - the main public repository/catalog of Python packages that tools like **pip** install from.
+    -   **PyPI**: It stand for **Python Package Index** - the main public repository/catalog of Python packages that tools like **pip** install from.
 
     -   **`.whl`** File: A `.whl` file (Wheel file) is a binary distribution format for Python packages. It is a **pre-built**, compressed package that allows for faster installation compared to building from source.
 
@@ -130,14 +130,14 @@
 
     -   **pyproject.toml**:`pyproject.toml` is a configuration file used in Python projects that adhere to the PEP 517 and PEP 518 standards. It is primarily used for specifying build and distribution tooling configurations, such as build system dependencies, build tool configuration, and project metadata. The file is written in the TOML (Tom's Obvious, Minimal Language) format.
 
-        -   `Build System Configuration`: pyproject.toml allows you to specify the build system requirements and configuration for your project. This includes the build backend to be used (e.g., setuptools, flit, poetry), as well as any required build tools, such as compilers or transpilers.
+        -   `Build System Configuration`: `pyproject.toml` allows you to specify the build system requirements and configuration for your project. This includes the build backend to be used (e.g., setuptools, flit, poetry), as well as any required build tools, such as compilers or transpilers.
         -   `Dependency Declarations`: You can declare the dependencies required for building and testing your project. This includes both runtime dependencies (specified in install_requires) and build/test dependencies (specified in build-system.requires or build-system.build-backend.requires). These dependencies are typically resolved and managed by the build tool.
-        -   `Project Metadata`: pyproject.toml allows you to specify project metadata, such as the package name, version, author, license, and other relevant information. This metadata is used during packaging and distribution processes.
+        -   `Project Metadata`: `pyproject.toml` allows you to specify project metadata, such as the package name, version, author, license, and other relevant information. This metadata is used during packaging and distribution processes.
         -   `Tool Configuration`: The file provides a place to configure specific build tools or plugins used in your project. For example, you can configure code linters, code formatters, testing frameworks, or other development tools specific to your project.
-        -   `Standardized Project Structure`: By using pyproject.toml, you adhere to the PEP 517 and PEP 518 standards, which define a standardized approach to Python project build and distribution. This helps ensure compatibility and consistency across different build tools and environments.
-        -   It's important to note that pyproject.toml alone does not perform any build or distribution actions. Instead, it provides the necessary configuration for build tools (specified in build-system.build-backend) to execute the build and distribution processes.
-        -   Popular build tools that utilize pyproject.toml include `setuptools`, `flit`, and `poetry`. These tools interpret the configuration in pyproject.toml and perform actions such as building source distributions (sdist), building binary distributions (bdist), installing the package (install), running tests (test), and more.
-        -   Overall, pyproject.toml serves as a central configuration file for build and distribution tooling in Python projects, enabling standardized build processes and providing a consistent way to specify project metadata and dependencies.
+        -   `Standardized Project Structure`: By using `pyproject.toml`, you adhere to the PEP 517 and PEP 518 standards, which define a standardized approach to Python project build and distribution. This helps ensure compatibility and consistency across different build tools and environments.
+        -   It's important to note that `pyproject.toml` alone does not perform any build or distribution actions. Instead, it provides the necessary configuration for build tools (specified in build-system.build-backend) to execute the build and distribution processes.
+        -   Popular build tools that utilize `pyproject.toml` include `setuptools`, `flit`, and `poetry`. These tools interpret the configuration in `pyproject.toml` and perform actions such as building source distributions (sdist), building binary distributions (bdist), installing the package (install), running tests (test), and more.
+        -   Overall, `pyproject.toml` serves as a central configuration file for build and distribution tooling in Python projects, enabling standardized build processes and providing a consistent way to specify project metadata and dependencies.
 
     -   **MANIFEST.in**:The `MANIFEST.in` file is used in Python projects to specify additional files that should be included when creating source distributions or packaging the project. It is commonly used in conjunction with the "`setup.py`" script and build tools like "setuptools" to define the contents of the distribution package.
         -   The purpose of the "MANIFEST.in" file is to provide explicit instructions on what files and directories should be included in the distribution, beyond the default inclusion rules specified by the build tool. By default, build tools like "setuptools" include only the necessary files based on the Python package's structure and metadata specified in "`setup.py`". However, there might be additional files or directories that are required for the package to function correctly or need to be distributed with the package.
@@ -379,7 +379,7 @@
     -   `$ poetry config virtualenvs.in-project true` → 
     -   `$ poetry self add poetry-plugin-shell` → 
 
-   -   <details><summary style="font-size:25px;color:#C71585">Configure and Publish Python package using Poetry</summary>
+    -   <details><summary style="font-size:20px;color:#C71585">Configure and Publish Python package using Poetry</summary>
 
         > This guide demonstrates how to create, configure, and publish a Python package using Poetry from start to finish.
 
@@ -481,7 +481,7 @@
 
         Update `pyproject.toml` with more configuration:
 
-        ```toml
+        ```ini
         [tool.poetry]
         name = "my-awesome-package"
         version = "0.1.0"
@@ -603,13 +603,13 @@
         2. **API Token**: Generate an API token from your PyPI account settings
 
         3. **Configure Poetry**:
-        ```bash
-        # Configure PyPI credentials
-        poetry config pypi-token.pypi your-api-token-here
+            ```bash
+            # Configure PyPI credentials
+            poetry config pypi-token.pypi your-api-token-here
 
-        # Or for Test PyPI first
-        poetry config pypi-token.testpypi your-testpypi-token-here
-        ```
+            # Or for Test PyPI first
+            poetry config pypi-token.testpypi your-testpypi-token-here
+            ```
 
         ### Step 12: Publish to PyPI
 
@@ -754,7 +754,6 @@
         - Test on multiple Python versions
         - Use Test PyPI for testing before real PyPI
 
-
         </details>
 
     </details>
@@ -819,7 +818,6 @@
 
 
     #### Project Initialization
-
     -   `$ uv init`
     -   `$ uv add -h`
     -   `$ uv add --active requests` -> install the requests library into activated environment instead of current projects environment with updating the `pyproject.toml` or `uv.lock` file.
@@ -827,6 +825,8 @@
     -   `$ uv pip freeze > requirements.txt` -> create `requirements.txt` file from an activated `uv` environment.(How to integrate packages of a existing `uv` environment)
     -   `$ uv add -r requirements.txt` -> Integrate packages from an `requirements.txt` file into current project.
     -   `$ uv export --format requirements.txt --no-hashes --no-emit-project -o requirements.txt`
+    -   `$ uv sync --all-groups`
+    -   `$ uv sync --group dev --group test`
     -   `$ uv `
 
     #### Creating & Using a virtual environment
@@ -896,23 +896,6 @@
 
     -   **Where they live**: Tool environments are typically stored in a central location, like `~/.cache/uv/tools/`
 
-    -   **Example**
-
-        If your `pyproject.toml` includes:
-
-        ```toml
-        [tool.uv.dependencies]
-        requests = "^2.32"
-
-        [tool.uv.dev-dependencies]
-        black = "^24.0"
-        pytest = "^8.0"
-        ```
-
-        -   `$ uv run black .`
-            -   Automatically install and cache `black` into a **tool environment**.
-            -   Not affect your main application virtual environment.
-
     -   **Tool Envs vs Main venv**
 
         | Aspect               | Main `venv`                   | Tool Environment                     |
@@ -921,6 +904,127 @@
         | Created by           | `uv venv`, `uv sync`          | Auto-created by `uv`                 |
         | Location             | Project folder or manual path | `~/.cache/uv/tools/`                 |
         | Shared between repos | ❌ (project-specific)          | ✅ (cached and reused)                |
+
+    -   <details><summary style="font-size:20px;color:#C71585">pyproject.toml</summary>
+
+        When using **`uv`** to manage Python projects and virtual environments (`.venv`), the `pyproject.toml` file acts as the central source of configuration. `uv` adheres to Python standards (such as PEP 621 and PEP 735) while extending functionality through its own `[tool.uv]` namespace.
+
+        Below is an overview of the key sections used by `uv` when constructing and syncing virtual environments.
+
+        -   **`[project]` (PEP 621 Standard)**: This section contains standard metadata about your application or library and defines core dependencies installed into the virtual environment.
+
+            ```ini
+            [project]
+            name = "my-app"
+            version = "0.1.0"
+            description = "A sample Python project managed by uv"
+            requires-python = ">=3.11" # Restricts Python versions allowed in .venv
+
+            dependencies = [
+                "fastapi>=0.110.0",
+                "requests>=2.31.0",
+            ]
+
+            ```
+
+            * **`requires-python`**: Dictates which Python versions are compatible. `uv sync` or `uv venv` uses this constraint to choose or build the active environment's Python interpreter.
+            * **`dependencies`**: Main runtime dependencies. Running `uv sync` installs these into `.venv`.
+
+        -   **`[project.optional-dependencies]` (PEP 508 Extras)**: Defines **optional features for end-users or consumers** of your package (e.g., database drivers, cloud providers).
+
+            ```ini
+            [project.optional-dependencies]
+            postgres = ["asyncpg>=0.29.0"]
+            aws = ["boto3>=1.30.0"]
+            ```
+
+            * Installed into the environment on demand: `$ uv sync --extra postgres`
+
+        -   **`[dependency-groups]` (PEP 735 Standard)**: Defines **development and workflow tools** needed by developers working on the repository, rather than end-users.
+
+            ```ini
+            [dependency-groups]
+            dev = [
+                "pytest>=8.0.0",
+                "ruff>=0.3.0",
+            ]
+            docs = [
+                "mkdocs>=1.5.0",
+            ]
+            # You can also nest dependency groups
+            all-dev = [
+                { include-group = "dev" },
+                { include-group = "docs" },
+            ]
+            ```
+
+            * **The `dev` group**: Treated specially by `uv`—`uv sync` and `uv run` install the `dev` group by default alongside `project.dependencies`.
+            * **Other groups**: Can be selectively synced or excluded:
+            ```bash
+            uv sync --only-group docs     # Syncs only doc tools into .venv
+            uv sync --no-dev              # Skips dev tools
+            ```
+
+        -   **`[tool.uv]` (uv Specific Settings)**: Custom settings configuring `uv`'s environment resolution, defaults, and build behaviors.
+
+            ```toml
+            [tool.uv]
+            # Control whether the project itself is built and installed into .venv as editable
+            package = true  
+
+            # Customize default dependency groups synced into .venv
+            default-groups = ["dev", "docs"]
+
+            # Specify target OS/platform environments for resolution
+            environments = [
+                "sys_platform == 'linux'",
+                "sys_platform == 'darwin'",
+            ]
+            ```
+
+            * **`package = false`**: Used for "standalone applications" or simple scripts that don't need to be installed as a package inside `.venv` (skips `pip install -e .` behavior).
+            * **`default-groups`**: Changes which dependency groups get installed into `.venv` when running an un-flagged `uv sync`.
+
+        -   **`[tool.uv.sources]`**: Extends dependency resolution by mapping packages to custom sources (Git repositories, local paths, index aliases, or wheels) without dirtying standard `project.dependencies`.
+
+            ```ini
+            [project]
+            dependencies = [
+                "my-internal-lib",
+                "torch",
+            ]
+
+            [tool.uv.sources]
+            # Path source (editable local package)
+            my-internal-lib = { path = "../libs/my-internal-lib", editable = true }
+
+            # Direct Git dependency
+            # my-internal-lib = { git = "https://github.com/org/repo.git", rev = "main" }
+
+            # Map specific dependency to an index
+            torch = { index = "pytorch" }
+            ```
+
+        -   **`[[tool.uv.index]]`**: Defines private or alternative PyPI registries (e.g., PyTorch, self-hosted Nexus/Artifactory).
+
+            ```ini
+            [[tool.uv.index]]
+            name = "pytorch"
+            url = "https://download.pytorch.org/whl/cpu"
+            explicit = true  # Only used when pinned via [tool.uv.sources]
+            ```
+
+        -   **`[build-system]` (PEP 517 Standard)**: Defines the backend used to build the current project (e.g., `hatchling`, `setuptools`, or `flit-core`).
+
+            ```toml
+            [build-system]
+            requires = ["hatchling"]
+            build-backend = "hatchling.build"
+            ```
+
+            * When `uv sync` creates a virtual environment for a library project, it reads `[build-system]` to build and install your project into `.venv` in **editable mode**.
+
+        </details>
 
    </details>
 
