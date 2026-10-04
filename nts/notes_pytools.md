@@ -257,6 +257,7 @@
 -   <details><summary style="font-size:25px;color:Orange">pip3</summary>
 
     -   `$ which pip` → run the command from the newly created env
+    -   `$ pip config -v list` → run the command from the newly created env
     -   `$ pip3 -V` → Version of the pip3
     -   `$ type pip3` → pip3 is `/usr/local/bin/pip3`
     -   `$ pip3 <command> [options]`

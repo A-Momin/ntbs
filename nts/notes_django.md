@@ -13,7 +13,6 @@
 
     -   demo audit trails that log and monitor user activities with Django project
 
-
 ---
 
 -   <details><summary style="font-size:25px;color:Orange">MVC vs MVT in context of Django Framework</summary>
@@ -485,7 +484,8 @@
                     -   `models.SET(<callable|value>)` -> set to value/callable
                     -   `models.DO_NOTHING` -> do not modify child rows (database may raise integrity error)
                     -   `models.RESTRICT` (Django 3.1+) -> block deletion with `RestrictedError`
-                -   `related_name`: name for reverse accessor on parent. If omitted, default is `<model>_set` (e.g. `author.book_set`). Setting `related_name='+'` does not creat reverse accessor on Parent
+                -   `related_name`: name for reverse accessor (from Parent). If omitted, default is `<model>_set` (e.g. `author.book_set`).
+                    -   Setting `related_name='+'` does not creat reverse accessor on Parent
                 -   `related_query_name`: name for reverse filter in **queryset lookups**; defaults to `related_name` or **model name** (e.g. `author.filter(Q(book__book_id))`).
                 -   `to_field`: reference non-PK field on related model (must be unique).
                 -   `limit_choices_to`: a dict/q or callable to limit admin/model choice selects.
@@ -2114,13 +2114,13 @@
                     # SQL: SELECT ... WHERE price > 50;
                     Product.objects.filter(price__gt=50)
                     ```
+
                 2. **String Pattern Matching**: These operators allow you to search for partial strings within a text field.
 
                    * **`__contains`**: Case-sensitive containment test (SQL: `LIKE '%value%'`).
                    * **`__icontains`**: Case-insensitive version (SQL: `ILIKE '%value%'`).
                    * **`__startswith` / `__istartswith`**: Matches the beginning of a string.
                    * **`__endswith` / `__iendswith`**: Matches the end of a string.
-
 
                 3. **List and Range Operators**: These are used when you want to check a field against a set of multiple values.
 
@@ -2130,6 +2130,7 @@
                        * `Order.objects.filter(created_at__range=(start_date, end_date))`
                    * **`__isnull`**: Takes a boolean (`True` or `False`) to check for `NULL` values in the database.
                        * `Profile.objects.filter(bio__isnull=True)`
+
                 4. **Date and Time Specific Lookups**: Django allows you to "extract" parts of a date field to filter by specific time units.
 
                     -   **`__year`**, **`__month`**, **`__day`**: Filters by the specific calendar unit.
@@ -2147,16 +2148,6 @@
                     # Filter Books by the Author's name using icontains
                     Book.objects.filter(author__name__icontains="Hemingway")
                     ```
-
-                -   **Summary Table**: 
-
-                    | Goal                   | Operator Example               |
-                    | :--------------------- | :----------------------------- |
-                    | **Search text**        | `name__icontains="clinton"`    |
-                    | **Check multiple IDs** | `id__in=[10, 20, 30]`          |
-                    | **Filter by Date**     | `created_at__year=2026`        |
-                    | **Check existence**    | `deleted_at__isnull=False`     |
-                    | **Find price range**   | `price__gte=10, price__lte=50` |
 
         2. **Navigating Relationships (Spanning Joins)**: This is where the "magic" really happens. You use `__` to filter a model based on fields in a **related** model (ForeignKey, OneToOne, or ManyToMany).
 
@@ -2368,7 +2359,6 @@
 
     -   <details><summary style="font-size:20px;color:Red">Aggregation and Annotation</summary>
 
-
         -   **`aggregate()`**: Returns a dictionary of summary values (e.g., Average price of all books).
         -   **`annotate()`**: Adds a "virtual" field to every item in a QuerySet (e.g., Each author object gets a `book_count` field).
 
@@ -2392,18 +2382,18 @@
 
             1.  **The "1" Query:** `SELECT * FROM books LIMIT 10;`
                 -   *The database returns 10 books.*
-            2.  **The "N" Queries:** For each post, your code looks for the author:
-                -   Post 1: `SELECT * FROM authors WHERE id = 1;`
-                -   Post 2: `SELECT * FROM authors WHERE id = 2;`
+            2.  **The "N" Queries:** For each Author, your code looks for the author:
+                -   Author 1: `SELECT * FROM authors WHERE id = 1;`
+                -   Author 2: `SELECT * FROM authors WHERE id = 2;`
                 -   ... (this continues 8 more times)
-                -   Post 10: `SELECT * FROM authors WHERE id = 5;`
+                -   Author 10: `SELECT * FROM authors WHERE id = 5;`
 
                 > **Total Hits: 11 Database Queries.** If you were showing 100 books, you’d hit the database 101 times. This creates massive latency and can crash a database under high traffic.
 
 
         2. **How to Fix It**: There are two primary ways to solve this, depending on the relationship type:
 
-            -   **JOINing (Django's `select_related`)**: For **One-to-One** or **Many-to-One** relationships, you can use a SQL JOIN to get everything in exactly **one** query.
+            -   **JOINing (Django's `.select_related(...)`)**: For **One-to-One** or **Many-to-One** relationships, you can use a SQL JOIN to get everything in exactly **one** query.
                 -   **SQL:** `SELECT * FROM books JOIN authors ON books.author_id = authors.id;`
 
             -   **Batching (Django's `prefetch_related` / DataLoaders)**: For **Many-to-Many** or **One-to-Many** relationships, you fetch the parents, collect all the child IDs, and fetch the children in one bulk "IN" query.
@@ -2412,124 +2402,7 @@
 
         </details>
 
-    -   <details><summary style="font-size:20px;color:Red">Useful ORM Methods</summary>
-
-        -   `all()`: Returns all objects of the model.
-
-            ```python
-            all_objects = MyModel.objects.all()
-            ```
-
-        -   `filter()`: Returns a queryset of objects that match the given lookup parameters.
-
-            ```python
-            filtered_objects = MyModel.objects.filter(name="John")
-            ```
-
-            -   `$ Book.objects.filter(author__name="Jhon")`
-            -   `$ Book.objects.filter(Q(authon__name="Jhon"))`
-            -   `$ `
-
-        -   `exclude()`: Returns a queryset excluding the objects that match the given lookup parameters.
-
-            ```python
-            excluded_objects = MyModel.objects.exclude(name="John")
-            ```
-
-        -   `get()`: Returns a single object that matches the given lookup parameters. Raises an error if multiple objects are found.
-
-            ```python
-            single_object = MyModel.objects.get(id=1)
-            ```
-
-        -   `create()`: Creates a new object with the given parameters and saves it to the database.
-
-            ```python
-            new_object = MyModel.objects.create(name="Jane", age=25)
-            ```
-
-        -   `update()`: Updates the objects that match the given lookup parameters with the new values.
-
-            ```python
-            MyModel.objects.filter(name="John").update(age=30)
-            ```
-
-        -   `delete()`: Deletes the objects that match the given lookup parameters.
-
-            ```python
-            MyModel.objects.filter(name="John").delete()
-            ```
-
-        -   `order_by()`: Orders the queryset by the specified field(s).
-
-            ```python
-            ordered_objects = MyModel.objects.all().order_by('-created_at') # Leading `-` indicates to order in reverse order
-            ```
-
-        -   `values()`: Returns a queryset that returns dictionaries instead of model instances.
-
-            ```python
-            data = MyModel.objects.values('name', 'age')
-            ```
-
-        -   `annotate()`: Adds annotations to each object in the queryset.
-
-            ```python
-            from django.db.models import Count
-            annotated_objects = MyModel.objects.annotate(num_children=Count('children'))
-            ```
-
-        -   `distinct()`: Returns a queryset with duplicate results removed.
-
-            ```python
-            unique_objects = MyModel.objects.values('name').distinct()
-            ```
-
-        -   `count()`: Returns the number of objects in the queryset.
-
-            ```python
-            num_objects = MyModel.objects.count()
-            ```
-
-        -   `exists()`: Returns True if the queryset contains any results, False otherwise.
-
-            ```python
-            has_objects = MyModel.objects.filter(name="John").exists()
-            ```
-
-        -   `first()`: Returns the first object in the queryset, or None if the queryset is empty.
-
-            ```python
-            first_object = MyModel.objects.first()
-            ```
-
-        -   `last()`: Returns the last object in the queryset, or None if the queryset is empty.
-
-            ```python
-            last_object = MyModel.objects.last()
-            ```
-
-        -   `values_list()`: Returns a queryset that returns tuples instead of model instances.
-
-            ```python
-            data_tuples = MyModel.objects.values_list('name', 'age')
-            ```
-
-        -   `bulk_create()`: Creates multiple objects in a single database query.
-
-            ```python
-            MyModel.objects.bulk_create([MyModel(name='John'), MyModel(name='Jane')])
-            ```
-
-        -   `defer()`: Defers the loading of certain fields until they are accessed.
-
-            ```python
-            deferred_fields = MyModel.objects.defer('large_text_field')
-            ```
-
-        </details>
-
-    -   <details><summary style="font-size:20px;color:Red">Multi-level nested forward and reverse query with Prefetch</summary>
+    -   <details><summary style="font-size:20px;color:Red">Multi-level reverse query with Prefetch</summary>
 
         ```python
         class Publisher(models.Model):
@@ -2562,16 +2435,14 @@
                             print(b.title)
                 ```
 
-            -   **The Optimized Way with `Prefetch`**: To nest prefetches, you use the **double-underscore** (`__`) syntax inside the `prefetch_related` call.
+            -   **The Optimized Way with `.prefetch_related(...)`**: To nest prefetches, you use the **double-underscore** (`__`) syntax inside the `prefetch_related` call.
 
                 ```python
-                from django.db.models import Prefetch
-
                 # Fetch Publishers + Authors + Books in exactly 3 queries
                 publishers = Publisher.objects.prefetch_related('authors__books' ).all()
                 ```
 
-        -   **Multi-level Forward Query (One → One → One)**: If you start at the **Book** and want to fetch its **Author** and that author's **Publisher**, you are moving "up" the chain. Since these are single-value relationships (one book has one author), we use `select_related` for better performance.
+        -   **Multi-level Forward Query (One → One → One)**: If you start at the **Book** and want to fetch its **Author** and that author's **Publisher**, you are moving "up" the chain. Since these are single-value relationships (one book has one author), we use `select_related()` for better performance.
 
             ```python
             # Fetches everything in 1 single SQL JOIN
@@ -2581,7 +2452,7 @@
                 print(f"{b.title} by {b.author.name} published by {b.author.publisher.name}")
             ```
 
-        -   **Complex Nested Prefetching (The Pro Level)**: Sometimes you need to apply filters or ordering to the nested data. This requires the `Prefetch` object nested inside another `Prefetch` object.
+        -   **Complex Nested Prefetching (The Pro Level)**: Sometimes you need to apply filters or ordering to the nested data. This requires the `Prefetch(...)` object nested inside another `Prefetch(...)` object.
 
             **Goal:** Fetch all Publishers, but only their "Active" Authors, and only "Recent" Books for those authors.
 
@@ -2595,32 +2466,6 @@
             publishers = Publisher.objects.prefetch_related(
                 Prefetch('authors', queryset=active_authors)
             ).all()
-            ```
-
-        -   **Advanced Nested select_related with Annotations**: Combine select_related with annotations for computed fields across relations.
-
-            ```python
-            from django.db.models import Count, Avg
-
-            # Fetch books with author and publisher, plus author's book count
-            books = Book.objects.select_related('author__publisher').annotate(
-                author_book_count=Count('author__books')
-            ).all()
-
-            for book in books:
-                print(f"{book.title} by {book.author.name} ({book.author_book_count} books) from {book.author.publisher.name}")
-            ```
-
-            ```sql
-            SELECT "book"."id", "book"."title", "book"."author_id",
-                   "author"."id", "author"."name", "author"."publisher_id",
-                   "publisher"."id", "publisher"."name",
-                   COUNT("author_books"."id") AS "author_book_count"
-            FROM "book"
-            INNER JOIN "author" ON ("book"."author_id" = "author"."id")
-            INNER JOIN "publisher" ON ("author"."publisher_id" = "publisher"."id")
-            LEFT OUTER JOIN "book" AS "author_books" ON ("author"."id" = "author_books"."author_id")
-            GROUP BY "book"."id", "author"."id", "publisher"."id";
             ```
 
         -   **Complex Prefetch with Multiple Levels and Ordering**: Prefetch authors with their top-rated books, ordered by rating.
@@ -2658,7 +2503,7 @@
             ORDER BY "book"."release_year" DESC;
             ```
 
-        -   **Combining select_related and prefetch_related**: Use select_related for forward relations and prefetch_related for reverse ones in the same query.
+        -   **Combining `.select_related(...)` and `.prefetch_related(...)`**: Use select_related for forward relations and prefetch_related for reverse ones in the same query.
 
             ```python
             # Books with author/publisher (select_related) + author's other books (prefetch_related)
@@ -2687,7 +2532,24 @@
             WHERE "book"."author_id" IN (...) AND NOT ("book"."id" = ...);
             ```
 
-        -   **Prefetch with Conditional Filtering**: Use Prefetch to filter related objects based on complex conditions.
+        -   **Using `.prefetch_related()` for Reverse Relations and `ManyToMany`**: When dealing with reverse `ForeignKey`, `ManyToMany`, or `OneToOne` relationships, use `.prefetch_related()` to retrieve related objects efficiently.
+
+            -   **How it works**: Executes **separate database queries** (one per prefetched relation) and caches results in Python memory. Unlike `select_related`, it does NOT perform **JOIN** at the database level. When you use `prefetch_related`, Django performs two (or more) distinct steps:
+                -   **Main Query**: It fetches all the primary objects (e.g., all Authors).
+                -   **Prefetch Query**: It collects all the IDs from the first result, then runs a single query to fetch all related objects (e.g., all Books belonging to those specific authors) using an **IN** clause.
+                -   **The "Stitching"**: Django’s ORM joins these objects in memory, so when you loop through `author.book_set.all()`, no new database hits occur.
+
+            -   **When to use**:
+                - Reverse ForeignKey lookups (e.g., `author.books` when Book has FK to Author).
+                - `ManyToManyField` relations (always requires separate query; JOIN would cause cartesian product).
+                - `OneToOneField` reverse relations.
+                - When the related set is expected to be large (JOIN would duplicate parent rows).
+
+            -   **When NOT to use**:
+                - Forward ForeignKey or OneToOne relations → use `select_related` (single JOIN query is faster).
+                - When you only need IDs or a single field → use `values_list()` or `only()`.
+
+        -   **`Prefetch(...)` with Conditional Filtering**: Use Prefetch to filter related objects based on complex conditions.
 
             ```python
             from django.db.models import Q
@@ -2695,8 +2557,7 @@
             # Prefetch authors with books that are either recent OR highly rated
             publishers = Publisher.objects.prefetch_related(
                 Prefetch('authors', queryset=Author.objects.prefetch_related(
-                    Prefetch('books', queryset=Book.objects.filter(
-                        Q(release_year__gt=2020) | Q(rating__gt=4)
+                    Prefetch('books', queryset=Book.objects.filter(Q(release_year__gt=2020) | Q(rating__gt=4)
                     ))
                 ))
             ).all()
@@ -2727,12 +2588,12 @@
 
         </details>
 
-    -   <details><summary style="font-size:20px;color:Red">How to perform JOIN query?</summary>
+    -   <details><summary style="font-size:20px;color:Red">Multi-level froward query with .select_related(...)</summary>
 
         -   In Django's Object-Relational Mapping (ORM), you can perform JOIN operations to retrieve data from multiple database tables using various methods. Below are some common ways to perform a JOIN query in Django ORM.
         -   Assuming you have two Django models: `Author` and `Book`, and you want to join them based on a common field, such as author_id, here's a demonstration of multiple ways to perform a JOIN query:
 
-        -   **Using `.select_related()` for `ForeignKey` and `OneToOne` Relationships**: Use `.select_related()` to perform a single SQL `INNER JOIN` for forward one-to-one and many-to-one relationships, eliminating the N+1 query problem.
+        -   **Using `.select_related()` for `ForeignKey` and `OneToOne` Relationships**: Use `.select_related()` to perform a single SQL `INNER JOIN` for forward **one-to-one** and **many-to-one** relationships, eliminating the N+1 query problem.
 
             -   **How it works**: Performs a **single database query with JOIN** and loads related object data into Python memory in one go. The related object is immediately available without additional queries.
 
@@ -2765,6 +2626,7 @@
             -   **Chaining multiple `.select_related()`**:
                 ```python
                 # Follow multiple ForeignKey chains in one query
+                # Join through multiple levels: Book -> Author -> Publisher
                 books = Book.objects.select_related('author__publisher').all()
                 # Equivalent to: select_related('author').select_related('publisher') but more efficient
                 ```
@@ -2778,272 +2640,113 @@
                 INNER JOIN "publisher" ON ("author"."publisher_id" = "publisher"."id");
                 ```
 
-            -   **Deep/Nested relations** (following FK chains):
+            -   **Advanced Nested `select_related(...)` with Annotations**: Combine select_related with annotations for computed fields across relations.
+
                 ```python
-                # Join through multiple levels: Book -> Author -> Publisher
-                books = Book.objects.select_related('author__publisher').all()
+                from django.db.models import Count, Avg
+
+                # Fetch books with author and publisher, plus author's book count
+                books = Book.objects.select_related('author__publisher').annotate(
+                    author_book_count=Count('author__books')
+                ).all()
+
                 for book in books:
-                    print(book.author.publisher.name)  # All loaded, no extra queries
+                    print(f"{book.title} by {book.author.name} ({book.author_book_count} books) from {book.author.publisher.name}")
                 ```
 
                 ```sql
                 SELECT "book"."id", "book"."title", "book"."author_id",
-                       "author"."id", "author"."name", "author"."publisher_id",
-                       "publisher"."id", "publisher"."name"
-                FROM "book"
-                INNER JOIN "author" ON ("book"."author_id" = "author"."id")
-                INNER JOIN "publisher" ON ("author"."publisher_id" = "publisher"."id");
-                ```
-
-            -   **Real-world nested example**:
-                ```python
-                from myapp.models import Order
-
-                # Fetch orders with customer and customer's city in a single JOIN
-                orders = Order.objects.select_related('customer__city').all()
-                for order in orders:
-                    print(f"{order.customer.name} from {order.customer.city.name}")
-                ```
-
-                ```sql
-                SELECT "order"."id", "order"."total", "order"."customer_id",
-                       "customer"."id", "customer"."name", "customer"."city_id",
-                       "city"."id", "city"."name"
-                FROM "order"
-                INNER JOIN "customer" ON ("order"."customer_id" = "customer"."id")
-                INNER JOIN "city" ON ("customer"."city_id" = "city"."id");
-                ```
-
-            -   **Performance implications**:
-                - **Query count**: 1 query vs N+1 (huge win).
-                - **Data transfer**: Single query sends all data at once; JOIN can duplicate parent rows if related set is large.
-                - **Memory**: Related objects cached in Python; no lazy-loading overhead.
-                - **Best when**: related object is small and frequent (like Author with 10-20 fields for 1000 books).
-
-            -   **Accessing related fields directly (no extra queries)**:
-                ```python
-                book = Book.objects.select_related('author').get(id=1)
-                # author is already in memory from the JOIN
-                print(book.author.name)  # No query fired
-                ```
-
-            -   **Combining with filters**:
-                ```python
-                # Filter on related fields; select_related still works
-                books = Book.objects.filter(author__country='USA').select_related('author').all()
-                ```
-
-            -   **Common pitfall: Redundant select_related on already tiny queryset**:
-                ```python
-                # OK but unnecessary; single book fetch is fast regardless
-                book = Book.objects.select_related('author').get(id=1)
-
-                # Better; if fetching many books, absolutely use select_related
-                books = Book.objects.select_related('author').all()[:100]
-                ```
-
-            -   **Chaining with prefetch_related for mixed relation types**:
-                ```python
-                # Use both: select_related for ForeignKey, prefetch_related for reverse FK
-                books = Book.objects.select_related('author').prefetch_related('reviews')
-                # author loaded via JOIN, reviews loaded via separate query + cached
-                ```
-
-            -   **Checking what queries are executed** (debugging):
-                ```python
-                from django.db import connection
-                from django.test.utils import CaptureQueriesContext
-
-                with CaptureQueriesContext(connection) as ctx:
-                    books = Book.objects.select_related('author').all()
-                    for book in books:
-                        print(book.author.name)
-
-                print(f"Total queries: {len(ctx.captured_queries)}")  # Should be 1
-                ```
-
-            -   **Comparison: `select_related` vs `prefetch_related`**:
-                | Aspect              | `select_related`         | `prefetch_related`       |
-                | ------------------- | ------------------------ | ------------------------ |
-                | Queries             | 1 (JOIN)                 | 2+ (separate)            |
-                | Use Case            | Forward FK, OneToOne     | Reverse FK, M2M          |
-                | Memory              | Data duplicated per JOIN | Data cached once         |
-                | Cartesian explosion | Risk with large sets     | No risk                  |
-                | Speed               | Fast for small relations | Fast for large relations |
-
-        -   **Using `.prefetch_related()` for Reverse Relations and `ManyToMany`**: When dealing with reverse `ForeignKey`, `ManyToMany`, or `OneToOne` relationships, use `.prefetch_related()` to retrieve related objects efficiently.
-
-            -   **How it works**: Executes **separate database queries** (one per prefetched relation) and caches results in Python memory. Unlike `select_related`, it does NOT perform **JOIN** at the database level. When you use `prefetch_related`, Django performs two (or more) distinct steps:
-                -   **Main Query**: It fetches all the primary objects (e.g., all Authors).
-                -   **Prefetch Query**: It collects all the IDs from the first result, then runs a single query to fetch all related objects (e.g., all Books belonging to those specific authors) using an **IN** clause.
-                -   **The "Stitching"**: Django’s ORM joins these objects in memory, so when you loop through `author.book_set.all()`, no new database hits occur.
-
-            -   **When to use**:
-                - Reverse ForeignKey lookups (e.g., `author.books` when Book has FK to Author).
-                - `ManyToManyField` relations (always requires separate query; JOIN would cause cartesian product).
-                - `OneToOneField` reverse relations.
-                - When the related set is expected to be large (JOIN would duplicate parent rows).
-
-            -   **When NOT to use**:
-                - Forward ForeignKey or OneToOne relations → use `select_related` (single JOIN query is faster).
-                - When you only need IDs or a single field → use `values_list()` or `only()`.
-
-            -   **The N+1 Problem** (solved by prefetch_related):
-                ```python
-                # Bad: N+1 queries (1 for authors + N queries for each author's books)
-                authors = Author.objects.all()
-                for author in authors:
-                    print(author.books.all())  # Separate query per author
-
-                # Good: 2 queries (1 for authors + 1 for all related books)
-                authors = Author.objects.prefetch_related('books')
-                for author in authors:
-                    print(author.books.all())
-                ```
-
-            -   **Basic Example** (ManyToMany):
-                ```python
-                from myapp.models import Author, Book
-
-                # 2 total queries: 1 for authors, 1 for all related books
-                authors = Author.objects.prefetch_related('books').all()
-
-                for author in authors:
-                    books = author.books.all()  # No additional query, cached
-                    print(f"Author: {author.name}, Books: {[book.title for book in books]}")
-                ```
-
-                ```sql
-                -- Query 1: Fetch all authors
-                SELECT "author"."id", "author"."name" FROM "author";
-
-                -- Query 2: Fetch all related books for the authors above
-                SELECT "book"."id", "book"."title", "book"."author_id"
-                FROM "book"
-                WHERE "book"."author_id" IN (1, 2, 3, ...);  -- IDs from Query 1
-                ```
-
-            -   **Chaining multiple prefetch_related**:
-                ```python
-                # Prefetch multiple relations in one operation
-                authors = Author.objects.prefetch_related('books', 'awards').all()
-                ```
-
-                ```sql
-                -- Query 1: Fetch all authors
-                SELECT "author"."id", "author"."name" FROM "author";
-
-                -- Query 2: Fetch all books for authors
-                SELECT "book"."id", "book"."title", "book"."author_id"
-                FROM "book"
-                WHERE "book"."author_id" IN (1, 2, 3, ...);
-
-                -- Query 3: Fetch all awards for authors
-                SELECT "award"."id", "award"."title", "award"."author_id"
-                FROM "award"
-                WHERE "award"."author_id" IN (1, 2, 3, ...);
-                ```
-
-            -   **Nested prefetch (related relations of related objects)**:
-                ```python
-                from django.db.models import Prefetch
-
-                # Prefetch books AND their authors' publishers for each author
-                authors = Author.objects.prefetch_related(
-                    Prefetch('books', queryset=Book.objects.select_related('author__publisher'))
-                )
-                # Now: author.books.all() gives cached Book objects with author and publisher already loaded
-
-                # All data is cached—no additional queries in this loop
-                for author in authors:
-                    print(f"Author: {author.name}")
-                    
-                    # Access prefetched books (no query fired)
-                    for book in author.books.all():
-                        print(f"  Book: {book.title}")
-                        
-                        # Access select_related publisher (no query fired)
-                        print(f"    Publisher: {book.author.publisher.name}")
-                ```
-
-                -   **Key points**:
-                    - `author.books.all()` uses the cached prefetch result; no new query.
-                    - `book.author.publisher` already loaded via `select_related` in the Prefetch queryset; no new query.
-                    - Total queries for the entire loop: **exactly 2** (no N+1 problem).
-                    - Without prefetch/select_related, this loop would execute **1 + N + (N × M)** queries (author + books per author + publishers per book).
-
-
-                ```sql
-                -- Query 1: Fetch all authors
-                SELECT "author"."id", "author"."name" FROM "author";
-
-                -- Query 2: Fetch books with their authors and publishers (JOIN for select_related)
-                SELECT "book"."id", "book"."title", "book"."author_id",
-                       "author"."id", "author"."name", "author"."publisher_id",
-                       "publisher"."id", "publisher"."name"
+                    "author"."id", "author"."name", "author"."publisher_id",
+                    "publisher"."id", "publisher"."name",
+                    COUNT("author_books"."id") AS "author_book_count"
                 FROM "book"
                 INNER JOIN "author" ON ("book"."author_id" = "author"."id")
                 INNER JOIN "publisher" ON ("author"."publisher_id" = "publisher"."id")
-                WHERE "book"."author_id" IN (1, 2, 3, ...);
+                LEFT OUTER JOIN "book" AS "author_books" ON ("author"."id" = "author_books"."author_id")
+                GROUP BY "book"."id", "author"."id", "publisher"."id";
                 ```
 
-            -   **Using `Prefetch` object for filtering prefetched results**: Sometimes you don't want all related objects; you want a filtered subset. For this, Django provides the Prefetch object.
 
-                ```python
-                from django.db.models import Prefetch
+                -   **Real-world nested example**:
+                    ```python
+                    from myapp.models import Order
 
-                # Fetch authors, but only prefetch their "highly_rated" books
-                authors = Author.objects.prefetch_related(
-                    Prefetch('books', queryset=Book.objects.filter(rating__gt=4))
-                )
-                # author.books.all() now contains only highly_rated books, cached
-                ```
+                    # Fetch orders with customer and customer's city in a single JOIN
+                    orders = Order.objects.select_related('customer__city').all()
+                    for order in orders:
+                        print(f"{order.customer.name} from {order.customer.city.name}")
+                    ```
 
-                ```sql
-                -- Query 1: Fetch all authors
-                SELECT "author"."id", "author"."name"
-                FROM "author";
+                    ```sql
+                    SELECT "order"."id", "order"."total", "order"."customer_id",
+                        "customer"."id", "customer"."name", "customer"."city_id",
+                        "city"."id", "city"."name"
+                    FROM "order"
+                    INNER JOIN "customer" ON ("order"."customer_id" = "customer"."id")
+                    INNER JOIN "city" ON ("customer"."city_id" = "city"."id");
+                    ```
 
-                -- Query 2: Fetch only highly rated books for these authors
-                SELECT "book"."id", "book"."title", "book"."rating", "book"."author_id"
-                FROM "book"
-                WHERE "book"."rating" > 4 AND "book"."author_id" IN (1, 2, 3, ...);
-                ```
+                -   **Performance implications**:
+                    - **Query count**: 1 query vs N+1 (huge win).
+                    - **Data transfer**: Single query sends all data at once; JOIN can duplicate parent rows if related set is large.
+                    - **Memory**: Related objects cached in Python; no lazy-loading overhead.
+                    - **Best when**: related object is small and frequent (like Author with 10-20 fields for 1000 books).
 
-            -   **Performance implications**:
-                - `select_related`: 1 query with JOIN; slower if related volume is large (cartesian explosion).
-                - `prefetch_related`: 2+ queries (separate) but faster overall due to no duplication.
-                - For reverse FK with 100+ children per parent, prefer `prefetch_related`.
+                -   **Accessing related fields directly (no extra queries)**:
+                    ```python
+                    book = Book.objects.select_related('author').get(id=1)
+                    # author is already in memory from the JOIN
+                    print(book.author.name)  # No query fired
+                    ```
 
-            -   **Combining with filters**: Avoid filtering on prefetched relations in QuerySet (use manual Python **filtering post-fetch**, or **filter before prefetch**):
-                ```python
-                # Book.objects.prefetch_related('author') is separate; filter on Book first
-                books = Book.objects.filter(title__icontains='Django').prefetch_related('author')
-                ```
+                -   **Combining with filters**:
+                    ```python
+                    # Filter on related fields; select_related still works
+                    books = Book.objects.filter(author__country='USA').select_related('author').all()
+                    ```
 
-                -   Assuming **Author ↔ Book** is a **ManyToManyField** (via pivot table), `select_related()` is not available; `prefetch_related()` is the right ORM tool.
-                -   When **Book → Author** (forward FK), use select_related('author') for a true one-query JOIN.
+                -   **Common pitfall: Redundant select_related on already tiny queryset**:
+                    ```python
+                    # OK but unnecessary; single book fetch is fast regardless
+                    book = Book.objects.select_related('author').get(id=1)
 
-                ```sql
-                -- Query 1 (books)
-                SELECT "book"."id","book"."title","book"."author_id"
-                FROM "book"
-                WHERE "book"."title" ILIKE '%Django%';
+                    # Better; if fetching many books, absolutely use select_related
+                    books = Book.objects.select_related('author').all()[:100]
+                    ```
 
-                -- Query 2 (authors)
-                SELECT "author"."id","author"."name",...
-                FROM "author"
-                WHERE "author"."id" IN (...book.author_id values...);
-                ```
+                -   **Chaining with prefetch_related for mixed relation types**:
+                    ```python
+                    # Use both: select_related for ForeignKey, prefetch_related for reverse FK
+                    books = Book.objects.select_related('author').prefetch_related('reviews')
+                    # author loaded via JOIN, reviews loaded via separate query + cached
+                    ```
 
-            -   **Common pitfall**: Calling `.all()` on a prefetched reverse relation loses the cache:
-                ```python
-                # Good: uses cache
-                author.books.all()
+                -   **Checking what queries are executed** (debugging):
+                    ```python
+                    from django.db import connection
+                    from django.test.utils import CaptureQueriesContext
 
-                # Bad: loses cache if you filter (executes new query)
-                author.books.filter(published=True)
-                ```
+                    with CaptureQueriesContext(connection) as ctx:
+                        books = Book.objects.select_related('author').all()
+                        for book in books:
+                            print(book.author.name)
+
+                    print(f"Total queries: {len(ctx.captured_queries)}")  # Should be 1
+                    ```
+
+                -   **Comparison: `select_related` vs `prefetch_related`**:
+                    | Aspect              | `select_related`         | `prefetch_related`       |
+                    | ------------------- | ------------------------ | ------------------------ |
+                    | Queries             | 1 (JOIN)                 | 2+ (separate)            |
+                    | Use Case            | Forward FK, OneToOne     | Reverse FK, M2M          |
+                    | Memory              | Data duplicated per JOIN | Data cached once         |
+                    | Cartesian explosion | Risk with large sets     | No risk                  |
+                    | Speed               | Fast for small relations | Fast for large relations |
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Red">Custom Joins && Raw SQL Queries</summary>
+
 
         -   **Custom Joins using `.filter()` and `annotate()`**: Custom joins in Django ORM allow you to query across related models with specific conditions, aggregations, and annotations without writing raw SQL. This is achieved through `.filter()` for conditions and `.annotate()` for adding computed fields. These methods leverage Django's ORM to perform implicit **JOIN**s based on model relationships.
 
@@ -3267,6 +2970,123 @@
             # Process the results
             for row in results:
                 print(f"Author: {row[0]}, Book Title: {row[1]}")
+            ```
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Red">Useful ORM Methods</summary>
+
+        -   `all()`: Returns all objects of the model.
+
+            ```python
+            all_objects = MyModel.objects.all()
+            ```
+
+        -   `filter()`: Returns a queryset of objects that match the given lookup parameters.
+
+            ```python
+            filtered_objects = MyModel.objects.filter(name="John")
+            ```
+
+            -   `$ Book.objects.filter(author__name="Jhon")`
+            -   `$ Book.objects.filter(Q(authon__name="Jhon"))`
+            -   `$ `
+
+        -   `exclude()`: Returns a queryset excluding the objects that match the given lookup parameters.
+
+            ```python
+            excluded_objects = MyModel.objects.exclude(name="John")
+            ```
+
+        -   `get()`: Returns a single object that matches the given lookup parameters. Raises an error if multiple objects are found.
+
+            ```python
+            single_object = MyModel.objects.get(id=1)
+            ```
+
+        -   `create()`: Creates a new object with the given parameters and saves it to the database.
+
+            ```python
+            new_object = MyModel.objects.create(name="Jane", age=25)
+            ```
+
+        -   `update()`: Updates the objects that match the given lookup parameters with the new values.
+
+            ```python
+            MyModel.objects.filter(name="John").update(age=30)
+            ```
+
+        -   `delete()`: Deletes the objects that match the given lookup parameters.
+
+            ```python
+            MyModel.objects.filter(name="John").delete()
+            ```
+
+        -   `order_by()`: Orders the queryset by the specified field(s).
+
+            ```python
+            ordered_objects = MyModel.objects.all().order_by('-created_at') # Leading `-` indicates to order in reverse order
+            ```
+
+        -   `values()`: Returns a queryset that returns dictionaries instead of model instances.
+
+            ```python
+            data = MyModel.objects.values('name', 'age')
+            ```
+
+        -   `annotate()`: Adds annotations to each object in the queryset.
+
+            ```python
+            from django.db.models import Count
+            annotated_objects = MyModel.objects.annotate(num_children=Count('children'))
+            ```
+
+        -   `distinct()`: Returns a queryset with duplicate results removed.
+
+            ```python
+            unique_objects = MyModel.objects.values('name').distinct()
+            ```
+
+        -   `count()`: Returns the number of objects in the queryset.
+
+            ```python
+            num_objects = MyModel.objects.count()
+            ```
+
+        -   `exists()`: Returns True if the queryset contains any results, False otherwise.
+
+            ```python
+            has_objects = MyModel.objects.filter(name="John").exists()
+            ```
+
+        -   `first()`: Returns the first object in the queryset, or None if the queryset is empty.
+
+            ```python
+            first_object = MyModel.objects.first()
+            ```
+
+        -   `last()`: Returns the last object in the queryset, or None if the queryset is empty.
+
+            ```python
+            last_object = MyModel.objects.last()
+            ```
+
+        -   `values_list()`: Returns a queryset that returns tuples instead of model instances.
+
+            ```python
+            data_tuples = MyModel.objects.values_list('name', 'age')
+            ```
+
+        -   `bulk_create()`: Creates multiple objects in a single database query.
+
+            ```python
+            MyModel.objects.bulk_create([MyModel(name='John'), MyModel(name='Jane')])
+            ```
+
+        -   `defer()`: Defers the loading of certain fields until they are accessed.
+
+            ```python
+            deferred_fields = MyModel.objects.defer('large_text_field')
             ```
 
         </details>
