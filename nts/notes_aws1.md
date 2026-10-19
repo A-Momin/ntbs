@@ -1022,72 +1022,116 @@
 
         -   **Main STS API Operations**
 
-            -   `AssumeRole`: Requests temporary security credentials and associates them with a specified IAM role.
-            -   `AssumeRoleWithSAML`: Returns temporary security credentials for users who have been authenticated via a SAML authentication response.
-            -   `AssumeRoleWithWebIdentity`: Returns temporary security credentials for users authenticated via a web identity provider, such as Login with Amazon, Facebook, Google, or any OpenID Connect-compatible provider.
-            -   `GetFederationToken`: Returns temporary security credentials for a federated user.
-            -   `GetSessionToken`: Returns temporary security credentials for an AWS account or IAM user.
+            1.  **Requesting a Token with `sts:GetSessionToken` (Same Permissions)**: The `GetSessionToken` API call generates temporary credentials that are based on the calling IAM user's long-term credentials and have the exact same permissions. This is primarily used to provide temporary, MFA-protected credentials.
 
-        > There are two main ways for an **IAM User** to request an AWS STS token, which grants **temporary, limited-privilege credentials**:
+                -   **Prerequisites**:
 
-        1.  **Requesting a Token with `GetSessionToken` (Same Permissions)**: The `GetSessionToken` API call generates temporary credentials that are based on the calling IAM user's long-term credentials and have the exact same permissions. This is primarily used to provide temporary, MFA-protected credentials.
+                    -   The IAM user must have long-term access keys configured.
+                    -   (Optional but recommended) The IAM user must have an MFA device configured, and the policy controlling access must require MFA.
 
-            -   **Prerequisites**:
+                -   **AWS CLI Example (with MFA)**: Use the `aws sts get-session-token` command, providing the MFA details:
 
-                -   The IAM user must have long-term access keys configured.
-                -   (Optional but recommended) The IAM user must have an MFA device configured, and the policy controlling access must require MFA.
-
-            -   **AWS CLI Example (with MFA)**: Use the `aws sts get-session-token` command, providing the MFA details:
-
-                ```bash
-                aws sts get-session-token \
-                    --duration-seconds 3600 \
-                    --serial-number arn:aws:iam::123456789012:mfa/user-name \
-                    --token-code 123456
-                ```
-
-                -   `--duration-seconds`: The duration for the temporary credentials (e.g., 3600 seconds = 1 hour). Max is 36 hours for IAM users.
-                -   `--serial-number`: The ARN of the IAM user's MFA device.
-                -   `--token-code`: The current 6-digit code from the MFA device.
-
-                **Output:** The command returns a `Credentials` object containing the `AccessKeyId`, `SecretAccessKey`, and `SessionToken`.
-
-        2.  **Requesting a Token with `AssumeRole` (Delegated Permissions)**: The `AssumeRole` API call allows an IAM user to temporarily take on the permissions defined in an **IAM Role**. This is the standard method for delegating permissions within the same account or across accounts.
-
-            -   **Prerequisites**:
-
-                1.  **IAM Role:** An IAM Role must exist with the desired permissions (via a permissions policy).
-                2.  **Role Trust Policy:** The Role's **Trust Policy** must explicitly allow the IAM User to assume it. This is done by specifying the IAM User's ARN in the `Principal` element of the trust policy, allowing the `sts:AssumeRole` action.
-                    ```json
-                    {
-                        "Version": "2012-10-17",
-                        "Statement": [
-                            {
-                                "Effect": "Allow",
-                                "Principal": {
-                                    "AWS": "arn:aws:iam::123456789012:user/target-user"
-                                },
-                                "Action": "sts:AssumeRole"
-                            }
-                        ]
-                    }
+                    ```bash
+                    aws sts get-session-token \
+                        --duration-seconds 3600 \
+                        --serial-number arn:aws:iam::123456789012:mfa/user-name \
+                        --token-code 123456
                     ```
-                3.  **IAM User Permissions:** The IAM User must have an **identity-based policy** that grants them the `sts:AssumeRole` permission on the specific Role ARN.
 
-            -   **AWS CLI Example**: The IAM User uses their own long-term credentials to call the `assume-role` command, specifying the Role they want to assume:
+                    -   `--duration-seconds`: The duration for the temporary credentials (e.g., 3600 seconds = 1 hour). Max is 36 hours for IAM users.
+                    -   `--serial-number`: The ARN of the IAM user's MFA device.
+                    -   `--token-code`: The current 6-digit code from the MFA device.
 
-                ```bash
-                aws sts assume-role \
-                    --role-arn arn:aws:iam::123456789012:role/TargetRoleName \
-                    --role-session-name AWSCLI-Session
+                    **Output:** The command returns a `Credentials` object containing the `AccessKeyId`, `SecretAccessKey`, and `SessionToken`.
+
+            2.  **Requesting a Token with `sts:AssumeRole` (Delegated Permissions)**: The `AssumeRole` API call allows an IAM Principals (Users, Services) to temporarily take on the permissions defined in an **IAM Role**. This is the standard method for delegating permissions within the same account or across accounts.
+
+                -   **Prerequisites**:
+
+                    1.  **IAM Role:** An IAM Role must exist with the desired permissions (via a permissions policy).
+                    2.  **Role Trust Policy:** The Role's **Trust Policy** must explicitly allow the IAM User to assume it. This is done by specifying the IAM User's ARN in the `Principal` element of the trust policy, allowing the `sts:AssumeRole` action.
+                        ```json
+                        {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "AWS": "arn:aws:iam::123456789012:user/target-user"
+                                    },
+                                    "Action": "sts:AssumeRole"
+                                }
+                            ]
+                        }
+                        ```
+                    3.  **IAM User Permissions:** The IAM User must have an **identity-based policy** that grants them the `sts:AssumeRole` permission on the specific Role ARN.
+
+            3. **`sts:AssumeRoleWithWebIdentity`**: Used for federation with external Identity Providers (IdPs) supporting OpenID Connect (OIDC), such as Okta, Google, GitHub Actions, or Amazon EKS Service Accounts (IRSA).
+
+                -   **Flow**: The client authenticates with the external IdP, receives a JSON Web Token (JWT), and passes it to STS. STS verifies the JWT signature against the IdP's public keys before minting AWS credentials.
+
+            4. **`sts:AssumeRoleWithSAML`**: Used for enterprise Single Sign-On (SSO) via SAML 2.0 assertions (e.g., Microsoft Entra ID / Active Directory Federation Services).
+
+            5. **`sts:GetCallerIdentity`**: Returns details about the current IAM identity making the call (Account ID, User/Role ARN, and UserId). It acts as the AWS API equivalent of whoami.
+
+            6. `GetFederationToken`: Returns temporary security credentials for a federated user.
+
+        -   **How it works when an AWS service assumes an IAM role**: It follows the exact same underlying mechanism as a user or cross-account entity: it makes a call to the Security Token Service (STS) to request short-lived credentials (`ASIA...`) bounded by the permissions attached to that role.
+
+            ```
+            ┌─────────────────┐           1. sts:AssumeRole            ┌─────────────────┐
+            │   AWS Service   │ ─────────────────────────────────────► │     AWS STS     │
+            │ (e.g., EC2,     │                                        └────────┬────────┘
+            │  Lambda, ECS)   │ ◄───────────────────────────────────────────────┘
+            └────────┬────────┘        2. Temporary Credentials
+                    │                    (AccessKey, Secret, Token)
+                    │
+                    │ 3. Sign API Requests (SigV4)
+                    ▼
+            ┌─────────────────┐
+            │ Target Resource │
+            │  (e.g., S3)     │
+            └─────────────────┘
+
+            ```
+
+            -   **Step 1: Trust Policy Verification**: Before an AWS service can invoke `sts:AssumeRole`, the target IAM role must explicitly grant that specific AWS service permission to do so in its **Trust Policy** (Trust Relationship).
+
+                ```json
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
                 ```
 
-                -   `--role-arn`: The Amazon Resource Name (ARN) of the Role you want to assume.
-                -   `--role-session-name`: A unique identifier for the session (visible in CloudTrail logs).
+            -   **Step 2: STS Credential Exchange**: When the resource starts up or executes (for example, when an AWS Lambda function is invoked or an EC2 instance launches with an IAM Instance Profile):
 
-                **Output:** The command returns an `AssumedRoleUser` object and a `Credentials` object containing the temporary `AccessKeyId`, `SecretAccessKey`, and `SessionToken`.
+                1. The underlying service platform calls the **STS endpoint** requesting `sts:AssumeRole` for the specified Role ARN.
+                2. STS checks the role's **Trust Policy** to verify `lambda.amazonaws.com` is an allowed principal.
+                3. STS generates and returns short-term credentials: an `AccessKeyId` (starting with `ASIA`), a `SecretAccessKey`, and a `SessionToken`.
 
-            -   **Next Step**: Once you receive the temporary credentials (Access Key ID, Secret Access Key, and Session Token), you must set them as environment variables or configure them in your AWS CLI/SDK profile to use them for subsequent AWS API calls.
+            -   **Step 3: Local Credential Hosting / Injection**: The AWS service automatically injects or manages these temporary credentials inside the execution environment:
+
+                -   **EC2:** Made available via the **Instance Metadata Service (IMDS)** at `[http://169.254.169.254/latest/meta-data/iam/security-credentials/](http://169.254.169.254/latest/meta-data/iam/security-credentials/)`.
+                -   **Lambda / ECS Task:** Environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) or local container endpoint tokens are populated automatically.
+
+            -   **Step 4: Accessing AWS Resources**: When your application code or SDK inside the service makes a call (e.g., `s3.getObject()`), the AWS SDK automatically picks up these temporary credentials to sign the request using **AWS Signature Version 4 (SigV4)**.
+
+            -   **Key Modes of Service Assumption**:
+
+                | Mode                   | Who Calls STS?                                   | Example                                                                                            |
+                | ---------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+                | **Execution Roles**    | The AWS infrastructure on launch/invocation.     | A Lambda function fetching parameters from Systems Manager Parameter Store.                        |
+                | **Chained AssumeRole** | Application code running inside the AWS service. | Code in an EC2 instance in Account A calling `sts:AssumeRole` to access an S3 bucket in Account B. |
+                | **PassRole Hand-off**  | The control plane service on deployment.         | AWS CloudFormation passing a service role to AWS CodePipeline to run deployments.                  |
 
         </details>
 
@@ -1112,7 +1156,6 @@
             -   Once the EC2 instance has assumed the role through the instance profile, it can use the temporary credentials to access AWS services based on the permissions defined in the role's policies.
 
         </details>
-
 
     -   **IAM Users**: An **IAM user** is an identity with specific permissions within an AWS account. IAM users are used to represent individuals or services that need to interact with AWS resources.
 
@@ -1158,14 +1201,6 @@
         -   **Attributes**:
             -   **Virtual MFA devices**: Can be implemented using applications like Google Authenticator.
             -   **Hardware MFA devices**: AWS supports physical MFA devices like hardware tokens.
-
-    -   **Best Practices for AWS IAM**:
-
-        -   Use **IAM roles** instead of IAM users for accessing AWS resources when possible.
-        -   Implement **Multi-Factor Authentication (MFA)** for all privileged accounts.
-        -   Follow the **principle of least privilege**: Assign only the permissions necessary for the task.
-        -   Regularly rotate **access keys** and monitor usage with IAM credential reports.
-        -   Use **permissions boundaries** to limit the scope of permissions assigned to roles and users.
 
     </details>
 
