@@ -492,7 +492,10 @@
                 -   `db_constraint`: set to `False` to disable the database-level foreign key constraint (use with caution).
                 -   `db_index`: defaults to `True`; useful for join performance.
                 -   `null` and `blank`: allow NULL values and form blank input in the child model.
-                -   `editable`, `db_column`, `verbose_name`, `help_text`.
+                -   `editable`: 
+                -   `db_column`:
+                -   `verbose_name`: 
+                -   `help_text`: 
                 -   `primary_key`: setting to `True` converts the ForeignKey into a One-to-One relationship (each parent linked to at most one child).
 
         -   **`OneToOneField(to, on_delete, parent_link=False, **options)`** | [doc](https://docs.djangoproject.com/en/4.1/ref/models/fields/#onetoonefield)

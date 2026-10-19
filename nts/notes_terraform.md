@@ -1,4 +1,6 @@
 -   [Terraform Language](https://developer.hashicorp.com/terraform/language)
+-   Config Driven State Management
+
 
 -   <details><summary style="font-size:25px;color:Orange">Terraform Components, Terms & Concepts</summary>
 
@@ -729,6 +731,22 @@
     6. **Prompted Input (Lowest)**: If a variable is declared with **no default value** and is not set by any of the higher-precedence sources, Terraform will **prompt the user** to enter a value during execution.
 
     > The primary takeaway is that **command-line arguments and flags always override file-based or environment-based settings.**
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">Securing Terraform Configurations</summary>
+
+
+
+    </details>
+
+---
+
+-   <details><summary style="font-size:25px;color:Orange">HCP Terraform</summary>
+
+
 
     </details>
 
@@ -1787,7 +1805,7 @@
 
                 ```ini
                 resource "aws_s3_bucket" "my_bucket" {
-                bucket = "my-bucket"
+                    bucket = "my-bucket"
                 }
                 ```
 
@@ -1919,6 +1937,7 @@
 -   <details><summary style="font-size:25px;color:Orange">Terraform CLI</summary>
 
     -   `$ terraform init`
+    -   `$ terraform init -upgrade`
 
     -   `$ terraform plan`
     -   `$ terraform plane -refresh=false`
@@ -1944,7 +1963,16 @@
     -   `$ terraform get -update` -> Check already-downloaded modules for available updates and install the newest versions available.
     -   `$ terraform validate`
     -   `$ terraform fmt`
+
+    -   `$ terraform state list`
+    -   `$ terraform state show aws_vpc.myvpc`
+    -   `$ terraform state mv`
+    -   `$ terraform state rm`
+    -   `$ terraform state pull/push`
+
     -   `$ terraform show`
+    -   `$ terraform state show aws_vpc.myvpc`
+
     -   `$ export TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX`
     -   `$ export TF_VAR_iam_user_name_prefix=FROM_ENV_VARIABLE_IAM_PREFIX`
 

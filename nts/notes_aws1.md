@@ -283,7 +283,7 @@
         -   `Traffic Isolation`: Instances launched in different subnets within the same VPC are isolated from each other at the network level. By controlling the routing and network access policies within subnets, you can control the flow of traffic between resources.
         -   `Associated Resources`: Subnets can be associated with various AWS resources, including EC2 instances, RDS databases, Lambda functions, and more. When launching resources, you can specify the subnet in which the resource should reside.
 
-    -   **CIDR (Classless Inter-Domain Routing)**: `CIDR` is a notation for representing a range/block of IP addresses with their associated `Network Prefix`. It allows for a more flexible allocation of IP addresses than the older class-based system (Class A, B, and C networks). `CIDR` notation includes both the IP address and the length of the network prefix, separated by a slash (`/`). For example, `10.0.0.0/16` indicates a network with a 16-bit prefix and represents a `CIDR` block with a range of IP addresses from `10.0.0.0` to `10.0.255.255`. The size of a `CIDR` block is $2^{32 − Prefix Length} = 2^{32 − 16} = 2^16$
+    -   **CIDR (Classless Inter-Domain Routing)**: `CIDR` is a notation for representing a range/block of IP addresses with their associated `Network Prefix`. It allows for a more flexible allocation of IP addresses than the older class-based system (Class A, B, and C networks). `CIDR` notation includes both the IP address and the length of the network prefix, separated by a slash (`/`). For example, `10.0.0.0/16` indicates a network with a 16-bit prefix and represents a `CIDR` block with a range of IP addresses from `10.0.0.0` to `10.0.255.255`. The size of a `CIDR` block is $2^{32 − Prefix Length} = 2^{32 − 16} = 2^{16}$
 
         -   In AWS, when you create a VPC, you define its IP address range using `CIDR` notation. `CIDR` notation is a compact representation of an IP address range, expressed as a base address followed by a forward slash and a numerical value representing the prefix length. For example, `10.0.0.0/16` indicates a network with a 16-bit network-prefix and represents a `CIDR` block with a range of IP addresses from 10.0.0.0 to 10.0.255.255.
 
@@ -378,7 +378,6 @@
         -   `Public IP Address`: A network interface can also be associated with a public IP address or an Elastic IP address (EIP), allowing the instance to communicate with the internet.
         -   `Security Groups`: Network interfaces can be associated with one or more security groups, which act as virtual firewalls, controlling the traffic allowed to and from the instance.
         -   `Traffic Monitoring and Control`: AWS provides tools for monitoring and controlling traffic through network interfaces, such as VPC Flow Logs, which capture information about the IP traffic going to and from network interfaces.
-
 
     -   <details><summary style="font-size:20px;color:Magenta">VPC Endpoint</summary>
 
@@ -514,20 +513,18 @@
 
     -   <details><summary style="font-size:20px;color:Magenta">VPN</summary>
 
-        A Virtual Private Network (VPN) on Amazon Web Services (AWS) is a service that provides a secure, encrypted connection for transmitting data over the public internet. This allows you to securely connect your on-premises networks or remote users to your Amazon Virtual Private Cloud (Amazon VPC) resources, creating a **hybrid cloud architecture**. AWS offers two primary VPN solutions: **AWS Site-to-Site VPN** and **AWS Client VPN**.
+        > A Virtual Private Network (VPN) on Amazon Web Services (AWS) is a service that provides a secure, encrypted connection for transmitting data over the public internet. This allows you to securely connect your on-premises networks or remote users to your Amazon Virtual Private Cloud (Amazon VPC) resources, creating a **hybrid cloud architecture**. AWS offers two primary VPN solutions: **AWS Site-to-Site VPN** and **AWS Client VPN**.
+        - Open VPN
 
-        -   **AWS Site-to-Site VPN**: AWS Site-to-Site VPN is designed to create a secure connection between your entire **on-premises network (a "site")** and your **Amazon VPC**. It's primarily used for connecting corporate data centers, branch offices, or other remote network locations to your cloud resources.
+        -   **AWS Site-to-Site VPN**: AWS Site-to-Site VPN is managed IPSec VPN designed to create a secure connection between your entire **on-premises network (a "site")** and your **Amazon VPC**. It's primarily used for connecting corporate data centers, branch offices, or other remote network locations to your cloud resources.
 
-            -   **Key Components**:
+            -   **Virtual Private Gateway (VGW):** This is the **AWS side** of the VPN connection. It's a logically redundant component attached to your Amazon VPC or an AWS Transit Gateway. It's the termination point for the VPN tunnels on the AWS side.
+            -   **Customer Gateway (CGW):** CGW in the AWS world is a configuration that you create in AWS. It represents your (**Customer Side** resources) physical or software VPN appliance (e.g., a firewall or router) in your on-premises data center. When you configure the CGW, you provide AWS with the internet-routable IP address of your appliance.
+            -   **VPN Connection:** This is the AWS resource that establishes the secure link between the Virtual Private Gateway (VGW) and the Customer Gateway (CGW).
+                -   **High Availability:** Each VPN Connection automatically provisions **two separate IPSec VPN tunnels** running concurrently. This provides redundancy and high availability. If one tunnel fails, network traffic automatically routes to the second tunnel, ensuring continuous connectivity.
+                -   **IPSec Tunnels:** The tunnels use the **IP Security (IPSec)** protocol suite to provide encryption, confidentiality, and integrity for the data in transit over the public internet.
 
-                -   **Virtual Private Gateway (VGW):** This is the **AWS side** of the VPN connection. It's a logically redundant component attached to your Amazon VPC or an AWS Transit Gateway. It's the termination point for the VPN tunnels on the AWS side.
-                -   **Customer Gateway (CGW):** This is the **customer side** resource in AWS that represents your physical or software VPN appliance (e.g., a firewall or router) in your on-premises data center. When you configure the CGW, you provide AWS with the internet-routable IP address of your appliance.
-                -   **VPN Connection:** This is the AWS resource that establishes the secure link between the Virtual Private Gateway (VGW) and the Customer Gateway (CGW).
-                    -   **High Availability:** Each VPN Connection automatically provisions **two separate IPSec VPN tunnels** running concurrently. This provides redundancy and high availability. If one tunnel fails, network traffic automatically routes to the second tunnel, ensuring continuous connectivity.
-                    -   **IPSec Tunnels:** The tunnels use the **IP Security (IPSec)** protocol suite to provide encryption, confidentiality, and integrity for the data in transit over the public internet.
-
-            -   **Routing Options**:
-
+            -   **Routing Options**: S2S VPN support both Static routing if you want to define your routing manually and BGP peering and routing.
                 -   **Static Routing:** You manually specify the IP address prefixes (CIDR blocks) for your on-premises network and for the VPC/Transit Gateway on both the Customer Gateway and the AWS side.
                 -   **Dynamic Routing (BGP):** This uses the **Border Gateway Protocol (BGP)** to automatically exchange route information between the Customer Gateway and the Virtual Private Gateway/Transit Gateway. This is generally preferred as it simplifies network management and provides quicker adaptation to network changes.
 
@@ -536,6 +533,12 @@
                 -   **Hybrid Cloud:** Integrating your existing on-premises infrastructure with AWS cloud services.
                 -   **Disaster Recovery:** Setting up replication and failover between your data center and a recovery VPC on AWS.
                 -   **AWS Direct Connect Backup:** Using the Site-to-Site VPN as a lower-cost, redundant backup path for your dedicated AWS Direct Connect link.
+
+            -   **Site-to-Site VPN Limitations**:
+                -   Depends on Internet Latency – Performance varies based on internet conditions. You can create VPN connections accross Private Network List as well, we can do it accross Direct Connect, for eexample, to add addition layer of encryptions voer direct connect
+                -   Limited Bandwidth – Maximum bandwidth is 1.25 Gbps per VPN tunnel
+                -   Single TCP Session Limit – AWS throttles single TCP flows to 250 Mbps, affecting high-bandwidth applications
+                -   Manual Failover Between Tunnels – If one VPN tunnel fails, your router must switch to the second tunnel manually (unless using BGP)
 
         -   **AWS Client VPN**: AWS Client VPN is a managed, client-based VPN service that enables **individual remote users** (like employees working from home or traveling) to securely access your AWS resources and any connected on-premises networks. It is a modern replacement for traditional self-managed remote access VPN solutions.
 
@@ -567,6 +570,14 @@
             | **Protocols**          | IPSec                                                    | OpenVPN-based (TLS)                                       |
             | **User Management**    | None (It connects _networks_)                            | Centralized access control (AD, SAML, Certificates)       |
             | **AWS Endpoint**       | Virtual Private Gateway (VGW) or Transit Gateway         | Client VPN Endpoint                                       |
+
+        -   **AWS VPN Cloudhub**: Cloudhub essentially a deployment topology.
+
+        -   **Third Party Software VPN Appliance**:
+
+        </details>
+
+    -   <details><summary style="font-size:20px;color:Magenta">AWS Direct Connect</summary>
 
         </details>
 
@@ -619,8 +630,6 @@
         -   Only 5 EIPs per region by default (can request more).
         -   Idle EIPs cost money. (When not attached to a running resource.)
 
-    -   **VPN**: Virtual Private Network, a connection between your on-premises network and your VPC that enables secure communication.
-    -   **AWS Direct Connect**: A dedicated network connection between your on-premises data center and your VPC.
     -   **VPC Flow Logs**: A feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.
 
     -   **Egress-only Internet Gatway**:
@@ -814,11 +823,42 @@
                 | **Service Role**        | A custom role created by an administrator to grant specific, scoped permissions for an AWS service (like Lambda or EC2) to access resources in your account.                                                 | **Customer-Managed**. You define and control both the trust and permissions policies.                                                                        | An **AWS Lambda function** needs to read data from a DynamoDB table and write logs to CloudWatch. |
                 | **Service-Linked Role** | A unique type of IAM role that is **directly linked** to an AWS service. These roles are pre-defined by the service and automatically contain all permissions required for the service to operate correctly. | **AWS-Managed**. The service automatically creates and updates the role, and you typically cannot modify its permissions or trust policy (only view/delete). | An **Auto Scaling Group** needs to manage EC2 instances or Elastic Load Balancers on your behalf. |
 
-        -   **Service-Linked Role**:
+        -   **Assume Role (`sts:AssumeRole`)**: **Assume Role** is an **API call** (provided by AWS Security Token Service / STS) that allows an identity (an IAM User, application, or another Role) to temporarily trade in its current identity for a different set of permissions.
 
-        -   **Assumed Role**:
+            -   **When an entity calls `AssumeRole`**:
 
-        -   **Pass Role**:
+                1. AWS validates that the target role's **Trust Policy** allows the entity to assume it.
+                2. AWS returns **temporary security credentials** (Access Key, Secret Key, and Session Token) valid for a set time (typically 1–12 hours).
+                3. The principal uses these temporary credentials to execute actions allowed by the role's **Permissions Policy**.
+
+        -   **Service-Linked Role**: A **Service-Linked Role (SLR)** is a unique type of IAM Role that is **predefined and managed directly by an AWS Service** (such as Auto Scaling, Elastic Beanstalk, or GuardDuty) rather than by you.
+
+            * **Purpose:** Allows an AWS service to perform actions on your behalf across other AWS resources automatically.
+            * **Management:** AWS automatically creates, links, and updates the permissions policy for the SLR. You cannot edit the permissions attached to a Service-Linked Role.
+            * **Deletion:** You can only delete a Service-Linked Role if the resource using it is deleted first, preventing accidental breakage of core service operations.
+            * **Naming:** They follow a specific path structure, typically formatted as `AWSServiceRoleFor<ServiceName>`.
+
+        -   **Pass Role (`iam:PassRole`)**: Unlike `AssumeRole`, **Pass Role is a permission action** (an IAM policy permission, not an API call you invoke directly). It grants a user the ability to assign ("pass") an IAM Role to an AWS resource (such as an EC2 instance, Lambda function, or ECS task).
+
+            * **The Problem It Solves:** If a developer creates a Lambda function and attaches an admin role to it, that developer could write code in Lambda to elevate their own permissions.
+            * **How It Works:** To assign a role to a service, the user's IAM policy must explicitly grant `iam:PassRole` on that specific Role ARN.
+
+            ```json
+            {
+                "Effect": "Allow",
+                "Action": "iam:PassRole",
+                "Resource": "arn:aws:iam::123456789012:role/MyLambdaExecutionRole"
+            }
+            ```
+
+        -   **Quick Comparison**
+
+            | Mechanism               | Type             | Who Uses It?           | Key Function                                                                                                                                |
+            | ----------------------- | ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+            | **Assume Role**         | STS API Call     | Users, Apps, Roles     | Requests short-term credentials to switch permissions.                                                                                      |
+            | **Service Role**        | IAM Role         | AWS Services           | An IAM role that an AWS service assumes to perform actions on your behalf (defined with a service trust policy, e.g., `ec2.amazonaws.com`). |
+            | **Service-Linked Role** | Managed IAM Role | AWS Services           | A predefined, AWS-managed Service Role with fixed permissions locked to a specific service lifecycle.                                       |
+            | **Pass Role**           | IAM Permission   | Administrators / Users | Authorizes a user to attach/pass a role to an AWS service or resource.                                                                      |
 
         -   **assume-role-policy-document**: An assume-role-policy-document is a policy attached to an IAM role that defines who (which entities) can assume the role. This policy, also known as a trust policy, specifies the conditions under which the role can be assumed and the permissions granted to those entities.
 
@@ -2234,6 +2274,10 @@
 
 -   <details><summary style="font-size:25px;color:Orange">ECS</summary>
 
+    -   Circuit breaking
+    -   app mesh
+    -   Side car
+    
     -   [amazon-ecs-and-eks](https://digitalcloud.training/amazon-ecs-and-eks/)
 
     > Amazon Elastic Container Service (**ECS**) is a fully managed container orchestration service that makes it easy for you to deploy, manage, and scale Docker containers on AWS. It abstracts away the complexity of managing the underlying infrastructure, allowing you to focus on building and running your applications. ECS eliminates the need to install, operate, and scale your own container management infrastructure. AWS ECS offers different ways to run your containers, catering to various needs and levels of control:
@@ -3003,13 +3047,13 @@
             -   The modern best practice is to **always use Capacity Providers** instead of explicitly setting a Launch Type on a service or task.
             -   **Managed Scaling for EC2:** The primary benefit of EC2 Capacity Providers is **managed scaling** for EC2. ECS automatically integrates with the EC2 Auto Scaling Group (ASG), scaling the ASG **in response to task placement needs** and managing instance draining for scale-in. This replaces the complex, separate ASG configuration required by the old EC2 Launch Type.
 
-                | Feature           | Launch Type                                          | Capacity Provider                                                                                                   |
-                | :---------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
-                | **Defines**       | The **type** of compute (EC2 or Fargate).            | The **pool** of compute and **how it scales**.                                                                      |
-                | **Configuration** | Set directly on the **service** or **task** (**old way**).       | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
-                | **Scaling**       | EC2 requires external ASG setup. Fargate is managed. | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
-                | **Flexibility**   | Binary choice (only one type per service).           | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
-                | **Best Practice** | **Legacy/Discouraged** for EC2.                      | **Recommended approach** for all new deployments.                                                                   |
+                | Feature           | Launch Type                                                | Capacity Provider                                                                                                   |
+                | :---------------- | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+                | **Defines**       | The **type** of compute (EC2 or Fargate).                  | The **pool** of compute and **how it scales**.                                                                      |
+                | **Configuration** | Set directly on the **service** or **task** (**old way**). | Configured on the cluster, then referenced by a strategy on the service/task.                                       |
+                | **Scaling**       | EC2 requires external ASG setup. Fargate is managed.       | **Managed scaling** is built-in for both Fargate and EC2 capacity.                                                  |
+                | **Flexibility**   | Binary choice (only one type per service).                 | Allows **Capacity Provider Strategies** to use multiple capacity types (e.g., Fargate and EC2 Spot) simultaneously. |
+                | **Best Practice** | **Legacy/Discouraged** for EC2.                            | **Recommended approach** for all new deployments.                                                                   |
 
         </details>
 

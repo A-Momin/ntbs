@@ -120,11 +120,11 @@
 
         -   **Architecture Selection Criteria**:
 
-            | Architecture Pattern | Availability Level | Replication Type | RPO / RTO Target | Primary Use Case |
-            | --- | --- | --- | --- | --- |
-            | **Single-AZ** | Low (Single Point of Failure) | None | High RPO/RTO | Development, testing, non-critical internal apps |
-            | **Multi-AZ** | High (Multi-AZ Failover) | Synchronous | RPO ≈ 0 / RTO < 2 mins | Production applications needing disaster recovery |
-            | **Read Replicas** | High (Horizontal Scale) | Asynchronous | Dependent on Lag | Reporting, BI queries, heavy read-traffic offloading |
+            | Architecture Pattern | Availability Level            | Replication Type | RPO / RTO Target       | Primary Use Case                                     |
+            | -------------------- | ----------------------------- | ---------------- | ---------------------- | ---------------------------------------------------- |
+            | **Single-AZ**        | Low (Single Point of Failure) | None             | High RPO/RTO           | Development, testing, non-critical internal apps     |
+            | **Multi-AZ**         | High (Multi-AZ Failover)      | Synchronous      | RPO ≈ 0 / RTO < 2 mins | Production applications needing disaster recovery    |
+            | **Read Replicas**    | High (Horizontal Scale)       | Asynchronous     | Dependent on Lag       | Reporting, BI queries, heavy read-traffic offloading |
 
         </details>
 
@@ -381,8 +381,6 @@
         ```
 
 
-    ---
-
     # 1. What Is Amazon Aurora?
 
     **Amazon Aurora** is a fully managed, cloud-native relational database engine provided by AWS. It is compatible with: **MySQL** and **PostgreSQL**.
@@ -390,8 +388,6 @@
     > **A relational database engine with a purpose-built distributed storage architecture designed for high availability, durability, performance, and scalability**.
 
     Aurora provides many capabilities you expect from a traditional relational database: SQL, ACID transactions, Joins, Indexes, Foreign keys, Stored procedures, Transactions, Relational data modeling.
-
-    ---
 
     # 2. Aurora vs Traditional RDS
 
@@ -435,8 +431,6 @@
     * Automatic storage expansion
     * High durability
     * Independent compute scaling
-
-    ---
 
     -   <summary style="font-size:25px;color:Orange">3. Aurora Cluster Architecture</summary>
 

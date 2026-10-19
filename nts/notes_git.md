@@ -572,6 +572,7 @@
     ##### [Resetting, Reverting, and Checking Out](https://www.atlassian.com/git/tutorials/resetting-checking-out-and-reverting)
 
     -   [Undoing Commits & Changes](https://www.atlassian.com/git/tutorials/undoing-changes)
+
     -   🔥 [git checkout]()
 
         -   `$ git checkout <commit_id>`
@@ -582,10 +583,9 @@
 
     -   🔥 [git reset]()
 
-        -   <font color="orange">How do I unstage changes?</font>
+        -   `$ git checkout .` → discards all local changes in the working directory and resets the files to the latest committed state (HEAD); this does not affect untracked files.
+        -   `$ git restore .` → restores all files in the current directory and subdirectories to their last committed state, effectively discarding all local changes; this is the modern replacement for `git checkout .`.
 
-            -   `$ git checkout .` → discards all local changes in the working directory and resets the files to the latest committed state (HEAD); this does not affect untracked files.
-            -   `$ git restore .` → restores all files in the current directory and subdirectories to their last committed state, effectively discarding all local changes; this is the modern replacement for `git checkout .`.
         -   `$ git restore <path/to/filefile_name>` → Discard all the changes of the file.
         -   `$ git restore --source=HEAD~1 -- <path/to/filefile_name>` → Restore a file to exactly how it was in the previous commit (i,e HEAD~1)
         -   `$ git restore --source <COMMIT_ID> <file_name>` → Revert the file to how it is in the specified commit.
@@ -595,18 +595,21 @@
         -   `$ git rm --cached *_initial.py` → Unstage all the files name ended with `_initial.py` from Staging Area.
         -   `$ git rm -r --cached */migrations/` → Unstage all (`migrations/*`) files recursively from Staging Area. (`--cached` refere to 'Staging Area')
 
-        -   <span style="color:orange">How to discard committed files? Extra care should be given using the reset command?</span>
-            -   `$ git reset` → Removes all files from the staging area, but keeps the changes in your working directory. It effectively "unstages" all changes.
-            -   `$ git reset HEAD <file_name>` → Unstage the specified file from Staging Area.
-            -   `$ git reset HEAD */.` → Unstage all the file from Staging Area
-            -   `$ git reset HEAD~3` → Discard the LAST THREE commit from Local Repository (Committing Area). Discarted file kept in Working Area
-            -   `$ git reset --soft HEAD~3` → Discard the first three commit from Local Repository (Committing Area). Discarted file kept in Staging Area
-            -   **$ git reset --hard** → It is used to reset the current commit or branch and the staging area to it's initial state or to a given commit. It moves the HEAD and the current branch pointer to the specified commit if given any.
-            -   `$ git reset --hard HEAD~1` -> Move your current branch pointer back to one commit and make your index+working tree match that older commit.
-            -   `$ git revert` → it's better to use `git revert` to create a new commit that undoes the changes made in the previous commit.
-            -   <span style="color:orange">How to remove a commit from remote repository:</span>
-                1. git reset <commit_id>
-                2. git push origin master -f
+        -   `$ git reset` → Removes all files from the staging area, but keeps the changes in your working directory. It effectively "unstages" all changes.
+        -   `$ git reset HEAD <file_name>` → Unstage the specified file from Staging Area.
+        -   `$ git reset HEAD */.` → Unstage all the file from Staging Area
+        -   `$ git reset HEAD~3` → Discard the LAST THREE commit from Local Repository (Committing Area). Discarted file kept in Working Area
+        -   `$ git reset --soft HEAD~3` → Discard the first three commit from Local Repository (Committing Area). Discarted file kept in Staging Area
+        -   **$ git reset --hard** → It is used to reset the current commit or branch and the staging area to it's initial state or to a given commit. It moves the HEAD and the current branch pointer to the specified commit if given any.
+        -   `$ git reset --hard HEAD~1` -> Move your current branch pointer back to one commit and make your index+working tree match that older commit.
+            -   `$ git push --force-with-lease` -> git push --force-with-lease is a safer alternative to git push --force (-f). It updates the remote branch only if the remote branch's head matches your local tracking branch, ensuring you do not overwrite someone else's un-retrieved commits.
+                -   `$ git push --force` -> Overwrites the remote branch with your local branch regardless of what has changed on the remote server.
+                -   `$ git push --force-with-lease` -> Checks if the remote ref has been updated since your last git fetch.
+                    -   If no new commits exist on remote, the push succeeds.
+                    -   If someone else pushed new commits, the push fails with a warning, protecting their work.
+        -   `$ git revert` → it's better to use `git revert` to create a new commit that undoes the changes made in the previous commit.
+        -   `$ git reset <commit_id>` -> How to remove a commit from remote repository
+            -   `$ git push origin master -f`
 
     ## GIT BRANCHING & MEARGING FILES
 

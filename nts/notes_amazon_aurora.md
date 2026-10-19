@@ -12,7 +12,6 @@ Below is the notebook, with the architecture-sensitive claims corrected where cu
 
 ---
 
-<details>
 <summary style="font-size:25px;color:Orange">1. Aurora Architecture & Distributed Storage Engine</summary>
 
 * **Aurora's Fundamental Architectural Model**:
